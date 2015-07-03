@@ -339,6 +339,23 @@ expFinU = cmpfun(expFinU)
 #and selection at a proportion specified by propB if 
 #sel and QRP are 1 not 0. 
 
+#' @param k the number of studies in the MA
+#' @param QRP 1 if QRP/p-hacks are available, 0 otherwise
+#' @param sel 1 if publication bias selection exists, 0 otherwise
+#' @param propB the proportion of the sample affected by bias
+#' @param meanD the true effect (or the average of the true effects if heterogeneity exists)
+#' @param sigma the SD around the true effect
+#' @param cbdv the correlation between the multiple DVs
+#' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples
+#' @param minN the min of the truncated normal for sample size
+#' @param meanN the mean of the truncated normal for sample size
+#' @param sdN the SD of the truncated normal for sample size
+#' @param multDV 1 if multiple DVs as a hack, 0 otherwise
+#' @param out 1 if optional outlier removal as a hack, 0 otherwise
+#' @param mod 1 if optional moderator as a hack, 0 otherwise
+#' @param colLim number of times to try collecting more data
+#' @param add number to add to each group when collecting more data
+
 
 dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA
                   meanD,sigma,cbdv,maxN, #arg for expDataB and expDataU
