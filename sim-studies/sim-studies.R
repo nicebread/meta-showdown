@@ -423,6 +423,19 @@ dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA
   if (kU > 0 & kB > 0){outMat = rbind(rU,rB)}
   if (kU > 0 & kB == 0){outMat = rU}
   if (kU == 0 & kB > 0){outMat = rB}
+  
+  #change outMat to a data.frame and name the columns
+  outMat = data.frame(d = outMat[,1],       # effect size, d
+                      p = outMat[,2],       # p value for the two group comparison
+                      t = outMat[,3],       # t value for the two group comparison
+                      N = outMat[,4],       # total N
+                      v = outMat[,5],       # variance for the effect size
+                      se = outMat[,6],      # standard error for the effect size
+                      pow = outMat[,7],     # power given the true effect for the two group comparison
+                      n1 = outMat[,8],      # experimental group sample size
+                      n2 = outMat[,9],      # control group sample size
+                      fileD = outMat[,10])  # number of experiment censored due to publication bias
+  
 return(outMat)
 }
 
