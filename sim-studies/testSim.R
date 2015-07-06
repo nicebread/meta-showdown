@@ -161,7 +161,7 @@ system.time({
 	biased_meta4 <- gen_k_studies(k = 1000, percent_sig = 1, avg_n = 20, min_n=20, max_n=20, d_true = 0.3)
 })
 
-plot(density(MA3$d), col="blue", xlab="d.obs")
-lines(density(biased_meta$dobs), col="red")
+plot(density(MA4$d), col="blue", xlab="d.obs")
+lines(density(biased_meta4$dobs), col="red")
 
 
