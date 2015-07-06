@@ -6,10 +6,14 @@ library(dplyr)
 gen_k_studies = function(k, percent_sig, avg_n, 
                          min_n = 40, max_n = Inf, d_true=0,
                          tails = 2) {
-  n_per_cell = 
-    rtrunc(k, "lnorm", a = min_n, b = max_n, 
-           meanlog = log(avg_n), sdlog = .5) %>% 
-    round(0)  
+
+  if (avg_n == min_n && avg_n == max_n) {
+  	n_per_cell <- avg_n
+  } else {
+	  n_per_cell = 
+	    rtrunc(k, "lnorm", a = min_n, b = max_n, 
+	           meanlog = log(avg_n), sdlog = .5) %>% round(0)    	
+  }
   df = n_per_cell * 2 - 2
   
   # Run studies
