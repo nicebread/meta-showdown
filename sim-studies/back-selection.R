@@ -45,19 +45,19 @@ gen_k_studies = function(k, percent_sig, avg_n,
                    "t" = t, "p" = p)
 }
 
-# Demonstration ----
-# Generate 20 significant results on a null effect
-biased_meta = gen_k_studies(k = 20, percent_sig = 1, avg_n = 30, d_true = 0)
-plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .7))
-subset(biased_meta$p, biased_meta$p < .05) %>% 
-  hist(breaks=seq(0, .05, by=.01))
-# Generate 30 studies on a null effect, of which 75% are forced to be significant
-biased_meta = gen_k_studies(k = 30, percent_sig = .75, avg_n = 30, d_true = 0)
-plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .7))
-subset(biased_meta$p, biased_meta$p < .05) %>% 
-  hist(breaks=seq(0, .05, by=.01))
-# Generate 40 studies on a small effect with heavy pub bias
-biased_meta = gen_k_studies(k = 40, percent_sig = .80, avg_n = 30, d_true = .3)
-plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .9))
-subset(biased_meta$p, biased_meta$p < .05) %>% 
-  hist(breaks=seq(0, .05, by=.01))
+# # Demonstration ----
+# # Generate 20 significant results on a null effect
+# biased_meta = gen_k_studies(k = 20, percent_sig = 1, avg_n = 30, d_true = 0)
+# plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .7))
+# subset(biased_meta$p, biased_meta$p < .05) %>%
+#   hist(breaks=seq(0, .05, by=.01))
+# # Generate 30 studies on a null effect, of which 75% are forced to be significant
+# biased_meta = gen_k_studies(k = 30, percent_sig = .75, avg_n = 30, d_true = 0)
+# plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .7))
+# subset(biased_meta$p, biased_meta$p < .05) %>%
+#   hist(breaks=seq(0, .05, by=.01))
+# # Generate 40 studies on a small effect with heavy pub bias
+# biased_meta = gen_k_studies(k = 40, percent_sig = .80, avg_n = 30, d_true = .3)
+# plot(biased_meta$dobs, biased_meta$nobs, xlim = c(-.3, .9))
+# subset(biased_meta$p, biased_meta$p < .05) %>%
+#   hist(breaks=seq(0, .05, by=.01))
