@@ -1,0 +1,265 @@
+#runs and analyzes MAs
+#currently only uses RE,Trim and fill,PET,PEESE,PET-PEESE
+#also assesses funnel plot asymmetry test (FAT) and test for excess significance (TES)
+
+################################### MA level analysis
+
+#produces results for nMA meta-analyses given the conditions
+analyMA = function(nMA,                   #arg specific to analyMA
+                   k,QRP,sel,propB,       #arg specific to dataMA (QRP is used for expFinB, too)
+                   meanD,sigma,cbdv,maxN, #arg for expDataB 
+                   minN,meanN,sdN,        #arg for sampB and sampU
+                   multDV,out,mod,        #arg in analyB and expFinB
+                   colLim,add){           #arg for expFinB 
+  
+  #initialize output matricies
+  reD = reCILL = reCIUL = reP = rep(NA,nMA)                          #RE model
+  tfD = tfCILL = tfCIUL = tfAdded = tfP = rep(NA,nMA)                #Trim and Fill
+  tau = tauCILL = tauCIUL = qP = rep(NA,nMA)                         #Tau
+  fatB = fatP = rep(NA,nMA)                                          #FAT
+  petB = petCILL = petCIUL = petP = rep(NA,nMA)                      #PET
+  peeseB = peeseCILL = peeseCIUL = peeseP = rep(NA,nMA)              #PEESE
+  ppB = ppCILL = ppCIUL = ppP = rep(NA,nMA)                          #PET-PEESE
+  samp = nRat = nV = rep(NA,nMA)                                     #sample size
+  indTES = reTES = mIndPow = mRePow = rep(NA,nMA)                    #TES and pwr
+  
+  for (i in 1:nMA){
+    
+    #produce a meta-analytic data set
+    data = dataMA(k,QRP,sel,propB,       
+                  meanD,sigma,cbdv,maxN, 
+                  minN,meanN,sdN,        
+                  multDV,out,mod,        
+                  colLim,add)           
+    
+    #get models
+    ma = rma(yi = data[,1], vi = data[,5],  method = "DL")  
+    lmSE = lm(data[,1]~data[,6],weights = 1/data[,5])
+    lmV = lm(data[,1]~data[,5],weights = 1/data[,5])
+    
+    #get specifics from models
+    reD[i] = as.numeric(ma$b)
+    reCILL[i] = ma$ci.lb
+    reCIUL[i] = ma$ci.ub
+    reP[i] = ma$pval
+    
+    tf = trimfill(ma)
+    tfD[i] = as.numeric(tf$b)
+    tfCILL[i] = tf$ci.lb
+    tfCIUL[i] = tf$ci.ub
+    tfAdded[i] = tf$k0
+    tfP[i] = tf$pval
+    
+    tauInfo = confint(ma)
+    tau[i] = tauInfo[[1]][2]
+    tauCILL[i] = tauInfo[[1]][6]
+    tauCIUL[i] = tauInfo[[1]][10]
+    qP[i] = ma$QEp
+    
+    fatB[i] = summary(lmSE)$coefficients[2]
+    fatP[i] = summary(lmSE)$coefficients[8]
+    
+    petB[i] = summary(lmSE)$coefficients[1]
+    petCILL[i] = confint(lmSE)[1]
+    petCIUL[i] = confint(lmSE)[3]
+    petP[i] = summary(lmSE)$coefficients[7]
+    
+    peeseB[i] = summary(lmV)$coefficients[1]
+    peeseCILL[i] = confint(lmV)[1]
+    peeseCIUL[i] = confint(lmV)[3]
+    peeseP[i] = summary(lmV)$coefficients[7]
+    
+    lmPP = if (summary(lmSE)$coefficients[7]<0.05){lmV}else{lmSE}         #p<.05?
+    ppB[i] = summary(lmPP)$coefficients[1]    
+    ppCILL[i] = confint(lmPP)[1]
+    ppCIUL[i] = confint(lmPP)[3]
+    ppP[i] = summary(lmPP)$coefficients[7]
+    
+    #get info about samples
+    samp[i] = median(data[,4])
+    nRat[i] = max(data[,4])/min(data[,4])
+    nV[i] = var(data[,4])
+    
+    #get infor about power and excess of significance
+    nTot = length(data[,2])
+    nSig = length(subset(data[,2],data[,2]<.05))
+    indPow = data[,7]
+    rePow = pwr.t2n.test(as.numeric(ma$b), n1=data[,8], n2=data[,9])
+    mIndPow[i] = mean(indPow)
+    mRePow[i] = mean(rePow$power)
+    indTES[i] = binom.test(x=nSig,n=nTot,mIndPow[i],alternative="greater")$p.value
+    reTES[i] = binom.test(x=nSig,n=nTot,mRePow[i],alternative="greater")$p.value
+    
+  }
+  
+  return(data.frame(reD,       #estimate of d: RE 
+                    reCILL,    #95% CI lower limit: RE 
+                    reCIUL,    #95% CI upper limit: RE
+                    reP,       #p-value for estimate: RE
+                    tfD,       #estimate of d: TF
+                    tfCILL,    #95% CI upper limit: TF
+                    tfCIUL,    #95% CI upper limit: TF
+                    tfAdded,   #studies added by TF
+                    tfP,       #p-value for estimate: TF
+                    tau,       #estimate of tau from RE
+                    tauCILL,   #95% CI upper limit
+                    tauCIUL,   #95% CI upper limit
+                    qP,        #p-val for test of heterogeneity
+                    fatB,      #slope coefficient in PET/Egger's test
+                    fatP,      #p-value for Egger's test
+                    petB,      #estimate of d: PET
+                    petCILL,   #95% CI lower limit: PET
+                    petCIUL,   #95% CI upper limit: PET
+                    petP,      #p-value for estimate: PET
+                    peeseB,    #estimate of d: PEESE
+                    peeseCILL, #95% CI lower limit: PEESE
+                    peeseCIUL, #95% CI upper limit: PEESE
+                    peeseP,    #p-value for estimate: PEESE
+                    ppB,       #estimate of d: PET-PEESE
+                    ppCILL,    #95% CI lower limit: PET-PEESE 
+                    ppCIUL,    #95% CI upper limit: PET-PEESE
+                    ppP,       #p-value for estimate: PET-PEESE
+                    samp,      #median sample size
+                    nRat,      #ratio of max N to min N
+                    nV,        #variance in sample sizes
+                    mIndPow,   #mean power from indv. studies
+                    mRePow,    #mean power based on RE est
+                    indTES,    #TES given indv. studies
+                    reTES))    #TES given RE est
+}
+
+analyMA = cmpfun(analyMA)
+
+###############################################################
+#performance evaluation functions
+
+#goodness of fit function
+gOF = function (estimates, truth){
+  ME = mean(estimates - truth)         #mean error
+  MAE = mean(abs(estimates - truth))   #mean absolute error
+  MSE = mean((estimates - truth)^2)   #mean squared error
+  out = data.frame(ME,MAE,MSE) 
+}
+gOF = cmpfun(gOF)
+
+#Coverage Probability
+#takes vectors for LL and UL of length nMA and a value for truth
+#returns the mean of a vector of either 1 or 0 if truth is bounded by LL and UL
+covP = function(ciLL,ciUL,truth){
+  n = length(ciLL)
+  truth = matrix(truth,n)
+  data = cbind(ciLL,ciUL,truth)
+  cov = matrix(NA,n) 
+  
+  for (i in 1:n){
+    ciLL[i] = if(is.na(ciLL[i])){0}else{ciLL[i]}
+    ciUL[i] = if(is.na(ciUL[i])){0}else{ciUL[i]}
+    cov[i] = if(truth[i]>=ciLL[i] & truth[i]<=ciUL[i]){1}else{0}
+    
+  }
+  out = mean(cov) 
+}
+covP = cmpfun(covP)
+
+#Proportion Significant
+#Takes a vector of pvalues of length nMA and an alpha lvl
+#returns the mean of a vector where elements are 1 when pval < alpha and 0 otherwise
+pSig = function(pVal,alpha){
+  n = length(pVal)
+  alpha = matrix(alpha,n)
+  data = cbind(pVal,alpha)
+  sig = matrix(NA,n) 
+  for (i in 1:n){
+    sig[i] = if(pVal[i]<alpha[i]){1}else{0}
+  }
+  out = mean(sig)
+}
+pSig = cmpfun(pSig)
+
+
+
+########################################################
+
+#simSum
+#takes a set of results from nMA meta-analyses
+#and conditions and evaluates performance
+
+#output will be a list of the following:
+# condition information
+# performance info (fit and coverage) for ea estimator
+# MA sample characteristics
+
+
+simSum = function(nMA,                   #arg specific to analyMA
+                  k,QRP,sel,propB,       #arg specific to dataMA (QRP is used for expFinB, too)
+                  meanD,sigma,cbdv,maxN, #arg for expDataB 
+                  minN,meanN,sdN,        #arg for sampB and sampU
+                  multDV,out,mod,        #arg in analyB and expFinB
+                  colLim,add){           #arg for expFinB 
+  
+  #get the results from the meta-analyses
+  resMA = analyMA(nMA,
+                  k, QRP, sel, propB,       
+                  meanD, sigma, cbdv, maxN, 
+                  minN, meanN, sdN,        
+                  multDV, out, mod,        
+                  colLim, add)
+  
+  #pull the condition information
+  con = paste(paste0('meanD = ',meanD),
+                    paste0('sigma = ',sigma),
+                    paste0('k = ',k),
+                    paste0('QRP = ',QRP),
+                    paste0('sel = ',sel),
+                    paste0('propB = ',propB),
+                    sep=' | ')
+  
+  #pull estimator performance
+  est = rbind(data.frame(method="RE", 
+                                gOF(resMA$reD,meanD),
+                                cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
+                                prSig=pSig(resMA$reP,0.05)),                     
+                     data.frame(method="TF", 
+                                gOF(resMA$tfD,meanD),
+                                cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
+                                prSig=pSig(resMA$tfP,0.05)),
+                     data.frame(method="PET", 
+                                gOF(resMA$petB,meanD),
+                                cov=covP(resMA$petCILL,resMA$petCIUL,meanD),
+                                prSig=pSig(resMA$petP,0.05)),
+                     data.frame(method="PEESE", 
+                                gOF(resMA$peeseB,meanD),
+                                cov=covP(resMA$peeseCILL,resMA$peeseCIUL,meanD),
+                                prSig=pSig(resMA$peeseP,0.05)),
+                     data.frame(method="Tau", 
+                                gOF(resMA$tau,sigma),
+                                cov=covP(resMA$tauCILL,resMA$tauCIUL,sigma),
+                                prSig=pSig(resMA$qP,0.05)),
+                     data.frame(method="ind TES", 
+                                ME=NA,MAE=NA,MSE=NA,
+                                cov=NA,
+                                prSig=pSig(resMA$indTES,0.10)),
+                     data.frame(method="RE TES", 
+                                ME=NA,MAE=NA,MSE=NA,
+                                cov=NA,
+                                prSig=pSig(resMA$reTES,0.10)),
+                     data.frame(method="FAT", 
+                                ME=NA,MAE=NA,MSE=NA,
+                                cov=NA,
+                                prSig=pSig(resMA$fatP,0.10))
+                     )
+  
+  #pull sample description
+  sInfo = rbind(data.frame(stat='median N',q=rbind(quantile(resMA$samp,c(.05,.25,.5,.75,.95)))),
+                     data.frame(stat='max N/min N',q=rbind(quantile(resMA$nRat,c(.05,.25,.5,.75,.95)))),
+                     data.frame(stat='variance N',q=rbind(quantile(resMA$nV,c(.05,.25,.5,.75,.95)))),
+                     data.frame(stat='mean Ind Pow',q=rbind(quantile(resMA$mIndPow,c(.05,.25,.5,.75,.95)))),
+                     data.frame(stat='mean RE Pow',q=rbind(quantile(resMA$mRePow,c(.05,.25,.5,.75,.95)))),
+                     data.frame(stat='TF: k added',q=rbind(quantile(resMA$tfAdded,c(.05,.25,.5,.75,.95)))))
+  
+  
+  out = list(condition=con,estimators=est,sampleInfo=sInfo)
+  
+}
+
+simSum = cmpfun(simSum)
