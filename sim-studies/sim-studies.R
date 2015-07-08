@@ -1,15 +1,19 @@
-#required packages
+#VERSION NOTES
+#Data production no longer uses a "raw data approach" unless QRPs are requested.
+#No longer records the number of studies file drawered. 
+
 
 library(MASS)
 library(pwr)
 library(compiler)
 library(truncnorm)
-
+library(truncdist)
 ######################################################################
 
-###################
-# sampB and sampU #
-###################
+##########
+# sample #
+##########
+
 
 #For biased sampling. Produces four sample sizes for four groups.
 #The logic here is that the biased data collector has included a 
@@ -25,6 +29,7 @@ sampB = function(minN,meanN,sdN){
   Ns=c(n1,n2,n3,n4)
 }
 
+
 #Just produces two sample sizes for two groups. 
 sampU = function(minN,meanN,sdN){
   #get total sample size, N
@@ -35,15 +40,12 @@ sampU = function(minN,meanN,sdN){
   Ns=c(n1,n2)
 }
 
+
 sampB = cmpfun(sampB)
 sampU = cmpfun(sampU)
 
 ######################################################################
-
-#########################
-# expDataB and expDataU #
-#########################
-
+#Experimental Data (Biased and Unbiased)
 #Create a list where k entries contain (both) vector(s) of g1:g4
 
 #For p-hack-able (bias) data. Note that it doesn't take sample size.
@@ -58,19 +60,8 @@ expDataB = function(meanD,sigma,cbdv,maxN){
               g4=mvrnorm(maxN,rep(0,2),matrix(c(1,cbdv,cbdv,1),2,2))),dim=c(maxN,2,4))
   }
 
-
-#CAN CHANGE THIS AND JUST SAMPLE FROM A T-DISTRIBUTION???
-
-#For unbiased data. Note that it takes an exact sample size from sampU. 
-expDataU = function(meanD,sigma,cbdv,n1,n2){
-  D = rnorm(1,meanD,sigma)
-  G = list(g1=rnorm(n1,D,1),
-           g2=rnorm(n2,0,1))
-}
-
-
 expDataB = cmpfun(expDataB)
-expDataU = cmpfun(expDataU)
+
 
 
 ######################################################################
@@ -250,34 +241,7 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
   publish=c(pub[1],pub[2],pub[3],pub[4],pub_v,pub_se,pub_pwr,pub[5],pub[6])
 }
 
-#Produces a vector of results without use of QRPs.
-#Takes groups g1 & g2. Gives a vector of 
-#{d,p,t,N,v,se,power,n1,n2}
-
-analyU = function(g1,g2){
-  y = c(g1,g2)
-  x = c(replicate(length(g1),1),replicate(length(g2),2))
-  test = t.test(y~x,var.equal=T)
-  v1 = var(g1)
-  v2 = var(g2)
-  n1 = as.numeric(length(g1))
-  n2 = as.numeric(length(g2))
-  N=n1+n2
-  t = as.numeric(test[1])             
-  p = test$p.value
-  m1 = as.numeric(test$estimate[1])
-  m2 = as.numeric(test$estimate[2])
-  d = (m1-m2)/(sqrt(((n1-1)*v1+(n2-1)*v2)/(n1+n2-2)))
-  d_v = N/(n1*n2) + (d^2)/(2*N)                          
-  d_se = sqrt(d_v)
-  pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
-  pwr=pow$power 
-  out = c(d,p,t,N,d_v,d_se,pwr,n1,n2) 
-}
-
-
 analyB = cmpfun(analyB)
-analyU = cmpfun(analyU)
 
 
 ######################################################################
@@ -292,36 +256,68 @@ analyU = cmpfun(analyU)
 expFinB = function(meanD,sigma,cbdv,maxN,  #arg for expDataB and expDataU
                    minN,meanN,sdN,         #arg for sampB and sampU
                    multDV,out,mod,         #arg for analyB
-                   colLim,add){            #arg specific to expDataB 
+                   colLim,add,QRP){        #arg specific to expDataB 
   
-  G = expDataB(meanD,sigma,cbdv,maxN)
-  
-  s = sampB(minN,meanN,sdN)
-  
-  a = analyB(G[,,1][1:s[1],],G[,,2][1:s[2],],G[,,3][1:s[3],],G[,,4][1:s[4],],multDV,out,mod)  
-  
-  for (i in 0:colLim){
-    a = if(i == colLim || a[1] > 0 & a[2] < .05){a}else{
-      s[1]=s[1]+add
-      s[2]=s[2]+add
-      s[3]=s[3]+add
-      s[4]=s[4]+add
-      a=analyB(G[,,1][1:s[1],],G[,,2][1:s[2],],G[,,3][1:s[3],],G[,,4][1:s[4],],multDV,out,mod)
-    }
-    return(a)
-  }
+  if (QRP==1){
+    #get data for a study using QRPs
+    G = expDataB(meanD,sigma,cbdv,maxN)
+    s = sampB(minN,meanN,sdN)
+    a = analyB(G[,,1][1:s[1],],G[,,2][1:s[2],],G[,,3][1:s[3],],G[,,4][1:s[4],],multDV,out,mod)  
+    for (i in 0:colLim){
+      a = if(i == colLim || a[1] > 0 & a[2] < .05){a}else{
+        s[1]=s[1]+add
+        s[2]=s[2]+add
+        s[3]=s[3]+add
+        s[4]=s[4]+add
+        a=analyB(G[,,1][1:s[1],],G[,,2][1:s[2],],G[,,3][1:s[3],],G[,,4][1:s[4],],multDV,out,mod)
+      }
+      return(a)}    
+  }else{
+    
+    #get data for a study using only publication selection
+    #get the sample
+    samp = sampU(minN,meanN,sdN)
+    n1 = samp[1]; n2 = samp[2]
+    N = n1+n2
+    df = N - 2
+    #set tcrit (default is selction based on two-tail p-value and positive effect size)
+    tcrit = qt(.975, df)
+    #based on meanD, get a t value
+    t = rtrunc(1, "t", a = tcrit, b = Inf,
+               df = df, ncp = sqrt(n1/2)*meanD) 
+    #convert to effect size etc.
+    d=2*t/sqrt(2*n1)
+    d_v = ( (2*n1 / (n1^2)) + d^2 / 2*df ) * (2*n1 / df)
+    d_se = sqrt(d_v)
+    p=2*pt(t, df=n1 + n2 - 2, lower.tail = F)
+    pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
+    pwr=pow$power 
+    out = c(d,p,t,N,d_v,d_se,pwr,n1,n2) 
+    return(out)
+  }    
 } 
   
-#Produces results from an experiment without QRPs. 
-#This just ties together expDataU, sampU, and analyU
-#in a way that parallels expFinB.
-expFinU = function(meanD,sigma,cbdv,  #arg for expDataU
+#Produces results from an experiment without QRPs or pubbias. 
+expFinU = function(meanD,             #arg for expDataU
                    minN,meanN,sdN){   #arg for sampU
   
-  s = sampU(minN,meanN,sdN)
-  G = expDataU(meanD,sigma,cbdv,s[1],s[2]) 
-  a = analyU(G$g1,G$g2)
-  
+  #get the sample
+  samp = sampU(minN,meanN,sdN)
+  n1 = samp[1]; n2 = samp[2]
+  N = n1+n2
+  #based on meanD, get a t value
+  t = rtrunc(1, "t", a = -Inf, b = Inf,
+             df = N - 2,
+             ncp = sqrt(n1/2)*meanD) 
+  #convert to effect size etc.
+  d=2*t/sqrt(2*n1)
+  d_v = ( (2*n1 / (n1^2)) + d^2 / 2*df ) * (2*n1 / df)
+  d_se = sqrt(d_v)
+  p=2*pt(t, df=n1 + n2 - 2, lower.tail = F)
+  pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
+  pwr=pow$power 
+  out = c(d,p,t,N,d_v,d_se,pwr,n1,n2) 
+
 }
 
 expFinB = cmpfun(expFinB)
@@ -357,8 +353,8 @@ expFinU = cmpfun(expFinU)
 #' @param add number to add to each group when collecting more data
 
 
-dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA
-                  meanD,sigma,cbdv,maxN, #arg for expDataB and expDataU
+dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA (QRP is used for expFinB, too)
+                  meanD,sigma,cbdv,maxN, #arg for expDataB 
                   minN,meanN,sdN,        #arg for sampB and sampU
                   multDV,out,mod,        #arg in analyB and expFinB
                   colLim,add){           #arg for expFinB 
@@ -366,58 +362,48 @@ dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA
   #get the number of studies produced with bias (and those without)
   kB = round(k*propB)
   kU = k-kB
-
+  
+  #return warnings if needed
+  if(QRP==0){
+    if(multDV==1){print('multDV is only used if QRP = 1')} 
+    if(out==1){print('out is only used if QRP = 1')} 
+    if(mod==1){print('mod is only used if QRP = 1')} 
+    if(colLim>0){print('colLim is only used if QRP = 1')} 
+    if(add>0){print('add is only used if QRP = 1')}
+    if (sel == 0 & kB > 0){print("propB cannot be > 0 with no sel or QRP")}   
+  }
+  
   #Produce unbiased data, if any
   if (kU > 0){
     rU = matrix(NA,kU,9)
-    i = 1
     for (i in 1: kU){
-      rU[i,] = expFinU(meanD,sigma,cbdv,minN,meanN,sdN)}    
-    fd = matrix(0,kU)    
-    rU = cbind(rU,fd)
+      rU[i,] = expFinU(meanD,minN,meanN,sdN)}    
   }
-
-  #Produce biased data, if any, based on QRP and Sel
+ 
+  #Produce biased data based on QRP AND Sel
   if (QRP == 1 & sel == 1 & kB > 0){
     rB = matrix(NA,kB,9)
     i = 1
-    fileDrawered = 0
     for (i in 1:kB){
-      rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add)    
+      rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add,QRP)    
       repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add)
-        fileDrawered = fileDrawered + 1}}}    
-    fd = matrix(fileDrawered,kB)
-    rB = cbind(rB,fd)
+        rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add,QRP)}
+      }
+    }    
   }
   
-  #Produce biased data, if any, based on Sel alone
+  #Produce biased data based on Sel alone.
   if (QRP == 0 & sel == 1 & kB > 0){
     rB = matrix(NA,kB,9)
-    i = 1
-    fileDrawered = 0
     for (i in 1:kB){
-      rB[i,] = expFinU(meanD,sigma,cbdv,minN,meanN,sdN)
-      repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,] = expFinU(meanD,sigma,cbdv,minN,meanN,sdN)
-        fileDrawered = fileDrawered + 1}}}  
-    fd = matrix(fileDrawered,kB)
-    rB = cbind(rB,fd) 
+      rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add,QRP)}
   }
   
-  #Produce biased data, if any, based on QRP                        
+  #Produce biased data based on QRP alone. 
   if (QRP == 1 & sel == 0 & kB > 0){
     rB = matrix(NA,kB,9)
-    i = 1
-    fileDrawered = 0
     for (i in 1:kB){
-      rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add)}
-    fd = matrix(fileDrawered,kB)
-    rB = cbind(rB,fd)   
-  }
-  
-  if (QRP == 0 & sel == 0 & kB > 0){
-    print("propB cannot be > 0 with no selection or QRP")
+      rB[i,] = expFinB(meanD,sigma,cbdv,maxN,minN,meanN,sdN,multDV,out,mod,colLim,add,QRP)}  
   }
   
   if (kU > 0 & kB > 0){outMat = rbind(rU,rB)}
@@ -431,13 +417,16 @@ dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA
                       N = outMat[,4],       # total N
                       v = outMat[,5],       # variance for the effect size
                       se = outMat[,6],      # standard error for the effect size
-                      pow = outMat[,7],     # post-hoc power given the estimated effect for the two group comparison
+                      pow = outMat[,7],     # power given the true effect for the two group comparison
                       n1 = outMat[,8],      # experimental group sample size
-                      n2 = outMat[,9],      # control group sample size
-                      fileD = outMat[,10])  # number of experiments censored due to publication bias
-  
-return(outMat)
+                      n2 = outMat[,9])      # control group sample size
+
+  return(outMat)
 }
 
 dataMA = cmpfun(dataMA)
  
+
+
+
+
