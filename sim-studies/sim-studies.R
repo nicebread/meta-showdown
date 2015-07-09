@@ -310,14 +310,15 @@ expFinU = function(meanD,             #arg for expDataU
              df = N - 2,
              ncp = sqrt(n1/2)*meanD) 
   #convert to effect size etc.
-  d=2*t/sqrt(2*n1)
+  # FIXME: Should 2*n1 be n1+n2? Or is n1==n2? This should be documented somewhere.
+  d=2*t/sqrt(2*n1)	
+  df=N-2
   d_v = ( (2*n1 / (n1^2)) + d^2 / 2*df ) * (2*n1 / df)
   d_se = sqrt(d_v)
-  p=2*pt(t, df=n1 + n2 - 2, lower.tail = F)
+  p=2*pt(t, df=df, lower.tail = FALSE)
   pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
   pwr=pow$power 
   out = c(d,p,t,N,d_v,d_se,pwr,n1,n2) 
-
 }
 
 expFinB = cmpfun(expFinB)
@@ -426,7 +427,3 @@ dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA (QRP is used fo
 
 dataMA = cmpfun(dataMA)
  
-
-
-
-
