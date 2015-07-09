@@ -23,6 +23,10 @@ analyMA = function(nMA,                   #arg specific to analyMA
   samp = nRat = nV = rep(NA,nMA)                                     #sample size
   indTES = reTES = mIndPow = mRePow = rep(NA,nMA)                    #TES and pwr
   
+  #create a progress bar to monitor generaton of oupput, dat
+  pb   = txtProgressBar(1, nMA, style=3)
+  TIME = Sys.time()
+  
   for (i in 1:nMA){
     
     #produce a meta-analytic data set
@@ -89,6 +93,12 @@ analyMA = function(nMA,                   #arg specific to analyMA
     mRePow[i] = mean(rePow$power)
     indTES[i] = binom.test(x=nSig,n=nTot,mIndPow[i],alternative="greater")$p.value
     reTES[i] = binom.test(x=nSig,n=nTot,mRePow[i],alternative="greater")$p.value
+    
+    #update the progress bar every 100 cycles of i 
+    Sys.sleep(0.00002)
+    if (i %% 100 == 0){
+      setTxtProgressBar(pb,i)
+    }
     
   }
   
@@ -207,55 +217,55 @@ simSum = function(nMA,                   #arg specific to analyMA
   
   #pull the condition information
   con = paste(paste0('meanD = ',meanD),
-                    paste0('sigma = ',sigma),
-                    paste0('k = ',k),
-                    paste0('QRP = ',QRP),
-                    paste0('sel = ',sel),
-                    paste0('propB = ',propB),
-                    sep=' | ')
+              paste0('sigma = ',sigma),
+              paste0('k = ',k),
+              paste0('QRP = ',QRP),
+              paste0('sel = ',sel),
+              paste0('propB = ',propB),
+              sep=' | ')
   
   #pull estimator performance
   est = rbind(data.frame(method="RE", 
-                                gOF(resMA$reD,meanD),
-                                cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
-                                prSig=pSig(resMA$reP,0.05)),                     
-                     data.frame(method="TF", 
-                                gOF(resMA$tfD,meanD),
-                                cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
-                                prSig=pSig(resMA$tfP,0.05)),
-                     data.frame(method="PET", 
-                                gOF(resMA$petB,meanD),
-                                cov=covP(resMA$petCILL,resMA$petCIUL,meanD),
-                                prSig=pSig(resMA$petP,0.05)),
-                     data.frame(method="PEESE", 
-                                gOF(resMA$peeseB,meanD),
-                                cov=covP(resMA$peeseCILL,resMA$peeseCIUL,meanD),
-                                prSig=pSig(resMA$peeseP,0.05)),
-                     data.frame(method="Tau", 
-                                gOF(resMA$tau,sigma),
-                                cov=covP(resMA$tauCILL,resMA$tauCIUL,sigma),
-                                prSig=pSig(resMA$qP,0.05)),
-                     data.frame(method="ind TES", 
-                                ME=NA,MAE=NA,MSE=NA,
-                                cov=NA,
-                                prSig=pSig(resMA$indTES,0.10)),
-                     data.frame(method="RE TES", 
-                                ME=NA,MAE=NA,MSE=NA,
-                                cov=NA,
-                                prSig=pSig(resMA$reTES,0.10)),
-                     data.frame(method="FAT", 
-                                ME=NA,MAE=NA,MSE=NA,
-                                cov=NA,
-                                prSig=pSig(resMA$fatP,0.10))
-                     )
+                         gOF(resMA$reD,meanD),
+                         cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
+                         prSig=pSig(resMA$reP,0.05)),                     
+              data.frame(method="TF", 
+                         gOF(resMA$tfD,meanD),
+                         cov=covP(resMA$reCILL,resMA$reCIUL,meanD),
+                         prSig=pSig(resMA$tfP,0.05)),
+              data.frame(method="PET", 
+                         gOF(resMA$petB,meanD),
+                         cov=covP(resMA$petCILL,resMA$petCIUL,meanD),
+                         prSig=pSig(resMA$petP,0.05)),
+              data.frame(method="PEESE", 
+                         gOF(resMA$peeseB,meanD),
+                         cov=covP(resMA$peeseCILL,resMA$peeseCIUL,meanD),
+                         prSig=pSig(resMA$peeseP,0.05)),
+              data.frame(method="Tau", 
+                         gOF(resMA$tau,sigma),
+                         cov=covP(resMA$tauCILL,resMA$tauCIUL,sigma),
+                         prSig=pSig(resMA$qP,0.05)),
+              data.frame(method="ind TES", 
+                         ME=NA,MAE=NA,MSE=NA,
+                         cov=NA,
+                         prSig=pSig(resMA$indTES,0.10)),
+              data.frame(method="RE TES", 
+                         ME=NA,MAE=NA,MSE=NA,
+                         cov=NA,
+                         prSig=pSig(resMA$reTES,0.10)),
+              data.frame(method="FAT", 
+                         ME=NA,MAE=NA,MSE=NA,
+                         cov=NA,
+                         prSig=pSig(resMA$fatP,0.10))
+  )
   
   #pull sample description
   sInfo = rbind(data.frame(stat='median N',q=rbind(quantile(resMA$samp,c(.05,.25,.5,.75,.95)))),
-                     data.frame(stat='max N/min N',q=rbind(quantile(resMA$nRat,c(.05,.25,.5,.75,.95)))),
-                     data.frame(stat='variance N',q=rbind(quantile(resMA$nV,c(.05,.25,.5,.75,.95)))),
-                     data.frame(stat='mean Ind Pow',q=rbind(quantile(resMA$mIndPow,c(.05,.25,.5,.75,.95)))),
-                     data.frame(stat='mean RE Pow',q=rbind(quantile(resMA$mRePow,c(.05,.25,.5,.75,.95)))),
-                     data.frame(stat='TF: k added',q=rbind(quantile(resMA$tfAdded,c(.05,.25,.5,.75,.95)))))
+                data.frame(stat='max N/min N',q=rbind(quantile(resMA$nRat,c(.05,.25,.5,.75,.95)))),
+                data.frame(stat='variance N',q=rbind(quantile(resMA$nV,c(.05,.25,.5,.75,.95)))),
+                data.frame(stat='mean Ind Pow',q=rbind(quantile(resMA$mIndPow,c(.05,.25,.5,.75,.95)))),
+                data.frame(stat='mean RE Pow',q=rbind(quantile(resMA$mRePow,c(.05,.25,.5,.75,.95)))),
+                data.frame(stat='TF: k added',q=rbind(quantile(resMA$tfAdded,c(.05,.25,.5,.75,.95)))))
   
   
   out = list(condition=con,estimators=est,sampleInfo=sInfo)
