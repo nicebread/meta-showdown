@@ -1,9 +1,4 @@
-library(dplyr)
-library(data.table)
-
 # register CPU cores for parallel processing
-library(foreach)
-library(doMC)
 registerDoMC(2)
 getDoParWorkers()
 

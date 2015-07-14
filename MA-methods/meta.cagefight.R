@@ -252,8 +252,8 @@ meta <- function(k, pubbias, het, efx) { ## this is an example for publication b
   
   ## add in p curve
 
-  pcurve.d <- plotloss(tobs=tobs,dfobs=dfobs,dmin=-.2,dmax=2)
-  pcurve.bias <- pcurve.d- mean.real
+  pcurve.d <- pcurve_estimate_d(tobs=tobs,dfobs=dfobs,dmin=-.2,dmax=2)
+  pcurve.bias <- pcurve.d - mean.real
   pcurve.sqer = pcurve.bias^2
   
   

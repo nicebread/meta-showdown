@@ -1,7 +1,6 @@
 source("../sim-studies/sim-studies.R")
 source("../sim-studies/back-selection.R")
-library(meta)
-library(dplyr)
+
 set.seed(0xBEEF)
 
 # ---------------------------------------------------------------------

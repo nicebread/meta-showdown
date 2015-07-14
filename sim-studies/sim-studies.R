@@ -2,12 +2,6 @@
 #Data production no longer uses a "raw data approach" unless QRPs are requested.
 #No longer records the number of studies file drawered. 
 
-
-library(MASS)
-library(pwr)
-library(compiler)
-library(truncnorm)
-library(truncdist)
 ######################################################################
 
 ##########
@@ -354,11 +348,14 @@ expFinU = cmpfun(expFinU)
 #' @param add number to add to each group when collecting more data
 
 
-dataMA = function(k,QRP,sel,propB,       #arg specific to dataMA (QRP is used for expFinB, too)
-                  meanD,sigma,cbdv,maxN, #arg for expDataB 
-                  minN,meanN,sdN,        #arg for sampB and sampU
-                  multDV,out,mod,        #arg in analyB and expFinB
-                  colLim,add){           #arg for expFinB 
+dataMA <- function(k, meanD=0.5, sigma=0, maxN=5000,
+                  minN=15, meanN=40, sdN=20,
+
+				  # Parameters for publication bias
+				  sel=0, propB=0,
+	
+				  # parameters for QRP
+				  QRP=0, cbdv=0.5, multDV=0, out=0, mod=0, colLim=0, add=0) {
   
   #get the number of studies produced with bias (and those without)
   kB = round(k*propB)
