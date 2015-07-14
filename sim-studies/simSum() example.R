@@ -4,7 +4,7 @@
 
 out = simSum(nMA = 1000,                      #collect data from 1000 MAs.
              k = 20,                          #each MA has 20 studies in it.
-             QRP = 0, sel = 0, propB = 0,    #no p-hacking occurs (QRP=0), but 60% of studies
+             QRP = 0, sel = 1, propB = 0.6,    #no p-hacking occurs (QRP=0), but 60% of studies
                                               #(propB=.6) will be influenced by publication 
                                               #selection bias so that they must have a positive 
                                               #and sig result (sel = 1).
