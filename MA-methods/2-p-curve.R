@@ -109,7 +109,8 @@ pcurve_estimate_d_boot <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress
 
 
 # test: Unbiased set of studies
-dat <- dataMA(500, meanD=0.5, sel=0, propB=0)
+dat <- dataMA(50, meanD=0.5, sel=0, propB=0)
+pcurve_estimate_d(dat$t, dat$N-2)
 system.time({
 	d.boot <- pcurve_estimate_d_boot(dat$t, dat$N-2, -1, 5, B=1000)
 })
