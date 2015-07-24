@@ -28,33 +28,49 @@ print(start <- Sys.time())
 
 
 # use %dopar% for parallel processing, or %do% for single thread
-# "batch" stores the number of the parallel process
+# "batch" stores the id of the parallel process
 sim <- foreach(batch=1:getDoParWorkers(), .combine=rbind) %do% {    
 	
 	# how many replications are simulated within each fork?
 	b <- round(B/getDoParWorkers())
 	
-	# res stores the results
+	# res stores the results, pre-allocate memory
 	res <- matrix(NA, nrow=b*nrow(params), ncol=6)
 	
 	# run b replications, over the full parameter space
+	# (i.e., each fork runs all experimental conditions)
 	for (j in 1:nrow(params)) {
 		for (i in 1:b) {
 			
 			# ENTER ACTUAL COMPUTATIONS HERE ...
 			# dummy computation
-			res[(j-1)*b+i, ] <- c(batch=batch, replication=i, params$N[j], params$d[j], params$bias[j], MSE=rnorm(1))
+			MSE <- rnorm(1)			
+			
+			# collect results in the matrix
+			res[(j-1)*b+i, ] <- c(
+				batch		= batch, 
+				replication	= i, 
+				
+				# settings of the condition
+				N			= params$N[j], 
+				d			= params$d[j], 
+				bias		= params$bias[j], 
+				
+				# results of the computation
+				MSE			= MSE)
 		}
 	}
 	
 	return(res)
 }
 
+# TODO: Adapt colnames
 colnames(sim) <- c("batch", "replication", "N", "d", "bias", "MSE")
 
 # sanity check: We should have b replications in each experimental cell
 data.frame(sim) %>% group_by_(.dots=colnames(params)) %>% summarise(n=n())
 
+# TODO: Save results to RData file.
 
 end <- Sys.time()
 print(Sys.time())
