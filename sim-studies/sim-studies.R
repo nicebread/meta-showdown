@@ -346,6 +346,7 @@ expFinU = cmpfun(expFinU)
 #' @param mod 1 if optional moderator as a hack, 0 otherwise
 #' @param colLim number of times to try collecting more data
 #' @param add number to add to each group when collecting more data
+#' @param verbose Should informations be printed?
 
 
 dataMA <- function(k, meanD=0.5, sigma=0, maxN=5000,
@@ -355,14 +356,14 @@ dataMA <- function(k, meanD=0.5, sigma=0, maxN=5000,
 				  sel=0, propB=0,
 	
 				  # parameters for QRP
-				  QRP=0, cbdv=0.5, multDV=0, out=0, mod=0, colLim=0, add=0) {
+				  QRP=0, cbdv=0.5, multDV=0, out=0, mod=0, colLim=0, add=0, verbose=TRUE) {
   
   #get the number of studies produced with bias (and those without)
   kB = round(k*propB)
   kU = k-kB
   
   #return warnings if needed
-  if(QRP==0){
+  if(QRP==0 & verbose==TRUE){
     if(multDV==1){print('multDV is only used if QRP = 1')} 
     if(out==1){print('out is only used if QRP = 1')} 
     if(mod==1){print('mod is only used if QRP = 1')} 
@@ -398,6 +399,7 @@ dataMA <- function(k, meanD=0.5, sigma=0, maxN=5000,
   }
   
   #Produce biased data based on QRP alone. 
+  # TODO: Why do we have the condition kB > 0 here? If sel==0, then propB should have no meaning?
   if (QRP == 1 & sel == 0 & kB > 0){
     rB = matrix(NA,kB,9)
     for (i in 1:kB){
