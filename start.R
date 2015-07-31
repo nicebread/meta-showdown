@@ -13,4 +13,4 @@ library(progress)
 source("helpers/helpers.R")
 source("sim-studies/sim-studies.R")
 
-install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress")) 
+#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress")) 
