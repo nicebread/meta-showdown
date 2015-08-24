@@ -12,5 +12,6 @@ library(progress)
 
 source("helpers/helpers.R")
 source("sim-studies/sim-studies.R")
+source("MA-methods/2-p-curve.R")
 
 #install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress")) 

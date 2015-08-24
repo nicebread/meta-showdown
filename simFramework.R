@@ -1,8 +1,11 @@
+# run this file:
+# source("simFramework.R", echo=TRUE)
+
 # load all functions and packages
 source("start.R")
 
 # register CPU cores for parallel processing
-registerDoMC(20)
+registerDoMC(2)
 getDoParWorkers()
 
 ## ======================================================================
@@ -11,19 +14,20 @@ getDoParWorkers()
 ## ======================================================================
 
 # ---------------------------------------------------------------------
-#  experimental factors: Pub bias, but no hacking
-k_set <- c(20, 40, 80, 120)
-d_true_set <- c(0.3, 0.5, 0.7)
+#  experimental factors
+k_set <- c(20, 40, 80)
+d_true_set <- c(0, 0.5, 0.8)
 QRP_set <- c(0, 1)
 
 # params stores all possible combinations of experimental factors
+# Here, I always use strong pub bias with 100%
 params <- expand.grid(k=k_set, d_true=d_true_set, sel=1, propB=1, QRP=QRP_set)
 rownames(params) <- NULL
 print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))
 
 
 # other settings
-B <- 1000	# number of simulation replications per condition (should be dividable by getDoParWorkers())
+B <- 20	# number of simulation replications per condition (should be dividable by getDoParWorkers())
 
 
 ## ======================================================================
@@ -60,7 +64,7 @@ sim <- foreach(batch=1:getDoParWorkers(), .combine=rbind) %dopar% {
 							  sel=1, propB=1,
 	
 							  # parameters for QRP
-							  QRP=params[j, "QRP"], cbdv=0, multDV=0, out=0, mod=0, colLim=0, add=0, verbose=TRUE)		
+							  QRP=params[j, "QRP"], cbdv=0.5, multDV=3, out=0, mod=0, colLim=0, add=0, verbose=TRUE)		
 
 		  # remove rownames (otherwise cbind complains)
 		  rownames(MA1) <- NULL
@@ -97,7 +101,7 @@ sim <- foreach(batch=1:getDoParWorkers(), .combine=rbind) %dopar% {
 # sanity check: We should have b replications in each experimental cell
 data.frame(sim) %>% group_by(condition) %>% summarise(replications=n()/k[1])
 
-save(sim, file="simData/simData.RData")
+save(sim, file="simData/simDataTest.RData")
 
 # ---------------------------------------------------------------------
 # batch = ID of the parallel process

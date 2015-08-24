@@ -108,18 +108,18 @@ pcurve_estimate_d_boot <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress
 
 
 
-# test: Unbiased set of studies
-dat <- dataMA(50, meanD=0.5, sel=0, propB=0)
-pcurve_estimate_d(dat$t, dat$N-2)
-system.time({
-	d.boot <- pcurve_estimate_d_boot(dat$t, dat$N-2, -1, 5, B=1000)
-})
-quantile(d.boot, prob=c(.025, .5, .975))
+# # test: Unbiased set of studies
+# dat <- dataMA(50, meanD=0.5, sel=0, propB=0)
+# pcurve_estimate_d(dat$t, dat$N-2)
+# system.time({
+# 	d.boot <- pcurve_estimate_d_boot(dat$t, dat$N-2, -1, 5, B=1000)
+# })
+# quantile(d.boot, prob=c(.025, .5, .975))
 
 
-# test: biased set of studies
-dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.4)
-system.time({
-	d.boot <- pcurve_estimate_d_boot(dat2$t, dat2$N-2, -1, 5, B=1000)
-})
-quantile(d.boot, prob=c(.025, .5, .975))
+# # test: biased set of studies
+# dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.4)
+# system.time({
+# 	d.boot <- pcurve_estimate_d_boot(dat2$t, dat2$N-2, -1, 5, B=1000)
+# })
+# quantile(d.boot, prob=c(.025, .5, .975))
