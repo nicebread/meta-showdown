@@ -16,7 +16,7 @@ sim <- sim[sim$replication <= 2, ]
 # analyze each meta-analysis
 
 n.MA <- length(unique(sim$unique))		# overall number of MAs
-res <- matrix(NA, nrow=n.MA, ncol=10)	# TODO: adjust ncol
+res <- matrix(NA, nrow=n.MA, ncol=22)	# TODO: adjust ncol
 
 counter <- 1
 
@@ -31,11 +31,13 @@ for (i in 1:n.MA) {
 	res0 <- as.matrix(cbind(
 		
 		# save settings of condition to results:
-		MAdat[1, 1:9],
+		MAdat[1, 1:8],
 		
 		# save analysis results:
-		pcurve.est = pcurve_estimate_d(MAdat$t, MAdat$N-2)
-		
+		#pcurve.est = pcurve_estimate_d(MAdat$t, MAdat$N-2)
+		#commented out p-curve until we have it getting CIs for coverage...
+		re.est = reEst(MAdat$d,MAdat$v),  
+                lm.est = lmVarEst(MAdat$d,MAdat$v)
 		## TODO: add all other MA techniques, add CIs
 	))
 	res[counter, ] <- res0
