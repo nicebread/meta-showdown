@@ -1,4 +1,5 @@
-reEst = function(d,v){
+#' @param long Should the results be returned in long format?
+reEst <- function(d, v, long=TRUE) {
   
   #analyzes MA data set using standard RE model estimators
   #produces estimate of true effect, CI around estimate,
@@ -8,7 +9,7 @@ reEst = function(d,v){
   out = matrix(NA,1,4)
   colnames(out) = c("dRE","lbRE","ubRE","tauRE")
   
-  reMA = rma(d,v,method="DL")
+  reMA = rma(d, v, method="DL")
   
   out[1,1] = as.numeric(reMA$b[,1])
   out[1,2] = reMA$ci.lb
@@ -16,6 +17,11 @@ reEst = function(d,v){
   
   out[1,4] = as.numeric(sqrt(reMA$tau2))
 
-  return(out)
-  
+  if (long==FALSE) {
+  	return(out)
+  } else {
+	  outlong <- data.frame(method="RE", variable=c("d", "lb", "ub", "tau"), value=out[1, ])
+	  rownames(outlong) <- NULL
+	  return(outlong)
+  }
 }

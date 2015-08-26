@@ -22,3 +22,5 @@ sumSimEst = function(est,lb,ub,truth){
   out[,3] = mean(cov)
   
 }
+
+

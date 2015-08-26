@@ -1,4 +1,5 @@
-lmVarEst = function(d,v){
+#' @param long Should the results be returned in long format?
+lmVarEst <- function(d, v, long=TRUE) {
   
   #analyzes MA data set using two lm() models
   #produces estimates of true effect (and CIs) for
@@ -30,6 +31,11 @@ lmVarEst = function(d,v){
   
   out[,10] = summary(PET)$coefficients[8]
 
-  return(out)
-  
+  if (long==FALSE) {
+  	return(out)
+  } else {
+	  outlong <- data.frame(method=c(rep("PET", 3), rep("PEESE", 3), rep("PET-PEESE", 3), "FAT"), variable=c(rep(c("d", "lb", "ub"), 3), "p.value"), value=out[1, ])
+	  rownames(outlong) <- NULL
+	  return(outlong)
+  }
 }
