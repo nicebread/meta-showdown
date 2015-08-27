@@ -49,9 +49,9 @@ names(translation) <- unique(sim$unique)
 sim$core <- translation[as.character(sim$unique)]
 
 # Now, loop through all meta-analyses
-res <- foreach(batch=1:ncores, .combine=rbind) %do% {    
+res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {    
 
-	source("start.R")
+	#source("start.R")
 	counter <- 1
 	reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
 	

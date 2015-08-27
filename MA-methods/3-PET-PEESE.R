@@ -14,7 +14,7 @@ lmVarEst <- function(d, v, long=TRUE) {
   ciPET = confint(PET)
   ciPEESE = confint(PEESE)
   
-  usePET = if(summary(PET)$coefficients[7]/2<.05 & as.numeric(PET$coefficients[1])>0){1}else{0}
+  usePET = ifelse(summary(PET)$coefficients[7]/2 < .05 & as.numeric(PET$coefficients[1]) > 0, 1, 0)
   
   out[,1] = as.numeric(PET$coefficients[1])
   out[,4] = as.numeric(PEESE$coefficients[1])
