@@ -61,13 +61,13 @@ meta::funnel(meta2, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch
 meta::funnel(meta2, ref=0, xlab="Effect size", cex=.5, pch=19, xlim=c(-1.5, 1.5), yaxis="size", log="y")
 
 # ---------------------------------------------------------------------
-# Small effect + p-hacking, no pub bias
+# True effect + p-hacking, no pub bias
 
 H1.hack <- dataMA(k = 250,	# the number of studies in the MA
 				QRP = 1,	# 1 if QRP/p-hacks are available, 0 otherwise
 				sel = 0,	# 1 if publication bias selection exists, 0 otherwise
 				propB = 1,	# the proportion of the sample affected by bias
-                meanD = 0.3,	# the true effect (or the average of the true effects if heterogeneity exists)
+                meanD = 0.5,	# the true effect (or the average of the true effects if heterogeneity exists)
 				sigma = 0,	# the SD around the true effect
 				cbdv = 0.5,	# the correlation between the multiple DVs
 				maxN = 80,	# the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples
@@ -89,13 +89,13 @@ meta::funnel(meta3, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch
 
 
 # ---------------------------------------------------------------------
-# Small effect + p-hacking + pub bias
+# True effect + p-hacking + pub bias
 
 H1.hack.bias <- dataMA(k = 250,	# the number of studies in the MA
 				QRP = 1,	# 1 if QRP/p-hacks are available, 0 otherwise
 				sel = 1,	# 1 if publication bias selection exists, 0 otherwise
 				propB = 1,	# the proportion of the sample affected by bias
-                meanD = 0.3,	# the true effect (or the average of the true effects if heterogeneity exists)
+                meanD = 0.5,	# the true effect (or the average of the true effects if heterogeneity exists)
 				sigma = 0,	# the SD around the true effect
 				cbdv = 0.5,	# the correlation between the multiple DVs
 				maxN = 80,	# the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples
