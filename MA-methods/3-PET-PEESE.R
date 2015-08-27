@@ -13,19 +13,21 @@ lmVarEst = function(d,v){
   ciPET = confint(PET)
   ciPEESE = confint(PEESE)
   
+  usePET = if(summary(PET)$coefficients[7]/2<.05 & as.numeric(PET$coefficients[1])>0){1}else{0}
+  
   out[,1] = as.numeric(PET$coefficients[1])
   out[,4] = as.numeric(PEESE$coefficients[1])
-  out[,7] = if(summary(PET)$coefficients[7]<.05){out[,4]}else{out[,4]}
-
+  out[,7] = if(usePET==1){out[,1]}else{out[,4]}
+  
   out[,2] = ciPET[1]
   out[,3] = ciPET[3]
-
+  
   out[,5] = ciPEESE[1]
   out[,6] = ciPEESE[3]
-
-  out[,8] = if(summary(PET)$coefficients[7]<.05){out[,5]}else{out[,2]}
-  out[,9] = if(summary(PET)$coefficients[7]<.05){out[,6]}else{out[,3]}
-
+  
+  out[,8] = if(usePET==1){out[,2]}else{out[,5]}
+  out[,9] = if(usePET==1){out[,3]}else{out[,6]}
+  
   out[,10] = summary(PET)$coefficients[8]
 
   return(out)
