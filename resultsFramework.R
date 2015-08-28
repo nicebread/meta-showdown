@@ -1,10 +1,10 @@
 # load the results file
-load("analysisData/analysisStanley1.RData")
+load("analysisData/analysisStanley2.RData")
 
 
 ## reshape to wide format
 #res.wide <- dcast(res, ... ~ variable, value.var="value")
-#save(res.wide, file="analysisData/analysisStanley1.wide.RData")
+#save(res.wide, file="analysisData/analysisStanley2.wide.RData")
 load("analysisData/analysisStanley1.wide.RData")
 
 # compute summary statistics using dplyr:
