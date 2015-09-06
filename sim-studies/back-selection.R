@@ -5,7 +5,7 @@ library(dplyr)
 
 gen_k_studies = function(k, percent_sig, avg_n, 
                          min_n = 40, max_n = Inf, d_true=0,
-                         tails = 2) {
+                         tails = 2, force_nonsig = T) {
 
   if (avg_n == min_n && avg_n == max_n) {
   	n_per_cell <- avg_n
@@ -27,9 +27,17 @@ gen_k_studies = function(k, percent_sig, avg_n,
   sig = rbinom(k, size = 1, prob = percent_sig) + 1 # 1 if false, 2 if true
   lower_bound = c(-Inf, 1)[sig]
   lower_bound = lower_bound * tcrit
-  # Ditto 'upperbound'. Nonsig studies not allowed to have sig result.
-  upper_bound = c(1, Inf)[sig]
-  upper_bound = upper_bound * tcrit
+  # Ditto 'upperbound'. 
+  # Default: force_nonsig = T, Nonsig studies not allowed to have sig result.
+  if (force_nonsig = T) {
+    upper_bound = c(1, Inf)[sig]
+    upper_bound = upper_bound * tcrit
+  }
+  # Optional: force_nonsig = F, Nonsig studies may achieve sig as power & chance permit
+  if (force_nonsig = F) {
+    upper_bound = c(-Inf, Inf)[sig]
+    upper_bound = upper_bound * tcrit
+  }
   # sample a t-value coerced to be significant or nonsignificant.
     #rtrunc() barks but seems to work fine
   t = rtrunc(k, "t", a = lower_bound, b = upper_bound,
