@@ -281,7 +281,7 @@ expFinB = function(meanD,sigma,cbdv,maxN,  #arg for expDataB and expDataU
                df = df, ncp = sqrt(n1/2)*meanD) 
     #convert to effect size etc.
     d=2*t/sqrt(2*n1)
-    d_v = ( (2*n1 / (n1^2)) + d^2 / 2*df ) * (2*n1 / df)
+    d_v = ( (2*n1 / (n1^2)) + d^2 / (2*df) ) * (2*n1 / df)
     d_se = sqrt(d_v)
     p=2*pt(t, df=n1 + n2 - 2, lower.tail = F)
     pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
@@ -307,7 +307,7 @@ expFinU = function(meanD,             #arg for expDataU
   # FIXME: Should 2*n1 be n1+n2? Or is n1==n2? This should be documented somewhere.
   d=2*t/sqrt(2*n1)	
   df=N-2
-  d_v = ( (2*n1 / (n1^2)) + d^2 / 2*df ) * (2*n1 / df)
+  d_v = ( (2*n1 / (n1^2)) + d^2 / (2*df) ) * (2*n1 / df)
   d_se = sqrt(d_v)
   p=2*pt(t, df=df, lower.tail = FALSE)
   pow=pwr.t2n.test(d, n1 = n1, n2 = n2)
