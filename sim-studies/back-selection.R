@@ -36,7 +36,7 @@ gen_k_studies = function(k, percent_sig, avg_n,
              df = df,
              ncp = sqrt(n_per_cell/2)*d_true) # correct equation for ncp?
   d=2*t/sqrt(2*n_per_cell)
-  var_d = ( (2*n_per_cell / (n_per_cell^2)) + d^2 / 2*df ) * (2*n_per_cell / df)
+  var_d = ( (2*n_per_cell / (n_per_cell^2)) + d^2 / (2*df) ) * (2*n_per_cell / df)
   se_d = sqrt(var_d)
   p=2*pt(t, df=df, lower.tail = F)
   # output
