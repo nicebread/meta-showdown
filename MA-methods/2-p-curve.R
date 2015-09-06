@@ -9,6 +9,9 @@ pcurve_loss <- function(tobs, dfobs, dobs) {
   #3. dobs is the effect size on which fitted p-curve is based and the measure of loss computed
   #################################################################################################
   
+  # suppress warnings for KS test and pt precision
+  options(warn=-1)
+  
   #1.Convert all ts to the same sign (for justification see Supplement 5) 
   tobs <- abs(tobs)
   
@@ -43,13 +46,14 @@ pcurve_loss <- function(tobs, dfobs, dobs) {
   
   #6. Compute the gap between the distribution of observed pp-values and a uniform distribution 0,1 
   KSD <- ks.test(ppr, punif)$statistic        #this is the D statistic outputted by the KS test against uniform
+  options(warn=0)
   return(KSD)          
 }
 
 
 
 #Function 2: Estimate d
-pcurve_estimate_d <- function(tobs, dfobs, dmin=0, dmax=4, dstart=NA)
+pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
 {
   #################################################################################################
   #SYNTAX:
@@ -83,7 +87,7 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=0, dmax=4, dstart=NA)
 
 
 #Function 3: Compute bootstrapped CI for p-curve estimate
-pcurve_estimate_d_boot <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=TRUE) {
+pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=TRUE) {
 	
 	d.boot <- c()
 	dstart <- pcurve_estimate_d(tobs, dfobs, dmin=dmin, dmax=dmax)
@@ -105,21 +109,45 @@ pcurve_estimate_d_boot <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress
 	return(d.boot)
 }
 
+#' @param t A vector of t values
+#' @param df A vector of associated dfs
+#' @param CI Should the CI be computed? (Needs bootstrapping; takes long)
+#' @param level The coverage of the CI (default: 95%)
+#' @param B Number of bootstrap samples for CI
+#' @param progress Should a progress bar be displayed for the CI bootstrapping?
+#' @param long Should the results be returned in long format?
+pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRUE) {
+	out <- matrix(NA, 1, 3)
+	colnames(out) <- c("dPcurve","lbPcurve","ubPcurve")
+	
+	out[1, 1] <- pcurve_estimate_d(t, df)
+	if (CI==TRUE) {
+		d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=4, B=B, progress=progress)
+		CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
+		out[1, 2:3] <- CI.est
+	}
+	
+    if (long==FALSE) {
+    	return(out)
+    } else {
+  	  outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=out[1, ])
+  	  rownames(outlong) <- NULL
+  	  return(outlong)
+    }
+}
 
 
+# # test: Unbiased set of studies
+# dat <- dataMA(50, meanD=0.5, sigma=0, sel=0, propB=0)
+# system.time({
+# 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
+# })
 
-# test: Unbiased set of studies
-dat <- dataMA(50, meanD=0.5, sel=0, propB=0)
-pcurve_estimate_d(dat$t, dat$N-2)
-system.time({
-	d.boot <- pcurve_estimate_d_boot(dat$t, dat$N-2, -1, 5, B=1000)
-})
-quantile(d.boot, prob=c(.025, .5, .975))
+## Test long format
+#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=TRUE)
 
-
-# test: biased set of studies
-dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.4)
-system.time({
-	d.boot <- pcurve_estimate_d_boot(dat2$t, dat2$N-2, -1, 5, B=1000)
-})
-quantile(d.boot, prob=c(.025, .5, .975))
+# # test: biased set of studies
+# dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.8)
+# system.time({
+# 	pcurveEst(dat2$t, dat2$N-2, CI=TRUE)
+# })

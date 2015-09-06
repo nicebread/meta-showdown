@@ -2,6 +2,25 @@
 #performance (how well MA estimators and some other methods did) and sample information on the 
 #meta-analytic samples generated (median N per study, power, etc.)
 
+source("../MA-methods/Run + Analysis.R")
+
+out = analyMA(nMA = 1000,                      #collect data from 1000 MAs.
+             k = 20,                          #each MA has 20 studies in it.
+             QRP = 0, sel = 1, propB = 0.6,    #no p-hacking occurs (QRP=0), but 60% of studies
+                                              #(propB=.6) will be influenced by publication 
+                                              #selection bias so that they must have a positive 
+                                              #and sig result (sel = 1).
+             meanD = .5, sigma = 0,          #the average of the true effects for each study is
+                                              #d = .5 (meanD = .5), the SD (sigma) is .2.
+             cbdv = .5, maxN = 100,           #cbdv and maxN are only used with raw data generation
+                                              #so these can be tucked away in future versions.
+             minN = 10, meanN = 30, sdN = 25, #for study-level sample generation, the min of the 
+                                              #truncated normal is 10 (minN = 10) and the mean is 30
+                                              #(meanN = 30) while the SD is 25 (sdN = 25).
+             multDV = 0,out = 0,mod = 0,      #the final 5 arguments are specific to p-hacking--see
+             colLim = 0,add = 0)              #notes for dataMA()
+
+
 out = simSum(nMA = 1000,                      #collect data from 1000 MAs.
              k = 20,                          #each MA has 20 studies in it.
              QRP = 0, sel = 1, propB = 0.6,    #no p-hacking occurs (QRP=0), but 60% of studies
