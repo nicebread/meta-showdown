@@ -28,14 +28,14 @@ gen_k_studies = function(k, percent_sig, avg_n,
   lower_bound = c(-Inf, 1)[sig]
   lower_bound = lower_bound * tcrit
   # Ditto 'upperbound'. 
-  # Default: force_nonsig = T, Nonsig studies not allowed to have sig result.
-  if (force_nonsig = T) {
+  # Default: force_nonsig == T, Nonsig studies not allowed to have sig result.
+  if (force_nonsig == T) {
     upper_bound = c(1, Inf)[sig]
     upper_bound = upper_bound * tcrit
   }
-  # Optional: force_nonsig = F, Nonsig studies may achieve sig as power & chance permit
-  if (force_nonsig = F) {
-    upper_bound = c(-Inf, Inf)[sig]
+  # Optional: force_nonsig == F, Nonsig studies may achieve sig as power & chance permit
+  if (force_nonsig == F) {
+    upper_bound = c(Inf, Inf)[sig]
     upper_bound = upper_bound * tcrit
   }
   # sample a t-value coerced to be significant or nonsignificant.
