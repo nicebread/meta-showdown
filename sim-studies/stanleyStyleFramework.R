@@ -53,7 +53,7 @@ sim <- foreach(batch=1:getDoParWorkers(), .combine=rbind) %dopar% {
   
   # res stores the results, pre-allocate memory
   # TODO: adjust ncol to final number of columns
-  res <- matrix(NA, nrow=sum(params$kPer)*b, ncol=10)
+  res <- matrix(NA, nrow=sum(params$kPer)*b, ncol=12)
   counter <- 1	# counter stores the current position in the results matrix
   
   # run b replications, over the full parameter space
