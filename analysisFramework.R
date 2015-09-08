@@ -26,7 +26,7 @@ getDoParWorkers()
 
 # ---------------------------------------------------------------------
 # Alternatively: Stanley's data set
-load("simData/stanleyMA.RData")
+load("simData/stanleyMA2.RData")
 
 # ---------------------------------------------------------------------
 # This applies to both data sets ...
@@ -55,7 +55,7 @@ res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {
 	counter <- 1
 	reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
 	
-	sim.piece <- sim[sim$core==batch, ]
+	sim.piece <- sim %>% filter(core==batch)
 	n.MA.piece <- length(unique(sim.piece$unique))
 	for (i in 1:n.MA.piece) {
 		print(paste0(Sys.time(), ", batch=", batch, ": Computing ", i, "/", n.MA.piece))
@@ -67,11 +67,11 @@ res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {
 		# analyze with all MA techniques
 		re.est <- reEst(MAdat$d, MAdat$v, long=TRUE)
 	    lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
-		#pcurve.est <- pcurveEst(MAdat$t, MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=FALSE)	# TODO: increase B to 1000
+		pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=FALSE)	# TODO: increase B to 1000
 	
 		# combine analysis results
-		#res0 <- rbind(re.est, lm.est, pcurve.est)
-		res0 <- rbind(re.est, lm.est)
+		res0 <- rbind(re.est, lm.est, pcurve.est)
+		#res0 <- rbind(re.est, lm.est)
 	
 		# collect results
 		res1 <- cbind(
@@ -95,4 +95,4 @@ save(res, file="analysisData/analysis.RData")
 print(paste0(Sys.time(), ": Finished analyzing ", n.MA, " unique MAs."))
 
 # sanity check:
-if (!all.equal(unique(res$unique), unique(sim$unique))) warning("ERROR")
+if (!all.equal(unique(res$unique), unique(sim$unique))) warning("ERROR in analysisFramework.R")

@@ -13,3 +13,4 @@ vignettes/*.html
 vignettes/*.pdf
 
 stanleyMA.RData
+simData/stanleyMA2.RData
