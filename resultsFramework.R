@@ -1,9 +1,16 @@
+source("start.R")
 # load the results file
 load("analysisData/analysisStanley2.RData")
 
+tab <- res %>% group_by(HET, EFF) %>% summarise(n=n())
+print(tab, n=50)
 
-## reshape to wide format
-#res.wide <- dcast(res, ... ~ variable, value.var="value")
+r1 <- res %>% filter(EFF > 0)
+
+## reduce to relevant variables, drop unused factor levels
+res2 <- res %>% select(-batch, -replication, -condition) %>% filter(variable != "tau", method!="FAT") %>% droplevels()
+
+res.wide <- dcast(res2, unique + HET + kPer + EFF + BIAS + method ~ variable, value.var="value")
 #save(res.wide, file="analysisData/analysisStanley2.wide.RData")
 load("analysisData/analysisStanley1.wide.RData")
 

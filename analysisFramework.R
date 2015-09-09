@@ -28,6 +28,10 @@ getDoParWorkers()
 # Alternatively: Stanley's data set
 load("simData/stanleyMA2.RData")
 
+# show summary table of conditions
+condition.tab <- sim %>% as.data.frame(.) %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n())
+print(condition.tab, n=50)
+
 # ---------------------------------------------------------------------
 # This applies to both data sets ...
 sim <- data.frame(sim)
@@ -43,6 +47,7 @@ print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs..."))
 if (length(unique(sim$unique)) %% ncores != 0) {
 	warning(paste0("Number of MAs (", length(unique(sim$unique)), ") not dividable by number of cores (", ncores, ")"))
 }
+
 # build translation table: which unique sim ID goes into which core?
 translation <- rep(1:ncores, each=length(unique(sim$unique))/ncores)
 names(translation) <- unique(sim$unique)
@@ -55,7 +60,7 @@ res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {
 	counter <- 1
 	reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
 	
-	sim.piece <- sim %>% filter(core==batch)
+	sim.piece <- sim[sim$core==batch, ]
 	n.MA.piece <- length(unique(sim.piece$unique))
 	for (i in 1:n.MA.piece) {
 		print(paste0(Sys.time(), ", batch=", batch, ": Computing ", i, "/", n.MA.piece))
@@ -94,5 +99,12 @@ res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {
 save(res, file="analysisData/analysis.RData")
 print(paste0(Sys.time(), ": Finished analyzing ", n.MA, " unique MAs."))
 
-# sanity check:
+# sanity check 1:
 if (!all.equal(unique(res$unique), unique(sim$unique))) warning("ERROR in analysisFramework.R")
+	
+# sanity check 2:
+(tab1 <- sim %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n()/20))
+(tab2 <- res %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n()/17))
+
+if (!all.equal(tab1, tab2)) warning("ERROR 1 in analysisFramework.R")
+if (!all.equal(unique(res$unique), unique(sim$unique))) warning("ERROR 2 in analysisFramework.R")
