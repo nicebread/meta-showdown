@@ -92,7 +92,7 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
   
   #optimize around the global minimum
   dhat <- optimize(pcurve_loss, c(dstart-.2, dstart+.2), df.sig=df.sig, t.sig=t.sig)
-  return(dhat$minimum)
+  return(list(d=dhat$minimum, nStudies=length(t.sig)))
 }
 
 
@@ -101,7 +101,7 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
 pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=TRUE) {
 	
 	d.boot <- c()
-	dstart <- pcurve_estimate_d(tobs, dfobs, dmin=dmin, dmax=dmax)
+	dstart <- pcurve_estimate_d(tobs, dfobs, dmin=dmin, dmax=dmax)$d
 	
 	if (progress==TRUE) {
 		library(progress)
@@ -114,7 +114,7 @@ pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=T
 		# resample:
 		t.resample <- sample(tobs, length(tobs), replace=TRUE)
 		df.resample <- sample(dfobs, length(dfobs), replace=TRUE)
-		d.boot <- c(d.boot, pcurve_estimate_d(t.resample, df.resample, dmin=dmin, dmax=dmax, dstart=dstart))
+		d.boot <- c(d.boot, pcurve_estimate_d(t.resample, df.resample, dmin=dmin, dmax=dmax, dstart=dstart)$d)
 	}
 
 	return(d.boot)
@@ -128,20 +128,27 @@ pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=T
 #' @param progress Should a progress bar be displayed for the CI bootstrapping?
 #' @param long Should the results be returned in long format?
 pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRUE) {
-	out <- matrix(NA, 1, 3)
-	colnames(out) <- c("dPcurve","lbPcurve","ubPcurve")
+	out <- matrix(NA, 1, 4)
+	colnames(out) <- c("dPcurve","lbPcurve","ubPcurve", "nstudiesPcurve")
 	
-	out[1, 1] <- pcurve_estimate_d(tobs=t, dfobs=df)
-	if (CI==TRUE) {
-		d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=4, B=B, progress=progress)
-		CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
-		out[1, 2:3] <- CI.est
+	est <- pcurve_estimate_d(tobs=t, dfobs=df)
+	
+	if (!is.na(est)) {
+		out[1, 1] <- est$d
+		out[1, 4] <- est$nStudies
+		if (CI==TRUE) {
+			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=4, B=B, progress=progress)
+			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
+			out[1, 2:3] <- CI.est
+		}
+	} else {
+		out[1, 4] <- 0
 	}
 	
     if (long==FALSE) {
     	return(out)
     } else {
-  	  outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=out[1, ])
+  	  outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub", "nStudies"), value=out[1, ])
   	  rownames(outlong) <- NULL
   	  return(outlong)
     }
@@ -154,11 +161,11 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 # 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
 # })
 
-## Test long format
-#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=TRUE)
+## Test wide format
+#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=FALSE)
 
 # # test: biased set of studies
 # dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.8)
 # system.time({
-# 	pcurveEst(dat2$t, dat2$N-2, CI=TRUE)
+# 	pcurveEst(dat2$t, dat2$N-2, CI=FALSE)
 # })

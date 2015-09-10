@@ -2,27 +2,29 @@ source("start.R")
 # load the results file
 load("analysisData/analysisStanley2.RData")
 
-tab <- res %>% group_by(HET, EFF) %>% summarise(n=n())
+# Show conditions
+tab <- res %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n())
 print(tab, n=50)
 
-r1 <- res %>% filter(EFF > 0)
-
 ## reduce to relevant variables, drop unused factor levels
-res2 <- res %>% select(-batch, -replication, -condition) %>% filter(variable != "tau", method!="FAT") %>% droplevels()
+#res2 <- res %>% select(-batch, -replication, -condition) %>% filter(variable != "tau", method!="FAT") %>% droplevels()
 
-res.wide <- dcast(res2, unique + HET + kPer + EFF + BIAS + method ~ variable, value.var="value")
+#res.wide <- dcast(res2, HET + kPer + EFF + BIAS + method + unique ~ variable, value.var="value")
 #save(res.wide, file="analysisData/analysisStanley2.wide.RData")
-load("analysisData/analysisStanley1.wide.RData")
+load("analysisData/analysisStanley2.wide.RData")
+
+#res.wide %>% filter(method=="pcurve")
 
 # compute summary statistics using dplyr:
 # TODO: I guess EFF is actually EFF/100?
 res.wide <- res.wide %>% mutate(d_true = EFF/100)
 
 summ <- res.wide %>% filter(method!="FAT") %>% group_by(HET, kPer, EFF, BIAS, method) %>% summarise(
-	meanEst		= round(mean(d), 3),
-	ME 			= round(mean(d - d_true), 3),
-	MSE			= round(mean((d - d_true)^2), 3),
-	coverage 	= round(sum(d_true > lb & d_true < ub)/n(), 3)
+	meanEst		= round(mean(d, na.rm=TRUE), 3),
+	ME 			= round(mean(d - d_true, na.rm=TRUE), 3),
+	MSE			= round(mean(d - d_true, na.rm=TRUE)^2, 3),
+	coverage 	= round(sum(d_true > lb & d_true < ub)/sum(!is.na(lb)), 3),
+	n.simulations = n()
 )
 
 print(summ, n=nrow(summ))
