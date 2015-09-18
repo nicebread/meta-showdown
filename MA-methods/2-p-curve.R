@@ -79,7 +79,7 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=-3, dmax=3, dstart=NA)
   
   # If no starting value is provided: Compute a good starting value for the optimizer
   if (is.na(dstart)) {
-	  dtest.set <- seq(dmin, dmax, length.out=30)
+	  dtest.set <- seq(dmin, dmax, by=.2)
 	  options(warn=-1)               #turn off warning becuase R does not like its own pt() function!
 	  for (dtest in dtest.set) {    
 	    loss.test <- c(loss.test, pcurve_loss(t.sig=t.sig, df.sig=df.sig, dobs=dtest))
@@ -131,13 +131,13 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 	out <- matrix(NA, 1, 4)
 	colnames(out) <- c("dPcurve","lbPcurve","ubPcurve", "nstudiesPcurve")
 	
-	est <- pcurve_estimate_d(tobs=t, dfobs=df)
+	est <- pcurve_estimate_d(tobs=t, dfobs=df, dmin=-3, dmax=3)
 	
 	if (!is.na(est)) {
 		out[1, 1] <- est$d
 		out[1, 4] <- est$nStudies
 		if (CI==TRUE) {
-			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=2, B=B, progress=progress)
+			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-3, dmax=3, B=B, progress=progress)
 			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2), na.rm=TRUE)
 			out[1, 2:3] <- CI.est
 		}

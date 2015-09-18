@@ -26,12 +26,13 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(HET, kPer, d_true, BIAS,
 )
 
 summ$d_true.label <- factor(summ$d_true, labels=paste0("d_true = ", unique(summ$d_true)))
+summ$kPer.label <- factor(summ$kPer, labels=paste0("k = ", unique(summ$kPer)))
 
 print(summ, n=nrow(summ))
 
 # visualize
 library(ggplot2)
-ggplot(summ, aes(x=HET, y=meanEst, color=method)) + geom_point() + facet_wrap(~d_true.label) + geom_hline(aes(yintercept=d_true)) + theme_bw()
+ggplot(summ, aes(x=HET, y=meanEst, shape=method)) + geom_point() + facet_grid(kPer.label~d_true.label) + geom_hline(aes(yintercept=d_true)) + theme_bw()
 
 
 # ---------------------------------------------------------------------
