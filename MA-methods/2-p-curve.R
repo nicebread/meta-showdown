@@ -138,7 +138,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 		out[1, 4] <- est$nStudies
 		if (CI==TRUE) {
 			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=4, B=B, progress=progress)
-			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
+			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2), na.rm=TRUE)
 			out[1, 2:3] <- CI.est
 		}
 	} else {

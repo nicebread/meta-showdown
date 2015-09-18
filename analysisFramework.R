@@ -26,11 +26,7 @@ getDoParWorkers()
 
 # ---------------------------------------------------------------------
 # Alternatively: Stanley's data set
-load("simData/stanleyMA2.RData")
-
-# show summary table of conditions
-condition.tab <- sim %>% as.data.frame(.) %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n())
-print(condition.tab, n=50)
+load("simData/mixDataGen.RData")
 
 # ---------------------------------------------------------------------
 # This applies to both data sets ...
@@ -38,6 +34,9 @@ sim <- data.frame(sim)
 # for testing purposes: reduce data set
 #sim <- sim[sim$replication <= 1, ]
 
+# show summary table of conditions
+condition.tab <- sim %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n())
+print(condition.tab, n=50)
 
 
 n.MA <- length(unique(sim$unique))		# overall number of MAs
@@ -96,7 +95,7 @@ res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {
 	return(res2)
 }
 
-save(res, file="analysisData/analysis.RData")
+save(res, file="analysisData/analysismixDataGen.RData")
 print(paste0(Sys.time(), ": Finished analyzing ", n.MA, " unique MAs."))
 
 # sanity check 1:
