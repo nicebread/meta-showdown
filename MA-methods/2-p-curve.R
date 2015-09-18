@@ -52,7 +52,7 @@ pcurve_loss <- function(t.sig, df.sig, dobs) {
 
 
 #Function 2: Estimate d
-pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
+pcurve_estimate_d <- function(tobs, dfobs, dmin=-3, dmax=3, dstart=NA)
 {
   #################################################################################################
   #SYNTAX:
@@ -79,7 +79,7 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
   
   # If no starting value is provided: Compute a good starting value for the optimizer
   if (is.na(dstart)) {
-	  dtest.set <- seq(dmin, dmax, length.out=20)
+	  dtest.set <- seq(dmin, dmax, length.out=30)
 	  options(warn=-1)               #turn off warning becuase R does not like its own pt() function!
 	  for (dtest in dtest.set) {    
 	    loss.test <- c(loss.test, pcurve_loss(t.sig=t.sig, df.sig=df.sig, dobs=dtest))
@@ -91,14 +91,14 @@ pcurve_estimate_d <- function(tobs, dfobs, dmin=-1, dmax=4, dstart=NA)
   }
   
   #optimize around the global minimum
-  dhat <- optimize(pcurve_loss, c(dstart-.2, dstart+.2), df.sig=df.sig, t.sig=t.sig)
+  dhat <- optimize(pcurve_loss, c(dstart-.3, dstart+.3), df.sig=df.sig, t.sig=t.sig)
   return(list(d=dhat$minimum, nStudies=length(t.sig)))
 }
 
 
 
 #Function 3: Compute bootstrapped CI for p-curve estimate
-pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=0, dmax=4, B=1000, progress=TRUE) {
+pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=-2, dmax=2, B=1000, progress=TRUE) {
 	
 	d.boot <- c()
 	dstart <- pcurve_estimate_d(tobs, dfobs, dmin=dmin, dmax=dmax)$d
@@ -137,7 +137,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 		out[1, 1] <- est$d
 		out[1, 4] <- est$nStudies
 		if (CI==TRUE) {
-			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=4, B=B, progress=progress)
+			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-2, dmax=2, B=B, progress=progress)
 			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2), na.rm=TRUE)
 			out[1, 2:3] <- CI.est
 		}

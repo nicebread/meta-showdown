@@ -1,18 +1,16 @@
 source("start.R")
 # load the results file
-load("analysisData/analysisStanley3.RData")
+load("analysisData/analysismixDataGen.RData")
 
 # Show conditions
 tab <- res %>% group_by(HET, kPer, EFF, BIAS) %>% summarise(n=n())
 print(tab, n=50)
 
 ## reduce to relevant variables, drop unused factor levels
-#res2 <- res %>% select(-batch, -replication, -condition) %>% filter(variable != "tau", method!="FAT") %>% droplevels()
+res2 <- res %>% select(-batch, -replication, -condition) %>% filter(variable != "tau", method!="FAT") %>% droplevels()
 
-#res.wide <- dcast(res2, HET + kPer + EFF + BIAS + method + unique ~ variable, value.var="value")
-#head(res.wide)
-#save(res.wide, file="analysisData/analysisStanley3.wide.RData")
-load("analysisData/analysisStanley2.wide.RData")
+res.wide <- dcast(res2, HET + kPer + EFF + BIAS + method + unique ~ variable, value.var="value")
+head(res.wide)
 
 # compute summary statistics using dplyr:
 # TODO: I guess EFF is actually EFF/100?
