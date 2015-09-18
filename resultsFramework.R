@@ -23,6 +23,7 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(HET, kPer, d_true, BIAS,
 	ME 			= round(mean(d - d_true, na.rm=TRUE), 3),
 	MSE			= round(mean(d - d_true, na.rm=TRUE)^2, 3),
 	coverage 	= round(sum(d_true > lb & d_true < ub)/sum(!is.na(lb)), 3),
+	consisZero      = round(sum(0 > lb & 0 < ub)/n(), 3)
 	n.simulations = n()
 )
 
