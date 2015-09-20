@@ -262,6 +262,12 @@ expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
   G = expDataB(delta,tau,cbdv,maxN)
   #determine the starting per-group sample size
   s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  #if the data are generated with optional moderators
+  #what is typically the per-group sample size is divided in 2
+  #since one half experiences each level of the mod
+  if (mod == 1){
+    s = ceiling(s/2)  
+  }
   #run the first analysis with some QRPs applied
   a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
              g2 = G[,,2][1:s,],
