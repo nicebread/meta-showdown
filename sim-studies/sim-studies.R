@@ -415,7 +415,7 @@ dataMA <- function(k, delta=0.5, tau=0, maxN=500,
     i = 1
     for (i in 1:kB){
       rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add) 
-      rB[i,10]
+      rB[i,10] = 0 #number of file drawered studes
       repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
         rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add)
         rB[i,10] = rB[i,10] + 1} #count file-drawered studies
