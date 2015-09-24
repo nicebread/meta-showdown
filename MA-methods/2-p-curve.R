@@ -1,158 +1,123 @@
 #### functions for p-curve ES. Code adapted from Uri Simonsohn ####
 
-#LOSS FUNCTION
-pcurve_loss <- function(t.sig, df.sig, dobs) {
-  #################################################################################################
-  #SYNTAX:
-  #1. t.sig is a vector with observed significant t-values, 
-  #2. df.sig vector with degrees of freedom associated with each t-value
-  #3. dobs is the effect size on which fitted p-curve is based and the measure of loss computed
-  
-  # Note: Only provide significant t values!
-  #################################################################################################
-  
-  # suppress warnings for KS test and pt precision
-  options(warn=-1)
-  
-  #4.Compute non-centrality parameter implied by dobs and df.sig
-  #df+2 is total N. 
-  #Becuase the noncentrality parameter for the student distribution is ncp=sqrt(n/2)*d, 
-  #we add 2 to d.f. to get N,  divide by 2 to get n, and by 2 again for ncp, so -->df+2/4
-  ncp_est <- sqrt((df.sig+2)/4)*dobs                          
-  
-  #5.Find critical t-value for p=.05 (two-sided)
-  #this is used below to compute power, it is a vector as different tests have different dfs 
-  #and hence different critical values
-  tc <- qt(.975, df.sig)                     
-  
-  #4.Find power for ncp given tc, again, this is a vector of implied power, for ncp_est,  for each test
-  power_est <- 1-pt(tc, df.sig, ncp_est)
-  
-  #5.Compute pp-values
-  #5.1 First get the overall probability of a t>tobs, given ncp
-  p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
-  
-  #5.2 Now, condition on p<.05
-  ppr <- (p_larger-(1-power_est))/power_est  #this is the pp-value for right-skew
-  ppr <- ppr[!is.na(ppr)]
-  
-  # Are there enough observations?
-  if (length(ppr) == 0) {
-	  KSD <- 99999999 	# return a large number (instead of NA) because this is a loss function
-  } else {
-	  #6. Compute the gap between the distribution of observed pp-values and a uniform distribution 0,1 
-	  #this is the D statistic outputted by the KS test against uniform
-	  KSD <- ks.test(ppr, punif)$statistic        
-  }
-  
-  options(warn=0)
-  return(KSD)          
-}
-
-
-
-#Function 2: Estimate d
-pcurve_estimate_d <- function(tobs, dfobs, dmin=-3, dmax=3, dstart=NA)
-{
-  #################################################################################################
-  #SYNTAX:
-  #tobs  : vector with observed t-values 
-  #dfobs : vector with degrees of freedom associated with each t-value
-  #dmin   : smallest  effect size to consider 
-  #dnax   : largest   effect size to consider 
-  #e.g., dmin=-1, dmax=1 would look for the best fitting effect size in the d>=-1 and d<=1 range
-  #################################################################################################
-  
-  loss.test=c()
-  
-  #1.Convert all ts to the same sign (for justification see Supplement 5) 
-  tobs <- abs(tobs)
-  
-  #2 Compute p-values
-  pobs <- 2*(1-pt(tobs, df=dfobs))
-  
-  #3 Keep significant t-values and corresponding df.
-  t.sig <- subset(tobs, pobs<.05)
-  df.sig <- subset(dfobs, pobs<.05)
-  
-  if (length(t.sig) <= 1) return(NA)
-  
-  # If no starting value is provided: Compute a good starting value for the optimizer
-  if (is.na(dstart)) {
-	  dtest.set <- seq(dmin, dmax, by=.2)
-	  options(warn=-1)               #turn off warning becuase R does not like its own pt() function!
-	  for (dtest in dtest.set) {    
-	    loss.test <- c(loss.test, pcurve_loss(t.sig=t.sig, df.sig=df.sig, dobs=dtest))
-	  }
-	  options(warn=0)                #turn warnings back on
-  
-	  #find the effect leading to smallest loss in the test set; use as starting value in optim
-	  dstart <- dtest.set[which.min(loss.test)]
-  }
-  
-  #optimize around the global minimum
-  dhat <- optimize(pcurve_loss, c(dstart-.3, dstart+.3), df.sig=df.sig, t.sig=t.sig)
-  return(list(d=dhat$minimum, nStudies=length(t.sig)))
-}
-
-
-
-#Function 3: Compute bootstrapped CI for p-curve estimate
-pcurve_estimate_d_CI <- function(tobs, dfobs, dmin=-2, dmax=2, B=1000, progress=TRUE) {
-	
-	d.boot <- c()
-	dstart <- pcurve_estimate_d(tobs, dfobs, dmin=dmin, dmax=dmax)$d
-	
-	if (progress==TRUE) {
-		library(progress)
-		pb <- progress_bar$new(format="Bootstrapping [:bar] :percent ETA: :eta", total=B, clear=FALSE)
-	}
-	
-	for (i in 1:B) {
-		if (progress==TRUE) pb$tick()
-		
-		# resample:
-		t.resample <- sample(tobs, length(tobs), replace=TRUE)
-		df.resample <- sample(dfobs, length(dfobs), replace=TRUE)
-		d.boot <- c(d.boot, pcurve_estimate_d(t.resample, df.resample, dmin=dmin, dmax=dmax, dstart=dstart)$d)
-	}
-
-	return(d.boot)
-}
-
-#' @param t A vector of t values
-#' @param df A vector of associated dfs
+##########################
+# pcurveEst is the function that should be called to provide p-curve
+# estimates of effect size, in addition to bootstrapped confidence intervals
+# (if desired). See parameters below for details.
+#
+#' @param data Set of simulated studies generated by dataMA().
 #' @param CI Should the CI be computed? (Needs bootstrapping; takes long)
 #' @param level The coverage of the CI (default: 95%)
 #' @param B Number of bootstrap samples for CI
 #' @param progress Should a progress bar be displayed for the CI bootstrapping?
 #' @param long Should the results be returned in long format?
 pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRUE) {
-	out <- matrix(NA, 1, 4)
-	colnames(out) <- c("dPcurve","lbPcurve","ubPcurve", "nstudiesPcurve")
-	
-	est <- pcurve_estimate_d(tobs=t, dfobs=df, dmin=-3, dmax=3)
-	
-	if (!is.na(est)) {
-		out[1, 1] <- est$d
-		out[1, 4] <- est$nStudies
-		if (CI==TRUE) {
-			d.boot <- pcurve_estimate_d_CI(t, df, dmin=-3, dmax=3, B=B, progress=progress)
-			CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2), na.rm=TRUE)
-			out[1, 2:3] <- CI.est
-		}
-	} else {
-		out[1, 4] <- 0
+  require(dplyr) # dplyr is needed for filter functions below
+  out <- matrix(NA, 1, 3)
+  colnames(out) <- c("dPcurve","lbPcurve","ubPcurve")
+  # here let's define dmin and dmax? 
+  dmin = -2
+  dmax = 4
+  # pcurve_prep is called first to sort the data into a frame and verify it is compatible
+  pc_data = pcurve_prep(t_obs = t, df_obs = df)
+  # now let's get the pcurve ES estimate
+  out[1, 1] <- optimize(pcurve_loss, c(dmin, dmax), pc_data = pc_data)$minimum
+  if (CI==TRUE) {
+    d.boot <- pcurve_estimate_d_CI(pc_data = pc_data, dmin=dmin, dmax=dmax, B=B, progress=progress)
+    CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
+    out[1, 2:3] <- CI.est
+  }
+  
+  if (long==FALSE) {
+    return(out)
+  } else {
+    outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=out[1, ])
+    rownames(outlong) <- NULL
+    return(outlong)
+  }
+}
+
+
+##########################
+# pcurve_prep takes in vectors of t-values and associated degs. freedom
+# packages everything into a data.frame
+# strips out anything with p > .05
+# and warns the user if any negative t-values have been provided (pcurve is unsigned)
+# all pre-processing and validation should go in here
+pcurve_prep <- function(t_obs, df_obs){
+  # first, calculate p-values and d-values for all studies
+  d_vals = (t_obs*2)/sqrt(df_obs)
+  p_vals = (1 - pt(t_obs, df_obs)) * 2
+  # then, shove everything into a data.frame to keep things organized
+  unfiltered_data = data.frame(t_obs, df_obs, p_vals, d_vals)
+  # now for the checks. 
+  # first ensure that all t-values are positive. pcurve cannot accommodate negative values.
+  # if negative t-values are present, halt execution. 
+  # next, if any p-values are greater than .05, remove them and warn
+  # the user that they were present/are now removed.
+  # finally, if less than 4 good studies are left, abort: k=3 is a joke
+  neg_tvalues = filter(unfiltered_data, t_obs < 0)$t_obs
+  NS_studies = filter(unfiltered_data, p_vals > .05)$p_vals
+  clean_data = filter(unfiltered_data, p_vals < .05)
+  if (length(NS_studies) > 0){
+    msg = paste0(length(NS_studies), " NS studies were removed from dataset")
+    warning(msg)
+  }
+  if (length(neg_tvalues) > 0){
+    msg = "Negative t-values present in dataset, aborting"
+    stop(msg)
+  }
+  if (length(clean_data$p_vals) < 4){
+    msg = "Less than 4 pcurvable studies available, aborting"
+    stop(msg)
+  }
+  # all done!
+  return(clean_data)
+}
+
+
+######################################
+# pcurve_loss function
+# this code mirrors the functionality of the original loss function
+# written by Simonsohn et al.
+pcurve_loss <- function(pc_data, dobs) {
+  options(warn=-1)
+  t.sig = pc_data$t_obs
+  df.sig = pc_data$df_obs
+  ncp_est <- sqrt((df.sig+2)/4)*dobs                          
+  tc <- qt(.975, df.sig)                     
+  power_est <- 1-pt(tc, df.sig, ncp_est)
+  p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
+  ppr <- (p_larger-(1-power_est))/power_est 
+  KSD <- ks.test(ppr, punif)$statistic
+  options(warn=0)
+  return(KSD)          
+}
+
+
+
+######################################
+# pcurve_estimate_d_CI obtains bootstrapped resamples of the provided dataset
+# and estimates the ES of every resample using pcurve. 
+pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
+	d.boot <- c()
+	if (progress==TRUE) {
+		require(progress)
+		pb <- progress_bar$new(format="Bootstrapping [:bar] :percent ETA: :eta", total=B, clear=FALSE)
 	}
 	
-    if (long==FALSE) {
-    	return(out)
-    } else {
-  	  outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub", "nStudies"), value=out[1, ])
-  	  rownames(outlong) <- NULL
-  	  return(outlong)
-    }
+	for (i in 1:B) {
+		if (progress==TRUE) pb$tick()
+	  # get a random resample, with replacement
+	  # note that sample() doesn't work here, necessary to use sample_n()
+		resample_data = sample_n(pc_data, length(pc_data), replace=TRUE)
+		#
+		d.boot <- c(d.boot, optimize(pcurve_loss, c(dmin, dmax), pc_data = resample_data)$minimum)
+	}
+
+	return(d.boot)
 }
+
 
 
 # # test: Unbiased set of studies
@@ -161,11 +126,11 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 # 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
 # })
 
-## Test wide format
-#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=FALSE)
+## Test long format
+#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=TRUE)
 
 # # test: biased set of studies
 # dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.8)
 # system.time({
-# 	pcurveEst(dat2$t, dat2$N-2, CI=FALSE)
+# 	pcurveEst(dat2$t, dat2$N-2, CI=TRUE)
 # })
