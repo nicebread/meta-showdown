@@ -111,7 +111,7 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 		if (progress==TRUE) pb$tick()
 	  # get a random resample, with replacement
 	  # note that sample() doesn't work here, necessary to use sample_n()
-		resample_data = sample_n(pc_data, length(pc_data), replace=TRUE)
+		resample_data = sample_n(pc_data, length(pc_data$t_obs), replace=TRUE)
 		#
 		d.boot <- c(d.boot, optimize(pcurve_loss, c(dmin, dmax), pc_data = resample_data)$minimum)
 	}
