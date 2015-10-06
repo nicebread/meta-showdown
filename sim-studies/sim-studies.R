@@ -32,7 +32,7 @@ outlier=function(x,mean,sd){
 
 expDataB = function(delta,tau,
                     cbdv,maxN){                    
-
+  
   #calculate the treatement effect as a function of the 
   #true effect, delta, and heterogeneity (defined as tau)
   Te = delta + tau*rnorm(1,0,1)
@@ -58,7 +58,7 @@ expDataB = function(delta,tau,
   
   #build the output array
   G = array(c(g1,g2,g3,g4),dim=c(maxN,2,4))
-
+  
   return(G)
   
 }
@@ -256,12 +256,18 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
 
 expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
                    multDV,out,mod,         #arg for analyB
-                   colLim,add,minN,meanN){            #new args for expFinB
+                   colLim,add,empN,minN,meanN){            #new args for expFinB
   
   #get data for a study using QRPs
   G = expDataB(delta,tau,cbdv,maxN)
   #determine the starting per-group sample size
-  s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  #using either a specified distribution OR the empirical distribition
+  if (empN = T){
+    s = sample(perGrp$x,1)
+  }else{
+    s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  }
+  
   #if the data are generated with optional moderators
   #what is typically the per-group sample size is divided in 2
   #since one half experiences each level of the mod
@@ -308,10 +314,14 @@ expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
 
 # results from an unbiased experiment
 expFinU = function(delta,tau,
-                   minN,meanN){
+                   empN,minN,meanN){
   
   #get the per-group sample size 
-  n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  if (empN = T){
+    n = sample(perGrp$x,1)
+  }else{
+    n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  }
   
   #generate two independent vectors of raw data 
   #the mean is zero and error is randomly distributed
@@ -374,6 +384,7 @@ expFinU = function(delta,tau,
 #' @param delta the true effect (or the average of the true effects if heterogeneity exists)
 #' @param tau the SD around the true effect
 #' @param cbdv the correlation between the multiple DVs
+#' @param empN a logical, whether to use the empirical per-group N distribution
 #' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples
 #' @param minN the min of the truncated normal for sample size
 #' @param meanN the mean of the truncated normal for sample size
@@ -385,7 +396,7 @@ expFinU = function(delta,tau,
 #' @param verbose Should informations be printed?
 
 dataMA <- function(k, delta=0.5, tau=0, maxN=500,
-                   minN=10, meanN=30,                    
+                   empN = F, minN=10, meanN=30,                    
                    # Parameters for publication bias
                    sel=0, propB=0,                   
                    # parameters for QRP
@@ -409,7 +420,7 @@ dataMA <- function(k, delta=0.5, tau=0, maxN=500,
   if (kU > 0){
     rU = matrix(NA,kU,10) 
     for (i in 1: kU){
-      rU[i,1:9] = expFinU(delta,tau,minN,meanN)
+      rU[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
       rU[i,10] = 0
     }    
   }
@@ -420,10 +431,10 @@ dataMA <- function(k, delta=0.5, tau=0, maxN=500,
     rB = matrix(NA,kB,10)
     i = 1
     for (i in 1:kB){
-      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,minN,meanN) 
+      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN) 
       rB[i,10] = 0 #number of file drawered studes
       repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,minN,meanN)
+        rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN)
         rB[i,10] = rB[i,10] + 1} #count file-drawered studies
       }
     }    
@@ -435,10 +446,10 @@ dataMA <- function(k, delta=0.5, tau=0, maxN=500,
     for (i in 1:kB){
       #note that it is produced using expFinU and
       #then acted on by selection bias
-      rB[i,1:9] = expFinU(delta,tau,minN,meanN)
+      rB[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
       rB[i,10] = 0 #number of file drawered studies
       repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,1:9] = expFinU(delta,tau,minN,meanN)
+        rB[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
         rB[i,10] = rB[i,10] + 1} #count the file-drawered studies
       }
     }    
@@ -448,7 +459,7 @@ dataMA <- function(k, delta=0.5, tau=0, maxN=500,
   if (QRP == 1 & sel == 0 & kB > 0){
     rB = matrix(NA,kB,10)
     for (i in 1:kB){
-      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,minN,meanN)
+      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN)
       rB[i,10] = 0 #studies are never file-drawered, always takes a zero
     }  
   }
