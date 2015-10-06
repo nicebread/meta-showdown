@@ -5,7 +5,7 @@
 
 ######################################################################
 
-#==============
+#==============e
 #   Outlier   #
 #==============
 
@@ -262,7 +262,7 @@ expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
   G = expDataB(delta,tau,cbdv,maxN)
   #determine the starting per-group sample size
   #using either a specified distribution OR the empirical distribition
-  if (empN = T){
+  if (empN==T){
     s = sample(perGrp$x,1)
   }else{
     s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
@@ -317,7 +317,7 @@ expFinU = function(delta,tau,
                    empN,minN,meanN){
   
   #get the per-group sample size 
-  if (empN = T){
+  if (empN==T){
     n = sample(perGrp$x,1)
   }else{
     n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
