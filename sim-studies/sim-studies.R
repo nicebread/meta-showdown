@@ -208,24 +208,23 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
   
   #pull the best result given options
   #  start looking without moderator
-  best = 
-    if(t100[2]<.05 & t100[1]>0){t100}else{                      #DV1 and no outlier removal
-      if(out==1 & t101[2]<.05 & t101[1]>0){t101}else{             #DV1 with outlier removal
-        if(multDV==1 & t200[2]<.05 & t200[1]>0){t200}else{          #DV2 and no outlier removal
-          if(multDV==1 & out==1 & t201[2]<.05 & t201[1]>0){t201}else{ #DV2 with outlier removal
-            
-            #  start chopping on the moderator (lvl 1)
-            if(mod == 1 & t110[2]<.05 & t110[1]>0 & intA1P  < .05){t110}else{
-              if(out==1 & mod == 1 & t111[2]<.05 & t111[1]>0 & intA1P.o< .05){t111}else{
-                if(multDV==1 & mod == 1 & t210[2]<.05 & t210[1]>0 & intA1P  < .05){t210}else{
-                  if(multDV==1 & out==1 & mod == 1 & t211[2]<.05 & t211[1]>0 & intA1P.o< .05){t211}else{
-                    
-                    #  lvl 2
-                    if(mod == 1 & t120[2]<.05 & t120[1]>0 & intA2P  < .05){t120}else{
-                      if(out==1 & mod == 1 & t121[2]<.05 & t121[1]>0 & intA2P.o< .05){t121}else{
-                        if(multDV==1 & mod == 1 & t220[2]<.05 & t220[1]>0 & intA2P  < .05){t220}else{
-                          if(multDV==1 & out==1 & mod == 1 & t221[2]<.05 & t221[1]>0 & intA2P.o< .05){t221}else{
-                            t100}}}}}}}}}}}}
+  best = if(t100[2]<.05 & t100[1]>0){t100}                     #DV1 and no outlier removal
+    else if(out==1 & t101[2]<.05 & t101[1]>0){t101}             #DV1 with outlier removal
+    else if(multDV==1 & t200[2]<.05 & t200[1]>0){t200}         #DV2 and no outlier removal
+    else if(multDV==1 & out==1 & t201[2]<.05 & t201[1]>0){t201} #DV2 with outlier removal
+
+    #  start chopping on the moderator (lvl 1)
+    else if(mod == 1 & t110[2]<.05 & t110[1]>0 & intA1P  < .05){t110}
+    else if(out==1 & mod == 1 & t111[2]<.05 & t111[1]>0 & intA1P.o< .05){t111}
+    else if(multDV==1 & mod == 1 & t210[2]<.05 & t210[1]>0 & intA1P  < .05){t210}
+    else if(multDV==1 & out==1 & mod == 1 & t211[2]<.05 & t211[1]>0 & intA1P.o< .05){t211}
+
+    #  lvl 2
+    else if(mod == 1 & t120[2]<.05 & t120[1]>0 & intA2P  < .05){t120}
+    else if(out==1 & mod == 1 & t121[2]<.05 & t121[1]>0 & intA2P.o< .05){t121}
+    else if(multDV==1 & mod == 1 & t220[2]<.05 & t220[1]>0 & intA2P  < .05){t220}
+    else if(multDV==1 & out==1 & mod == 1 & t221[2]<.05 & t221[1]>0 & intA2P.o< .05){t221}
+    else{t100}
   
   #get additional info for the best results
   d = best[1]
