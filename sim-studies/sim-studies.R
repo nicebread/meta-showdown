@@ -1,11 +1,9 @@
 #VERSION NOTES
-#Totally re-did the data generation functions
-#Now it's all raw data approach
-#also now recording number of studies file-drawered to get the resulting observation
+#new framework for implementing QRPs and selection
 
 ######################################################################
 
-#==============e
+#==============
 #   Outlier   #
 #==============
 
@@ -17,6 +15,78 @@
 outlier=function(x,mean,sd){
   out=if(abs((x-mean)/sd)<2){0}else{1}
 }
+
+
+#==============
+#   expFinU   #
+#==============
+
+# generate the results from an unbiased experiment
+# delta is the true effect
+# tau indicated heterogeneity
+# minN and meanN are fed to a negative binomial for 
+# sample size
+
+# results from an unbiased experiment 
+expFinU = function(delta,tau,
+                   empN,meanN,minN){
+  
+  #get the per-group sample size 
+  if (empN==T){
+    n = sample(perGrp$x,1)
+  }else{
+    n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  }
+  
+  #generate two independent vectors of raw data 
+  #the mean is zero and error is randomly distributed
+  #and equal between groups
+  Xe = rnorm(n,0,1)
+  Xc = rnorm(n,0,1)       
+  
+  #calculate the treatement effect as a function of the 
+  #true effect, delta, and tau
+  Te = delta + tau * rnorm(1,0,1)
+  
+  #store the true effect for the study
+  D = Te
+  
+  #add the treatment effect to the experimental group
+  Ye = Te + Xe 
+  Yc =      Xc 
+  
+  #get the summary stats
+  m1 = mean(Ye)
+  v1 = var(Ye)
+  m2 = mean(Yc)
+  v2 = var(Yc)
+  n1 = n
+  n2 = n
+  df = 2*n-2
+  
+  #get the pooled variance
+  S = sqrt( ((n1 - 1)*v1 + (n2 - 1)*v2) / df )
+  
+  #compare the two distributions
+  test = t.test(Ye,Yc)
+  
+  #calculate d, the variance of d, the p-value, the t-stat, and n.
+  d = (m1 - m2)/S
+  d_v = (n1 + n2)/(n1 * n2) + (d^2 / (2 *df)) * (n1 + n2) / df
+  d_se = sqrt(d_v)
+  p = test$p.value
+  t = as.numeric(test$statistic)
+  N = n1+n2
+  
+  #get power
+  pow = pwr.t2n.test(d, n1 = n1, n2 = n2)
+  pwr = pow$power 
+  
+  #output 
+  out = c(d,p,t,N,d_v,d_se,pwr,n1,n2,D)
+  
+}
+
 
 
 #============
@@ -36,6 +106,9 @@ expDataB = function(delta,tau,
   #calculate the treatement effect as a function of the 
   #true effect, delta, and heterogeneity (defined as tau)
   Te = delta + tau*rnorm(1,0,1)
+  
+  #store the true effect for the study
+  D = matrix(Te,2,maxN)
   
   #generate four matricies of maxN rows and 2 columns
   #each matrix represents results from maxN subjects experiencing
@@ -57,7 +130,7 @@ expDataB = function(delta,tau,
   g4 = mvrnorm(maxN,rep(0,2),matrix(c(1,cbdv,cbdv,1),2,2))
   
   #build the output array
-  G = array(c(g1,g2,g3,g4),dim=c(maxN,2,4))
+  G = array(c(g1,g2,g3,g4,D),dim=c(maxN,2,5))
   
   return(G)
   
@@ -149,7 +222,7 @@ testIt=function(DV,lvl,out){
 # Takes groups (g1:g4) from expDataB. Gives a vector of 
 # (d,p,t,N,v,se,power,n1,n2).
 
-analyB <- function(g1,g2,g3,g4,multDV,out,mod){
+analyB <- function(g1,g2,g3,g4,D,multDV,out,mod){
   
   #Create combo groups  
   G1=rbind(g1,g3); G2=rbind(g2,g4)
@@ -209,22 +282,22 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
   #pull the best result given options
   #  start looking without moderator
   best = if(t100[2]<.05 & t100[1]>0){t100}                     #DV1 and no outlier removal
-    else if(out==1 & t101[2]<.05 & t101[1]>0){t101}             #DV1 with outlier removal
-    else if(multDV==1 & t200[2]<.05 & t200[1]>0){t200}         #DV2 and no outlier removal
-    else if(multDV==1 & out==1 & t201[2]<.05 & t201[1]>0){t201} #DV2 with outlier removal
-
-    #  start chopping on the moderator (lvl 1)
-    else if(mod == 1 & t110[2]<.05 & t110[1]>0 & intA1P  < .05){t110}
-    else if(out==1 & mod == 1 & t111[2]<.05 & t111[1]>0 & intA1P.o< .05){t111}
-    else if(multDV==1 & mod == 1 & t210[2]<.05 & t210[1]>0 & intA1P  < .05){t210}
-    else if(multDV==1 & out==1 & mod == 1 & t211[2]<.05 & t211[1]>0 & intA1P.o< .05){t211}
-
-    #  lvl 2
-    else if(mod == 1 & t120[2]<.05 & t120[1]>0 & intA2P  < .05){t120}
-    else if(out==1 & mod == 1 & t121[2]<.05 & t121[1]>0 & intA2P.o< .05){t121}
-    else if(multDV==1 & mod == 1 & t220[2]<.05 & t220[1]>0 & intA2P  < .05){t220}
-    else if(multDV==1 & out==1 & mod == 1 & t221[2]<.05 & t221[1]>0 & intA2P.o< .05){t221}
-    else{t100}
+  else if(out==1 & t101[2]<.05 & t101[1]>0){t101}             #DV1 with outlier removal
+  else if(multDV==1 & t200[2]<.05 & t200[1]>0){t200}         #DV2 and no outlier removal
+  else if(multDV==1 & out==1 & t201[2]<.05 & t201[1]>0){t201} #DV2 with outlier removal
+  
+  #  start chopping on the moderator (lvl 1)
+  else if(mod == 1 & t110[2]<.05 & t110[1]>0 & intA1P  < .05){t110}
+  else if(out==1 & mod == 1 & t111[2]<.05 & t111[1]>0 & intA1P.o< .05){t111}
+  else if(multDV==1 & mod == 1 & t210[2]<.05 & t210[1]>0 & intA1P  < .05){t210}
+  else if(multDV==1 & out==1 & mod == 1 & t211[2]<.05 & t211[1]>0 & intA1P.o< .05){t211}
+  
+  #  lvl 2
+  else if(mod == 1 & t120[2]<.05 & t120[1]>0 & intA2P  < .05){t120}
+  else if(out==1 & mod == 1 & t121[2]<.05 & t121[1]>0 & intA2P.o< .05){t121}
+  else if(multDV==1 & mod == 1 & t220[2]<.05 & t220[1]>0 & intA2P  < .05){t220}
+  else if(multDV==1 & out==1 & mod == 1 & t221[2]<.05 & t221[1]>0 & intA2P.o< .05){t221}
+  else{t100}
   
   #get additional info for the best results
   d = best[1]
@@ -240,7 +313,7 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
   pwr = pow$power
   
   #return the best result
-  out=c(d,p,t,N,d_v,d_se,pwr,n1,n2)
+  out=c(d,p,t,N,d_v,d_se,pwr,n1,n2,D)
   
   return(out)
 }
@@ -250,41 +323,53 @@ analyB <- function(g1,g2,g3,g4,multDV,out,mod){
 #     expFinB     #     
 #==================
 
-# Produces results from a p-hacked experiment.
-# It is the biased parallel to expFinU.
-
-expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
-                   multDV,out,mod,         #arg for analyB
-                   colLim,add,empN,minN,meanN){            #new args for expFinB
+# Produces results, a, from a p-hacked experiment.
+expFinB = function(delta,tau,
+                   empN,maxN,meanN,minN,
+                   strat){
   
-  #get data for a study using QRPs
-  G = expDataB(delta,tau,cbdv,maxN)
-  #determine the starting per-group sample size
-  #using either a specified distribution OR the empirical distribition
-  if (empN==T){
-    s = sample(perGrp$x,1)
-  }else{
-    s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+  #correlation between multiple DVs is set to 0.50 as default
+  cbdv = 0.5
+  
+  # if QRP strategy is NONE
+  if (strat=='none'){
+    a = expFinU(delta,tau,empN,meanN,minN)
   }
   
-  #if the data are generated with optional moderators
-  #what is typically the per-group sample size is divided in 2
-  #since one half experiences each level of the mod
-  if (mod == 1){
-    s = ceiling(s/2)  
-  }
-  #run the first analysis with some QRPs applied
-  a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
-             g2 = G[,,2][1:s,],
-             g3 = G[,,3][1:s,],
-             g4 = G[,,4][1:s,],
-             multDV,out,mod)
-  #see if you can benefit from optional stopping
-  for (i in 0:colLim){
-    #continue adding more data and p-hacking until either collection
-    #limit is reached (colLim) or the p-value and the sign of d are 
-    #significant and positive
-    a = if(i == colLim || a[1] > 0 & a[2] < .05){a}else{
+  #if QRP strategy is MODERATE
+  else if (strat=='mod'){
+    
+    #get data for a study using QRPs
+    G = expDataB(delta,tau,cbdv,maxN)
+    
+    #determine the starting per-group sample size
+    #using either a specified distribution OR the empirical distribition
+    if (empN==T){
+      s = sample(perGrp$x,1)
+    }else{
+      s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+    }
+    
+    s = round(s/2)
+    
+    #run the first analysis with some QRPs applied
+    a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
+               g2 = G[,,2][1:s,],
+               g3 = G[,,3][1:s,],
+               g4 = G[,,4][1:s,],
+               D = G[,,5][1,1],      # the study-lvl true effect
+               multDV=1,out=0,mod=0) # MODERATE 
+    
+    #define optional stopping parameters for MODERATE strategy
+    colLim = 3 
+    add = 3
+    
+    #see if you can benefit from optional stopping
+    for (i in 1:colLim){
+      #continue adding more data and p-hacking until either collection
+      #limit is reached (colLim) or the p-value and the sign of d are 
+      #significant and positive
+      if(a[1] > 0 & a[2] < .05){break}
       #if p-value and sign of d aren't sig/pos, define the new sample
       #sizes
       s=s+add
@@ -292,81 +377,67 @@ expFinB = function(delta,tau,cbdv,maxN,    #arg for expDataB
                  g2 = G[,,2][1:s,],
                  g3 = G[,,3][1:s,],
                  g4 = G[,,4][1:s,],
-                 multDV,out,mod)}
+                 D = G[,,5][1,1],      # the study-lvl true effect
+                 multDV=1,out=0,mod=0) # MODERATE
+    }
+  
   }
   
-  #return the p-hacked result
+  #if QRP strategy is AGGRESSIVE
+  else if (strat=='agg'){
+    
+    #get data for a study using QRPs
+    G = expDataB(delta,tau,cbdv,maxN)
+    
+    #determine the starting per-group sample size
+    #using either a specified distribution OR the empirical distribition
+    if (empN==T){
+      s = sample(perGrp$x,1)
+    }else{
+      s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+    }
+    
+    s = round(s/2)
+    
+    #run the first analysis with some QRPs applied
+    a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
+               g2 = G[,,2][1:s,],
+               g3 = G[,,3][1:s,],
+               g4 = G[,,4][1:s,],
+               D = G[,,5][1,1],      # the study-lvl true effect
+               multDV=1,out=1,mod=1) # AGGRESIVE 
+    
+    #define optional stopping parameters for AGGRESSIVE strategy
+    colLim = 5 
+    add = 3
+    
+    #see if you can benefit from optional stopping
+    for (i in 1:colLim){
+      #continue adding more data and p-hacking until either collection
+      #limit is reached (colLim) or the p-value and the sign of d are 
+      #significant and positive
+      if(a[1] > 0 & a[2] < .05){break}
+      #if p-value and sign of d aren't sig/pos, define the new sample
+      #sizes
+      s=s+add
+      a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
+                 g2 = G[,,2][1:s,],
+                 g3 = G[,,3][1:s,],
+                 g4 = G[,,4][1:s,],
+                 D = G[,,5][1,1],      # the study-lvl true effect
+                 multDV=1,out=1,mod=1) # AGGRESSIVE
+    }
+    
+  }
+  
+  else{print('ERROR: define QRP strategy')}
+  
+  #return the result
   return(a)    
   
 }    
 
 
-#==============
-#   expFinU   #
-#==============
-
-# generate the results from an unbiased experiment
-# delta is the true effect
-# tau indicated heterogeneity
-# minN and meanN are fed to a negative binomial for 
-# sample size
-
-# results from an unbiased experiment
-expFinU = function(delta,tau,
-                   empN,minN,meanN){
-  
-  #get the per-group sample size 
-  if (empN==T){
-    n = sample(perGrp$x,1)
-  }else{
-    n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
-  }
-  
-  #generate two independent vectors of raw data 
-  #the mean is zero and error is randomly distributed
-  #and equal between groups
-  Xe = rnorm(n,0,1)
-  Xc = rnorm(n,0,1)       
-  
-  #calculate the treatement effect as a function of the 
-  #true effect, delta, and tau
-  Te = delta + tau * rnorm(1,0,1)
-  
-  #add the treatment effect to the experimental group
-  Ye = Te + Xe 
-  Yc =      Xc 
-  
-  #get the summary stats
-  m1 = mean(Ye)
-  v1 = var(Ye)
-  m2 = mean(Yc)
-  v2 = var(Yc)
-  n1 = n
-  n2 = n
-  df = 2*n-2
-  
-  #get the pooled variance
-  S = sqrt( ((n1 - 1)*v1 + (n2 - 1)*v2) / df )
-  
-  #compare the two distributions
-  test = t.test(Ye,Yc)
-  
-  #calculate d, the variance of d, the p-value, the t-stat, and n.
-  d = (m1 - m2)/S
-  d_v = (n1 + n2)/(n1 * n2) + (d^2 / (2 *df)) * (n1 + n2) / df
-  d_se = sqrt(d_v)
-  p = test$p.value
-  t = as.numeric(test$statistic)
-  N = n1+n2
-  
-  #get power
-  pow = pwr.t2n.test(d, n1 = n1, n2 = n2)
-  pwr = pow$power 
-  
-  #output 
-  out = c(d,p,t,N,d_v,d_se,pwr,n1,n2)
-  
-}
 
 #=============
 #   dataMA   #
@@ -377,109 +448,150 @@ expFinU = function(delta,tau,
 # sel and QRP are 1 not 0. 
 
 #' @param k the number of studies in the MA
-#' @param QRP 1 if QRP/p-hacks are available, 0 otherwise
-#' @param sel 1 if publication bias selection exists, 0 otherwise
-#' @param propB the proportion of the sample affected by bias
 #' @param delta the true effect (or the average of the true effects if heterogeneity exists)
 #' @param tau the SD around the true effect
-#' @param cbdv the correlation between the multiple DVs
 #' @param empN a logical, whether to use the empirical per-group N distribution
 #' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples
 #' @param minN the min of the truncated normal for sample size
-#' @param meanN the mean of the truncated normal for sample size
-#' @param multDV 1 if multiple DVs as a hack, 0 otherwise
-#' @param out 1 if optional outlier removal as a hack, 0 otherwise
-#' @param mod 1 if optional moderator as a hack, 0 otherwise
-#' @param colLim number of times to try collecting more data
-#' @param add number to add to each group when collecting more data
-#' @param verbose Should informations be printed?
+#' @param meanN the average of the truncated normal for sample size
+#' @param selProp the proportion of the sample affected by bias
+#' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
 
-dataMA <- function(k, delta=0.5, tau=0, maxN=500,
-                   empN = F, minN=10, meanN=30,                    
-                   # Parameters for publication bias
-                   sel=0, propB=0,                   
-                   # parameters for QRP
-                   QRP=0, cbdv=0.5, multDV=0, out=0, mod=0, colLim=0, add=0, verbose=TRUE) {
+dataMA <- function(k,delta,tau,
+                   empN,maxN,meanN,minN,
+                   selProp,qrpEnv) {  
   
-  #get the number of studies produced with bias (and those without)
-  kB = round(k*propB)
+  #get the number of studies exposed to publication selection bias (and those now exposed)
+  kB = round(k*selProp)
   kU = k-kB
   
-  #return warnings if needed
-  if(QRP==0 & verbose==TRUE){
-    if(multDV==1){print('multDV is only used if QRP = 1')} 
-    if(out==1){print('out is only used if QRP = 1')} 
-    if(mod==1){print('mod is only used if QRP = 1')} 
-    if(colLim>0){print('colLim is only used if QRP = 1')} 
-    if(add>0){print('add is only used if QRP = 1')}
-    if(sel == 0 & kB > 0){print("propB cannot be > 0 with no sel or QRP")}   
-  }
+  #get the proportions of studies produced under each strategy
+  if(qrpEnv=='none'){
+    noneP = 1; modP = 0; aggP = 0
+  }else if(qrpEnv=='low'){
+    noneP = 0.50; modP = 0.40; aggP = 0.10
+  }else if(qrpEnv=='med'){
+      noneP = 0.30; modP = 0.50; aggP = 0.20
+  }else if(qrpEnv=='high'){
+        noneP = 0.10; modP = 0.40; aggP = 0.50
+  }else{
+          print('ERROR: qrpEnv must be none, low, med, or high')}
   
-  #Produce unbiased data, if any
-  if (kU > 0){
-    rU = matrix(NA,kU,10) 
-    for (i in 1: kU){
-      rU[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
-      rU[i,10] = 0
+  #get number of to-be observed studies for all cases
+  kU_None = round(kU*noneP) 
+  kU_Mod = round(kU*modP)
+  kU_Agg = kU - kU_None - kU_Mod
+  #
+  kB_None = round(kB*noneP)  
+  kB_Mod = round(kB*modP) 
+  kB_Agg = kB - kB_None - kB_Mod 
+  
+  #initialize results matricies for all of the above (makes it simpler, 
+  #the NAs will be trimmed later)
+  rU_None = matrix(NA,k,13)
+  rU_Mod = matrix(NA,k,13)
+  rU_Agg = matrix(NA,k,13)
+  rB_None = matrix(NA,k,13)
+  rB_Mod = matrix(NA,k,13)
+  rB_Agg = matrix(NA,k,13)
+  
+  #Produce data *unaffected* by publication selection bias or from QRP (strat = none)
+  if (kU_None > 0){
+    for (i in 1: kU_None){
+      rU_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+      rU_None[i,11] = 0 #number file drawered
+      rU_None[i,12] = 0 #no sel
+      rU_None[i,13] = 0 #no QRP
     }    
   }
-  
-  
-  #Produce biased data based on QRP AND Sel
-  if (QRP == 1 & sel == 1 & kB > 0){
-    rB = matrix(NA,kB,10)
-    i = 1
-    for (i in 1:kB){
-      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN) 
-      rB[i,10] = 0 #number of file drawered studes
-      repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN)
-        rB[i,10] = rB[i,10] + 1} #count file-drawered studies
+  #
+  #Produce data *unaffected* by publication selection bias but affected by QRP strat = mod
+  if (kU_Mod > 0){
+    for (i in 1: kU_Mod){
+      rU_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+      rU_Mod[i,11] = 0 #number file drawered
+      rU_Mod[i,12] = 0 #no sel
+      rU_Mod[i,13] = 1 #mod qrp
+    }    
+  }
+  #
+  #Produce data *unaffected* by publication selection bias and from QRP strat = agg
+  if (kU_Agg > 0){
+    for (i in 1: kU_Agg){
+      rU_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+      rU_Agg[i,11] = 0 #number file drawered
+      rU_Agg[i,12] = 0 #no sel
+      rU_Agg[i,13] = 2 #agg qrp
+    }    
+  }
+  #
+  #
+  #Produce data *affected* by publication selection bias and by QRP strat = none
+  if (kB_None > 0){
+    for (i in 1:kB_None){
+      rB_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+      rB_None[i,11] = 0 #number of file drawered studes
+      rB_None[i,12] = 1 #selection
+      rB_None[i,13] = 0 #no QRP
+      repeat {if (rB_None[i,1]>0 & rB_None[i,2]<.05) break else{
+        rB_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+        rB_None[i,11] = rB_None[i,11] + 1} #count file-drawered studies
+        rB_None[i,12] = 1 #sel
+        rB_None[i,13] = 0 #no QRP
+      }
+    }    
+  }
+  #
+  #Produce data *affected* by publication selection bias and from QRP strat = mod
+  if (kB_Mod > 0){
+    for (i in 1:kB_Mod){
+      rB_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+      rB_Mod[i,11] = 0 #number of file drawered studes
+      rB_Mod[i,12] = 1 #sel
+      rB_Mod[i,13] = 1 #mod QRP
+      repeat {if (rB_Mod[i,1]>0 & rB_Mod[i,2]<.05) break else{
+        rB_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+        rB_Mod[i,11] = rB_Mod[i,11] + 1} #count file-drawered studies
+        rB_Mod[i,12] = 1 #sel
+        rB_Mod[i,13] = 1 #mod QRP
+      }
+    }    
+  }
+  #
+  #Produce data *affected* by publication selection bias and from QRP strat = agg
+  if (kB_Agg > 0){
+    for (i in 1:kB_Agg){
+      rB_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+      rB_Agg[i,11] = 0 #number of file drawered studes
+      rB_Agg[i,12] = 1 #sel
+      rB_Agg[i,13] = 2 #Agg QRP
+      repeat {if (rB_Agg[i,1]>0 & rB_Agg[i,2]<.05) break else{
+        rB_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+        rB_Agg[i,11] = rB_Agg[i,11] + 1} #count file-drawered studies
+        rB_Agg[i,12] = 1 #sel
+        rB_Agg[i,13] = 2 #Agg QRP
       }
     }    
   }
   
-  #Produce biased data based on Sel alone.
-  if (QRP == 0 & sel == 1 & kB > 0){
-    rB = matrix(NA,kB,10)                    #made it 10 columns to record file drawered
-    for (i in 1:kB){
-      #note that it is produced using expFinU and
-      #then acted on by selection bias
-      rB[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
-      rB[i,10] = 0 #number of file drawered studies
-      repeat {if (rB[i,1]>0 & rB[i,2]<.05) break else{
-        rB[i,1:9] = expFinU(delta,tau,empN,minN,meanN)
-        rB[i,10] = rB[i,10] + 1} #count the file-drawered studies
-      }
-    }    
-  }
+  #bind together the output and trim NAs
+  outMat = rbind(rU_None,rU_Mod,rU_Agg,rB_None,rB_Mod,rB_Agg)
+  outMat = subset(outMat,!is.na(outMat[,1]))
   
-  #Produce biased data based on QRP alone. 
-  if (QRP == 1 & sel == 0 & kB > 0){
-    rB = matrix(NA,kB,10)
-    for (i in 1:kB){
-      rB[i,1:9] = expFinB(delta,tau,cbdv,maxN,multDV,out,mod,colLim,add,empN,minN,meanN)
-      rB[i,10] = 0 #studies are never file-drawered, always takes a zero
-    }  
-  }
-  
-  #bind together the output
-  if (kU > 0 & kB > 0){outMat = rbind(rU,rB)}
-  if (kU > 0 & kB == 0){outMat = rU}
-  if (kU == 0 & kB > 0){outMat = rB}
-  
-  #change outMat to a data.frame and name the columns
-  outMat = data.frame(d = outMat[,1],       # effect size, d
-                      p = outMat[,2],       # p value for the two group comparison
-                      t = outMat[,3],       # t value for the two group comparison
-                      N = outMat[,4],       # total N
-                      v = outMat[,5],       # variance for the effect size
-                      se = outMat[,6],      # standard error for the effect size
-                      pow = outMat[,7],     # power given the true effect for the two group comparison
-                      n1 = outMat[,8],      # experimental group sample size
-                      n2 = outMat[,9],      # control group sample size
-                      kFD = outMat[,10])    # the number of studies file drawered to generate the observed results 
+  #name columnes
+  colnames(outMat) = c('d',       # effect size, d
+                       'p',       # p value for the two group comparison
+                       't',       # t value for the two group comparison
+                       'N',       # total N
+                       'v',       # variance for the effect size
+                       'se',      # standard error for the effect size
+                       'pow',     # power given the true effect for the two group comparison
+                       'n1',      # experimental group sample size
+                       'n2',      # control group sample size
+                       'D',       # the study-level true effect
+                       'kFD',     # the number of studies file drawered to generate the observed results 
+                       'sel',     # 0 = no selection, 1 = selection
+                       'qrp')     # 0 = 'none', 1 = 'mod', 2 = 'agg'
   
   return(outMat)
 }
-
