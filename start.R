@@ -11,6 +11,7 @@ library(doMC)
 library(meta)
 library(metafor)
 library(progress)
+library(notifyR)
 
 source("helpers/helpers.R")
 source("sim-studies/sim-studies.R")
@@ -18,5 +19,8 @@ source("MA-methods/1-RMA.R")
 source("MA-methods/2-p-curve.R")
 source("MA-methods/3-PET-PEESE.R")
 
+# load empirical sample sizes into workspace
+perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")
+
 #source("start.R")
-#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress")) 
+#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
