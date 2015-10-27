@@ -21,6 +21,10 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   dmax = 4
   # pcurve_prep is called first to sort the data into a frame and verify it is compatible
   pc_data = pcurve_prep(t_obs = t, df_obs = df)
+  # next we check to make sure we have more than 0 rows (at least 1 study); if not, return a null
+  if(nrow(pc_data) == 0){
+    return(NULL)
+  }
   # now let's get the pcurve ES estimate
   out[1, 1] <- optimize(pcurve_loss, c(dmin, dmax), pc_data = pc_data)$minimum
   if (CI==TRUE) {
@@ -43,7 +47,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 # pcurve_prep takes in vectors of t-values and associated degs. freedom
 # packages everything into a data.frame
 # strips out anything with p > .05
-# and warns the user if any negative t-values have been provided (pcurve is unsigned)
+# also strips out any negative t-values
 # all pre-processing and validation should go in here
 pcurve_prep <- function(t_obs, df_obs){
   # first, calculate p-values and d-values for all studies
@@ -52,26 +56,10 @@ pcurve_prep <- function(t_obs, df_obs){
   # then, shove everything into a data.frame to keep things organized
   unfiltered_data = data.frame(t_obs, df_obs, p_vals, d_vals)
   # now for the checks. 
-  # first ensure that all t-values are positive. pcurve cannot accommodate negative values.
-  # if negative t-values are present, halt execution. 
-  # next, if any p-values are greater than .05, remove them and warn
-  # the user that they were present/are now removed.
-  # finally, if less than 4 good studies are left, abort: k=3 is a joke
-  neg_tvalues = filter(unfiltered_data, t_obs < 0)$t_obs
-  NS_studies = filter(unfiltered_data, p_vals > .05)$p_vals
+  # strip out anything that is NS, or if t < 0.
+  # Note that we're not throwing any warnings out here.
+  unfiltered_data = filter(unfiltered_data, t_obs > 0)
   clean_data = filter(unfiltered_data, p_vals < .05)
-  if (length(NS_studies) > 0){
-    msg = paste0(length(NS_studies), " NS studies were removed from dataset")
-    warning(msg)
-  }
-  if (length(neg_tvalues) > 0){
-    msg = "Negative t-values present in dataset, aborting"
-    stop(msg)
-  }
-  if (length(clean_data$p_vals) < 4){
-    msg = "Less than 4 pcurvable studies available, aborting"
-    stop(msg)
-  }
   # all done!
   return(clean_data)
 }
