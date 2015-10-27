@@ -58,6 +58,11 @@ for (f in simDatFiles) {
 			re.est <- reEst(MAdat$d, MAdat$v, long=TRUE)
 		    lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
 			#pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=FALSE)	# TODO: increase B to 1000
+			
+			pcurve.est <- rbind(pcurve.est, data.frame(
+				method="pcurve",
+				variable=c("D.mean", "D.median"),
+				value=c(mean(MAdat$D), median(MAdat$D))))
 	
 			# combine analysis results
 			#res0 <- rbind(re.est, lm.est, pcurve.est)
@@ -67,7 +72,7 @@ for (f in simDatFiles) {
 			res1 <- cbind(
 		
 				# save settings of condition to results:
-				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "selProp", "tau", "D", "kFD", "sel", "qrp")],
+				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "selProp", "tau", "kFD", "sel", "qrp")],
 		
 				# save analysis results:
 				res0
