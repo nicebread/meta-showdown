@@ -1,0 +1,53 @@
+## ======================================================================
+## This file loads the results of the meta-analyses (which were generated in 2-analysisFramework.R)
+## and computes summaries of them (such as mean error, MSE, coverage, etc.)
+## ======================================================================
+
+source("start.R")
+
+# load the results file which was generated in 2-analysisFramework.R
+load("analysisData/analysis504.RData")
+
+# Show conditions
+tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
+print(tab, n=50)
+
+## reduce to relevant variables, drop unused factor levels
+res2 <- res.final %>% filter(variable != "tau", method!="FAT") %>% droplevels()
+
+# reshape long format to wide format
+res.wide <- dcast(res2, id + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
+head(res.wide)
+
+# Compute summary measures across replications
+summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selProp, tau, method) %>% summarise(
+	meanEst		= round(mean(d, na.rm=TRUE), 3),
+	ME 			= round(mean(d - delta, na.rm=TRUE), 3),
+	MSE			= round(mean(d - delta, na.rm=TRUE)^2, 3),
+	coverage 	= round(sum(delta > lb & delta < ub)/sum(!is.na(lb)), 3),
+	consisZero      = round(sum(0 > lb & 0 < ub)/n(), 3),
+	n.simulations = n()
+)
+
+# define some meaningful labels for the plots
+summ$delta.label <- factor(summ$delta, labels=paste0("delta = ", unique(summ$delta)))
+summ$k.label <- factor(summ$k, labels=paste0("k = ", unique(summ$k)))
+
+print(summ, n=nrow(summ))
+
+# summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
+
+
+
+# ---------------------------------------------------------------------
+#  visualize
+library(ggplot2)
+ggplot(summ, aes(x=k, y=meanEst, shape=method)) + geom_point() + facet_grid(qrpEnv~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+
+
+# ---------------------------------------------------------------------
+# pcurve follow up
+
+res.wide %>% filter(method=="pcurve") %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(
+	nStudies=round(mean(nStudies, na.rm=TRUE))
+	)
