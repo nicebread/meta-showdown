@@ -18,6 +18,7 @@ registerDoMC(2)
 
 # simDatFiles stores the names of all simulated data files in the folder "simParts"
 simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
+# f <- simDatFiles[[33]]
 
 res.final <- data.frame()
 
@@ -57,16 +58,17 @@ for (f in simDatFiles) {
 			# analyze with all MA techniques
 			re.est <- reEst(MAdat$d, MAdat$v, long=TRUE)
 		    lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
-			#pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=FALSE)	# TODO: increase B to 1000
-			
+			pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=TRUE)	# TODO: increase B to 1000
+	
+			# add average study ES to results object
 			pcurve.est <- rbind(pcurve.est, data.frame(
 				method="pcurve",
 				variable=c("D.mean", "D.median"),
 				value=c(mean(MAdat$D), median(MAdat$D))))
 	
 			# combine analysis results
-			#res0 <- rbind(re.est, lm.est, pcurve.est)
-			res0 <- rbind(re.est, lm.est)
+			res0 <- rbind(re.est, lm.est, pcurve.est)
+			#res0 <- rbind(re.est, lm.est)
 	
 			# collect results
 			res1 <- cbind(

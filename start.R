@@ -1,3 +1,6 @@
+#source("start.R")
+#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
+
 library(MASS)
 library(pwr)
 library(compiler)
@@ -21,6 +24,3 @@ source("MA-methods/3-PET-PEESE.R")
 
 # load empirical sample sizes into workspace
 perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")
-
-#source("start.R")
-#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
