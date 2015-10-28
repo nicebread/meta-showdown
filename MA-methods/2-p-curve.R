@@ -23,7 +23,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   pc_data = pcurve_prep(t_obs = t, df_obs = df)
   # next we check to make sure we have more than 0 rows (at least 1 study); if not, return a null
   if(nrow(pc_data) == 0){
-    return(NULL)
+    return(out)
   }
   # now let's get the pcurve ES estimate
   out[1, 1] <- optimize(pcurve_loss, c(dmin, dmax), pc_data = pc_data)$minimum
