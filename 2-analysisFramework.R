@@ -1,7 +1,7 @@
 ## ======================================================================
 ## This file takes the simulated data sets, which are stored in separate
 ## files in folder /simParts, and runs all meta-analytic techniques on them.
-## Then it saves the analyses in one file in the /analysisData folder.
+## Then it saves the analyses in separate files in the /analysisData folder.
 ## ======================================================================
 
 # run this file:
@@ -12,7 +12,7 @@ source("start.R")
 
 library(doParallel)
 # detectCores()
-registerDoMC(2)
+registerDoParallel(cores=2)
 
 (ncores <- getDoParWorkers())	# number of parallel processes
 
@@ -20,12 +20,12 @@ registerDoMC(2)
 simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
 # f <- simDatFiles[[33]]
 
-res.final <- data.frame()
 
 # loop through all simParts files
 for (f in simDatFiles) {
 
 	load(f)	# the simulation data frame always is called "sim"
+	
 	n.MA <- length(unique(sim$id))		# overall number of MAs
 	print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs from file ", f))
 
@@ -33,6 +33,8 @@ for (f in simDatFiles) {
 	if (length(unique(sim$id)) %% ncores != 0) {
 		warning(paste0("Number of MAs (", length(unique(sim$id)), ") not dividable by number of cores (", ncores, ")"))
 	}
+	
+	flush.console()
 
 	# build translation table: which unique sim ID goes into which core?
 	translation <- rep(1:ncores, each=length(unique(sim$id))/ncores)
@@ -42,7 +44,6 @@ for (f in simDatFiles) {
 	# Now, loop through all meta-analyses, each core gets its share of studies
 	res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {    
 
-		#source("start.R")
 		counter <- 1
 		reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
 	
@@ -60,11 +61,11 @@ for (f in simDatFiles) {
 		    lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
 			pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=TRUE)	# TODO: increase B to 1000
 	
-			# add average study ES to results object
+			# add average study ES (D.mean, D.median) and # of significant studies to results object
 			pcurve.est <- rbind(pcurve.est, data.frame(
 				method="pcurve",
-				variable=c("D.mean", "D.median"),
-				value=c(mean(MAdat$D), median(MAdat$D))))
+				variable=c("D.mean", "D.median", "sig.studies"),
+				value=c(mean(MAdat$D), median(MAdat$D), sum(MAdat$p < .05))))
 	
 			# combine analysis results
 			res0 <- rbind(re.est, lm.est, pcurve.est)
@@ -78,7 +79,6 @@ for (f in simDatFiles) {
 		
 				# save analysis results:
 				res0
-				## TODO: add all other MA techniques
 			)
 			reslist[[counter]] <- res1
 			counter <- counter+1
@@ -88,9 +88,8 @@ for (f in simDatFiles) {
 		return(res2)
 	} # of dopar
 	
-	res.final <- bind_rows(res.final, res)
+	save(res, file=paste0("analysisParts/analysis_", basename(f)))
 } # of "f in simDatFiles"
 
 
-save(res.final, file="analysisData/analysis504.RData")
-print(paste0(Sys.time(), ": Finished analyzing ", length(unique(res.final$id)), " unique MAs."))
+print(paste0(Sys.time(), ": Finished analyzing."))

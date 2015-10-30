@@ -23,7 +23,8 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   pc_data = pcurve_prep(t_obs = t, df_obs = df)
   # next we check to make sure we have more than 0 rows (at least 1 study); if not, return a null
   if(nrow(pc_data) == 0){
-    return(out)
+	outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=NA)
+    return(outlong)
   }
   # now let's get the pcurve ES estimate
   out[1, 1] <- optimize(pcurve_loss, c(dmin, dmax), pc_data = pc_data)$minimum
@@ -77,8 +78,17 @@ pcurve_loss <- function(pc_data, dobs) {
   tc <- qt(.975, df.sig)                     
   power_est <- 1-pt(tc, df.sig, ncp_est)
   p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
-  ppr <- (p_larger-(1-power_est))/power_est 
-  KSD <- ks.test(ppr, punif)$statistic
+  ppr <- (p_larger-(1-power_est))/power_est
+  
+  # TODO: Check if this is valid!
+  # Problem: ks.test gives an error if the number of test statistics is small and
+  # bootstrapping selects a weird sample
+ KSD <- tryCatch({
+      ks.test(ppr, punif)$statistic
+  }, error = function(e) {
+	  return(1e10) # return a large loss function value
+  })
+  
   options(warn=0)
   return(KSD)          
 }
@@ -100,6 +110,7 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 	  # get a random resample, with replacement
 	  # note that sample() doesn't work here, necessary to use sample_n()
 		resample_data = sample_n(pc_data, length(pc_data$t_obs), replace=TRUE)
+		#print(resample_data)
 		#
 		d.boot <- c(d.boot, optimize(pcurve_loss, c(dmin, dmax), pc_data = resample_data)$minimum)
 	}
