@@ -5,8 +5,19 @@
 
 source("start.R")
 
-# load the results file which was generated in 2-analysisFramework.R
-load("analysisData/analysis504.RData")
+# load the results files which were generated in 2-analysisFramework.R,
+# combine them into one large data frame
+analysisFiles <- list.files("analysisParts", pattern=".*\\.RData", full.names=TRUE)
+# loop through all files
+
+results <- list()
+for (f in analysisFiles) {
+	load(f)	# the simulation data frame always is called "res"
+	results[[f]] <- res
+}
+res.final <- 
+
+
 
 # Show conditions
 tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
