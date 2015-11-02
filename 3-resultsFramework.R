@@ -8,15 +8,16 @@ source("start.R")
 # load the results files which were generated in 2-analysisFramework.R,
 # combine them into one large data frame
 analysisFiles <- list.files("analysisParts", pattern=".*\\.RData", full.names=TRUE)
-# loop through all files
 
-results <- list()
+print(paste0("Collecting results from ", length(analysisFiles), " analysis files."))
+
+# loop through all files
+res_list <- list()
 for (f in analysisFiles) {
 	load(f)	# the simulation data frame always is called "res"
-	results[[f]] <- res
+	res_list[[f]] <- res
 }
-res.final <- 
-
+res.final <- bind_rows(res_list)
 
 
 # Show conditions
@@ -24,7 +25,7 @@ tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA
 print(tab, n=50)
 
 ## reduce to relevant variables, drop unused factor levels
-res2 <- res.final %>% filter(variable != "tau", method!="FAT") %>% droplevels()
+res2 <- res.final %>% filter(variable != "tauEst", method!="FAT") %>% droplevels()
 
 # reshape long format to wide format
 res.wide <- dcast(res2, id + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
@@ -43,6 +44,7 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selPro
 # define some meaningful labels for the plots
 summ$delta.label <- factor(summ$delta, labels=paste0("delta = ", unique(summ$delta)))
 summ$k.label <- factor(summ$k, labels=paste0("k = ", unique(summ$k)))
+summ$qrp.label <- factor(summ$qrpEnv, labels=paste0("QRP-Environment = ", unique(summ$qrpEnv)))
 
 print(summ, n=nrow(summ))
 
@@ -53,12 +55,12 @@ print(summ, n=nrow(summ))
 # ---------------------------------------------------------------------
 #  visualize
 library(ggplot2)
-ggplot(summ, aes(x=k, y=meanEst, shape=method)) + geom_point() + facet_grid(qrpEnv~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+ggplot(summ, aes(x=k, y=meanEst, shape=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
 
 
 # ---------------------------------------------------------------------
 # pcurve follow up
 
 res.wide %>% filter(method=="pcurve") %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(
-	nStudies=round(mean(nStudies, na.rm=TRUE))
+	nStudies=round(mean(sig.studies, na.rm=TRUE))
 	)

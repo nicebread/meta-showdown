@@ -1,5 +1,5 @@
 # run this file:
-# source("simFramework.R", echo=TRUE)
+# source("1-simFramework.R", echo=TRUE)
 
 # load all functions and packages
 source("start.R")

@@ -5,14 +5,14 @@
 ## ======================================================================
 
 # run this file:
-# source("analysisFramework.R", echo=TRUE)
+# source("2-analysisFramework.R", echo=TRUE)
 
 # load all functions and packages
 source("start.R")
 
 library(doParallel)
 # detectCores()
-registerDoParallel(cores=2)
+registerDoParallel(cores=18)
 
 (ncores <- getDoParWorkers())	# number of parallel processes
 
@@ -22,7 +22,7 @@ simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
 
 
 # loop through all simParts files
-for (f in simDatFiles) {
+for (f in simDatFiles[29:432]) {
 
 	load(f)	# the simulation data frame always is called "sim"
 	
@@ -57,15 +57,15 @@ for (f in simDatFiles) {
 			rownames(MAdat) <- NULL
 	
 			# analyze with all MA techniques
-			re.est <- reEst(MAdat$d, MAdat$v, long=TRUE)
-		    lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
-			pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=10, progress=FALSE, long=TRUE, CI=TRUE)	# TODO: increase B to 1000
-	
+			re.est <- reEst(d=MAdat$d, v=MAdat$v, long=TRUE)
+			lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
+			pcurve.est <- pcurveEst(t=MAdat$t, df=MAdat$N-2, B=500, progress=FALSE, long=TRUE, CI=TRUE)	# TODO: increase B to 1000
+				
 			# add average study ES (D.mean, D.median) and # of significant studies to results object
 			pcurve.est <- rbind(pcurve.est, data.frame(
-				method="pcurve",
-				variable=c("D.mean", "D.median", "sig.studies"),
-				value=c(mean(MAdat$D), median(MAdat$D), sum(MAdat$p < .05))))
+					method="pcurve",
+					variable=c("D.mean", "D.median", "sig.studies"),
+					value=c(mean(MAdat$D), median(MAdat$D), sum(MAdat$p < .05))))
 	
 			# combine analysis results
 			res0 <- rbind(re.est, lm.est, pcurve.est)

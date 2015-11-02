@@ -10,7 +10,11 @@ reEst <- function(d, v, long=TRUE) {
   colnames(out) = c("dRE","lbRE","ubRE","tauRE","dTF","lbTF","ubTF","filledTF")
   
   reMA = rma(d, v, method="DL")
-  tfMA = trimfill(reMA)
+  
+  # assign NULL to tfMA if an error is raised
+  tfMA <- tryCatch({
+	  tfMA = trimfill(reMA)
+  }, error=function(e) NULL)
   
   out[1,1] = as.numeric(reMA$b[,1])
   out[1,2] = reMA$ci.lb
@@ -18,11 +22,12 @@ reEst <- function(d, v, long=TRUE) {
   
   out[1,4] = as.numeric(sqrt(reMA$tau2))
     
-  out[1,5] = as.numeric(tfMA$b[,1])
-  out[1,6] = tfMA$ci.lb
-  out[1,7] = tfMA$ci.ub
-  
-  out[1,8] = tfMA$k0
+  if (!is.null(tfMA)) {
+	  out[1,5] = as.numeric(tfMA$b[,1])
+	  out[1,6] = tfMA$ci.lb
+	  out[1,7] = tfMA$ci.ub  
+	  out[1,8] = tfMA$k0
+  }
 
   if (long==FALSE) {
   	return(out)
