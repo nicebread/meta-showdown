@@ -55,7 +55,10 @@ print(summ, n=nrow(summ))
 # ---------------------------------------------------------------------
 #  visualize
 library(ggplot2)
-ggplot(summ, aes(x=k, y=meanEst, shape=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+ggplot(summ %>% filter(tau==0.25, selProp==0.6), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+
+# control condition with tau=0 and selProp=0
+ggplot(summ %>% filter(tau==0, selProp==0), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
 
 
 # ---------------------------------------------------------------------
