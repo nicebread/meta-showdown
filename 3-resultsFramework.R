@@ -31,6 +31,12 @@ res2 <- res.final %>% filter(variable != "tauEst", method!="FAT") %>% droplevels
 res.wide <- dcast(res2, id + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
 head(res.wide)
 
+# define some meaningful labels for the plots
+res.wide$delta.label <- factor(res.wide$delta, labels=paste0("delta = ", unique(res.wide$delta)))
+res.wide$k.label <- factor(res.wide$k, labels=paste0("k = ", unique(res.wide$k)))
+res.wide$qrp.label <- factor(res.wide$qrpEnv, labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
+
+
 # Compute summary measures across replications
 summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selProp, tau, method) %>% summarise(
 	meanEst		= round(mean(d, na.rm=TRUE), 3),
@@ -41,29 +47,44 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selPro
 	n.simulations = n()
 )
 
-# define some meaningful labels for the plots
-summ$delta.label <- factor(summ$delta, labels=paste0("delta = ", unique(summ$delta)))
-summ$k.label <- factor(summ$k, labels=paste0("k = ", unique(summ$k)))
-summ$qrp.label <- factor(summ$qrpEnv, labels=paste0("QRP-Environment = ", unique(summ$qrpEnv)))
 
 print(summ, n=nrow(summ))
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
-
-
+library(rio)
+export(summ, file="summ.csv")
+save(summ, file="summ.RData")
 
 # ---------------------------------------------------------------------
 #  visualize
 library(ggplot2)
 ggplot(summ %>% filter(tau==0.25, selProp==0.6), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
 
+# ---------------------------------------------------------------------
+#  show violin plots in partly loop style
+library(gtools)
+
+# order two variables into one loop
+res.wide <- res.wide %>% mutate(k_method=paste0(k, "_", method))
+
+# order loop factor alphabetically
+res.wide$k_method <- factor(res.wide$k_method, levels=mixedsort(unique(res.wide$k_method)))
+
+# select relevant data
+sel <- res.wide %>% filter(method!="FAT", tau==0, selProp==1)
+
+ggplot(sel, aes(x=k_method, y=d, color=method, group=k_method)) + geom_violin() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()+ theme(axis.text.x = element_text(angle = 90, size=3))
+
 # control condition with tau=0 and selProp=0
 ggplot(summ %>% filter(tau==0, selProp==0), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+
 
 
 # ---------------------------------------------------------------------
 # pcurve follow up
 
 res.wide %>% filter(method=="pcurve") %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(
-	nStudies=round(mean(sig.studies, na.rm=TRUE))
+	nStudies=round(mean(sig.studies, na.rm=TRUE), 2)
 	)
+	
+head(res.wide %>% filter(method=="pcurve"))	

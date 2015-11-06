@@ -34,8 +34,6 @@ rownames(params) <- NULL
 print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))
 
 
-params <- params[1:4, ]
-
 # other settings
 B <- 2	# number of simulation replications per condition (should be dividable by getDoParWorkers())
 
