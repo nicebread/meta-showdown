@@ -168,8 +168,8 @@ testIt=function(DV,lvl,out){
   }
   # no subsetting by the moderator, exclusion of outliers
   if(lvl==0 & out==1){
-    Y = DV[,1]
-    X = DV[,2]  
+    Y = subset(DV[,1], DV[,4] < 1)
+    X = subset(DV[,2], DV[,4] < 1)   
   }
   # subsetting by lvl 1 of the moderator, exclusion of outliers
   if(lvl==1 & out==1){  
