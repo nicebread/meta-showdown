@@ -14,18 +14,26 @@ lmVarEst <- function(d, v, long=TRUE) {
   ciPET = confint(PET)
   ciPEESE = confint(PEESE)
   
-  usePET = ifelse(summary(PET)$coefficients[7]/2 < .05 & as.numeric(PET$coefficients[1]) > 0, 1, 0)
+  #the one-tail version that Stanley privately advocated. Not mentioned in publications.
+  #usePET = ifelse(summary(PET)$coefficients[7] < .10 & as.numeric(PET$coefficients[1]) > 0, 0, 1)
   
-  out[,1] = as.numeric(PET$coefficients[1])
-  out[,4] = as.numeric(PEESE$coefficients[1])
-  out[,7] = if(usePET==1){out[,1]}else{out[,4]}
+  #the two-tail version. Note the change in the conditional argument. 
+  usePET = ifelse(summary(PET)$coefficients[7] > .05, 1, 0)
   
+  #the estimates of delta
+  out[,1] = as.numeric(PET$coefficients[1])     #dPT
+  out[,4] = as.numeric(PEESE$coefficients[1])   #dPE
+  out[,7] = if(usePET==1){out[,1]}else{out[,4]} #dPP
+  
+  #PET CI limits
   out[,2] = ciPET[1]
   out[,3] = ciPET[3]
   
+  #PEESE CI limits
   out[,5] = ciPEESE[1]
   out[,6] = ciPEESE[3]
   
+  #PET-PEESE CI limits
   out[,8] = if(usePET==1){out[,2]}else{out[,5]}
   out[,9] = if(usePET==1){out[,3]}else{out[,6]}
   
