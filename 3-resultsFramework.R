@@ -75,6 +75,10 @@ sel <- res.wide %>% filter(method!="FAT", tau==0, selProp==1)
 
 ggplot(sel, aes(x=k_method, y=d, color=method, group=k_method)) + geom_violin() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()+ theme(axis.text.x = element_text(angle = 90, size=3))
 
+# without loop
+ggplot(sel, aes(x=k.label, y=d, color=method, group=k_method)) + geom_violin(position=position_dodge()) + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+
+
 # control condition with tau=0 and selProp=0
 ggplot(summ %>% filter(tau==0, selProp==0), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
 

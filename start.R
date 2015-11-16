@@ -1,5 +1,5 @@
 #source("start.R")
-#install.packages(c("MASS", "pwr", "compiler", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
+#install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
 
 library(MASS)
 library(pwr)
