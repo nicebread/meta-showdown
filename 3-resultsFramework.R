@@ -40,10 +40,19 @@ res.wide$qrp.label <- factor(res.wide$qrpEnv, labels=paste0("QRP = ", unique(res
 # Compute summary measures across replications
 summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selProp, tau, method) %>% summarise(
 	meanEst		= round(mean(d, na.rm=TRUE), 3),
+	meanD		= round(mean(D.mean, na.rm=TRUE), 3),
+	
+	# relative to true population mean ("delta")
 	ME 			= round(mean(d - delta, na.rm=TRUE), 3),
 	MSE			= round(mean(d - delta, na.rm=TRUE)^2, 3),
 	coverage 	= round(sum(delta > lb & delta < ub)/sum(!is.na(lb)), 3),
 	consisZero      = round(sum(0 > lb & 0 < ub)/n(), 3),
+	
+	# relative to mean of entered ES ("D")
+	ME.D		= round(mean(d - meanD, na.rm=TRUE), 3),
+	MSE.D		= round(mean(d - meanD, na.rm=TRUE)^2, 3),
+	coverage.D	= round(sum(meanD > lb & meanD < ub)/sum(!is.na(lb)), 3),
+	consisZero.D     = round(sum(0 > lb & 0 < ub)/n(), 3),
 	n.simulations = n()
 )
 
