@@ -18,6 +18,9 @@ registerDoParallel(cores=18)
 
 # simDatFiles stores the names of all simulated data files in the folder "simParts"
 simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
+
+library(gtools)
+simDatFiles <- mixedsort(simDatFiles)
 # f <- simDatFiles[[33]]
 
 
@@ -63,9 +66,14 @@ for (f in simDatFiles[29:432]) {
 				
 			# add average study ES (D.mean, D.median) and # of significant studies to results object
 			pcurve.est <- rbind(pcurve.est, data.frame(
-					method="pcurve",
-					variable=c("D.mean", "D.median", "sig.studies"),
-					value=c(mean(MAdat$D), median(MAdat$D), sum(MAdat$p < .05))))
+                method="pcurve",
+                variable=c("D.mean", "D.median", "D.mean.sig", "D.median.sig", "sig.studies"),
+                value=c(
+					mean(MAdat$D[MAdat$D > 0], na.rm=TRUE), 
+					median(MAdat$D[MAdat$D > 0], na.rm=TRUE), 
+					mean(MAdat$D[MAdat$D > 0 & MAdat$p <= .05], na.rm=TRUE), 
+					median(MAdat$D[MAdat$D > 0 & MAdat$p <= .05], na.rm=TRUE), 
+					sum(MAdat$p[MAdat$D > 0] <= .05))))
 	
 			# combine analysis results
 			res0 <- rbind(re.est, lm.est, pcurve.est)
