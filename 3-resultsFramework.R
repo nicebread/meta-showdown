@@ -38,7 +38,7 @@ res.wide$qrp.label <- factor(res.wide$qrpEnv, labels=paste0("QRP = ", unique(res
 
 
 # Compute summary measures across replications
-summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, delta, qrpEnv, selProp, tau, method) %>% summarise(
+summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% summarise(
 	meanEst		= round(mean(d, na.rm=TRUE), 3),
 	meanD		= round(mean(D.mean, na.rm=TRUE), 3),
 	meanD.sig	= round(mean(D.mean.sig, na.rm=TRUE), 3),
@@ -74,7 +74,7 @@ save(summ, file="summ.RData")
 # ---------------------------------------------------------------------
 #  visualize
 library(ggplot2)
-ggplot(summ %>% filter(tau==0.25, selProp==0.6), aes(x=k, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
+ggplot(summ %>% filter(tau==0, selProp==0.6), aes(x=k.label, y=meanEst, color=method)) + geom_point() + facet_grid(qrp.label~delta.label) + geom_hline(aes(yintercept=delta)) + theme_bw()
 
 # ---------------------------------------------------------------------
 #  show violin plots in partly loop style
