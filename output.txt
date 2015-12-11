@@ -1,0 +1,1079 @@
+New simulation started at: 2015-12-10 07:24:43
+2015-12-10 07:24:43, NEW CONDITION: computing condition 335/432
+2015-12-10 07:24:43, batch=1: computing condition 335/432; rep = 1
+2015-12-10 07:24:43, batch=2: computing condition 335/432; rep = 1
+2015-12-10 07:24:47, batch=1: computing condition 335/432; rep = 2
+2015-12-10 07:24:48, batch=2: computing condition 335/432; rep = 2
+2015-12-10 07:24:51, batch=1: computing condition 335/432; rep = 3
+2015-12-10 07:24:52, batch=2: computing condition 335/432; rep = 3
+2015-12-10 07:24:56, batch=2: computing condition 335/432; rep = 4
+2015-12-10 07:24:56, batch=1: computing condition 335/432; rep = 4
+2015-12-10 07:25:00, batch=2: computing condition 335/432; rep = 5
+2015-12-10 07:25:00, batch=1: computing condition 335/432; rep = 5
+2015-12-10 07:25:03, NEW CONDITION: computing condition 336/432
+2015-12-10 07:25:03, batch=1: computing condition 336/432; rep = 1
+2015-12-10 07:25:03, batch=2: computing condition 336/432; rep = 1
+2015-12-10 07:25:09, batch=1: computing condition 336/432; rep = 2
+2015-12-10 07:25:10, batch=2: computing condition 336/432; rep = 2
+2015-12-10 07:25:15, batch=1: computing condition 336/432; rep = 3
+2015-12-10 07:25:16, batch=2: computing condition 336/432; rep = 3
+2015-12-10 07:25:20, batch=1: computing condition 336/432; rep = 4
+2015-12-10 07:25:22, batch=2: computing condition 336/432; rep = 4
+2015-12-10 07:25:26, batch=1: computing condition 336/432; rep = 5
+2015-12-10 07:25:28, batch=2: computing condition 336/432; rep = 5
+2015-12-10 07:25:33, NEW CONDITION: computing condition 337/432
+2015-12-10 07:25:33, batch=2: computing condition 337/432; rep = 1
+2015-12-10 07:25:33, batch=1: computing condition 337/432; rep = 1
+2015-12-10 07:25:33, batch=1: computing condition 337/432; rep = 2
+2015-12-10 07:25:33, batch=2: computing condition 337/432; rep = 2
+2015-12-10 07:25:33, batch=2: computing condition 337/432; rep = 3
+2015-12-10 07:25:33, batch=1: computing condition 337/432; rep = 3
+2015-12-10 07:25:33, batch=2: computing condition 337/432; rep = 4
+2015-12-10 07:25:33, batch=2: computing condition 337/432; rep = 5
+2015-12-10 07:25:33, batch=1: computing condition 337/432; rep = 4
+2015-12-10 07:25:33, batch=1: computing condition 337/432; rep = 5
+2015-12-10 07:25:33, NEW CONDITION: computing condition 338/432
+2015-12-10 07:25:33, batch=1: computing condition 338/432; rep = 1
+2015-12-10 07:25:33, batch=2: computing condition 338/432; rep = 1
+2015-12-10 07:25:33, batch=1: computing condition 338/432; rep = 2
+2015-12-10 07:25:34, batch=2: computing condition 338/432; rep = 2
+2015-12-10 07:25:34, batch=1: computing condition 338/432; rep = 3
+2015-12-10 07:25:34, batch=2: computing condition 338/432; rep = 3
+2015-12-10 07:25:34, batch=1: computing condition 338/432; rep = 4
+2015-12-10 07:25:34, batch=2: computing condition 338/432; rep = 4
+2015-12-10 07:25:34, batch=1: computing condition 338/432; rep = 5
+2015-12-10 07:25:34, batch=2: computing condition 338/432; rep = 5
+2015-12-10 07:25:34, NEW CONDITION: computing condition 339/432
+2015-12-10 07:25:34, batch=1: computing condition 339/432; rep = 1
+2015-12-10 07:25:34, batch=2: computing condition 339/432; rep = 1
+2015-12-10 07:25:35, batch=1: computing condition 339/432; rep = 2
+2015-12-10 07:25:35, batch=2: computing condition 339/432; rep = 2
+2015-12-10 07:25:35, batch=2: computing condition 339/432; rep = 3
+2015-12-10 07:25:35, batch=1: computing condition 339/432; rep = 3
+2015-12-10 07:25:35, batch=2: computing condition 339/432; rep = 4
+2015-12-10 07:25:35, batch=1: computing condition 339/432; rep = 4
+2015-12-10 07:25:35, batch=2: computing condition 339/432; rep = 5
+2015-12-10 07:25:35, batch=1: computing condition 339/432; rep = 5
+2015-12-10 07:25:35, NEW CONDITION: computing condition 340/432
+2015-12-10 07:25:36, batch=1: computing condition 340/432; rep = 12015-12-10 07:25:36, batch=2: computing condition 340/432; rep = 1
+
+2015-12-10 07:25:36, batch=1: computing condition 340/432; rep = 2
+2015-12-10 07:25:36, batch=2: computing condition 340/432; rep = 2
+2015-12-10 07:25:36, batch=1: computing condition 340/432; rep = 3
+2015-12-10 07:25:36, batch=2: computing condition 340/432; rep = 3
+2015-12-10 07:25:36, batch=1: computing condition 340/432; rep = 4
+2015-12-10 07:25:36, batch=2: computing condition 340/432; rep = 4
+2015-12-10 07:25:37, batch=1: computing condition 340/432; rep = 5
+2015-12-10 07:25:37, batch=2: computing condition 340/432; rep = 5
+2015-12-10 07:25:37, NEW CONDITION: computing condition 341/432
+2015-12-10 07:25:37, batch=1: computing condition 341/432; rep = 12015-12-10 07:25:37, batch=2: computing condition 341/432; rep = 1
+
+2015-12-10 07:25:37, batch=1: computing condition 341/432; rep = 2
+2015-12-10 07:25:37, batch=2: computing condition 341/432; rep = 2
+2015-12-10 07:25:37, batch=1: computing condition 341/432; rep = 3
+2015-12-10 07:25:37, batch=2: computing condition 341/432; rep = 3
+2015-12-10 07:25:37, batch=1: computing condition 341/432; rep = 4
+2015-12-10 07:25:37, batch=2: computing condition 341/432; rep = 4
+2015-12-10 07:25:37, batch=1: computing condition 341/432; rep = 5
+2015-12-10 07:25:37, batch=2: computing condition 341/432; rep = 5
+2015-12-10 07:25:37, NEW CONDITION: computing condition 342/432
+2015-12-10 07:25:37, batch=1: computing condition 342/432; rep = 1
+2015-12-10 07:25:37, batch=2: computing condition 342/432; rep = 1
+2015-12-10 07:25:37, batch=1: computing condition 342/432; rep = 2
+2015-12-10 07:25:37, batch=2: computing condition 342/432; rep = 2
+2015-12-10 07:25:37, batch=1: computing condition 342/432; rep = 3
+2015-12-10 07:25:38, batch=2: computing condition 342/432; rep = 3
+2015-12-10 07:25:38, batch=1: computing condition 342/432; rep = 4
+2015-12-10 07:25:38, batch=2: computing condition 342/432; rep = 4
+2015-12-10 07:25:38, batch=1: computing condition 342/432; rep = 5
+2015-12-10 07:25:38, batch=2: computing condition 342/432; rep = 5
+2015-12-10 07:25:38, NEW CONDITION: computing condition 343/432
+2015-12-10 07:25:38, batch=1: computing condition 343/432; rep = 1
+2015-12-10 07:25:38, batch=2: computing condition 343/432; rep = 1
+2015-12-10 07:25:38, batch=1: computing condition 343/432; rep = 2
+2015-12-10 07:25:38, batch=2: computing condition 343/432; rep = 2
+2015-12-10 07:25:38, batch=1: computing condition 343/432; rep = 3
+2015-12-10 07:25:38, batch=2: computing condition 343/432; rep = 3
+2015-12-10 07:25:38, batch=1: computing condition 343/432; rep = 4
+2015-12-10 07:25:38, batch=2: computing condition 343/432; rep = 4
+2015-12-10 07:25:38, batch=1: computing condition 343/432; rep = 5
+2015-12-10 07:25:38, batch=2: computing condition 343/432; rep = 5
+2015-12-10 07:25:38, NEW CONDITION: computing condition 344/432
+2015-12-10 07:25:38, batch=1: computing condition 344/432; rep = 1
+2015-12-10 07:25:38, batch=2: computing condition 344/432; rep = 1
+2015-12-10 07:25:39, batch=1: computing condition 344/432; rep = 2
+2015-12-10 07:25:39, batch=2: computing condition 344/432; rep = 2
+2015-12-10 07:25:39, batch=1: computing condition 344/432; rep = 3
+2015-12-10 07:25:39, batch=2: computing condition 344/432; rep = 3
+2015-12-10 07:25:39, batch=1: computing condition 344/432; rep = 4
+2015-12-10 07:25:39, batch=2: computing condition 344/432; rep = 4
+2015-12-10 07:25:39, batch=1: computing condition 344/432; rep = 5
+2015-12-10 07:25:39, batch=2: computing condition 344/432; rep = 5
+2015-12-10 07:25:39, NEW CONDITION: computing condition 345/432
+2015-12-10 07:25:39, batch=1: computing condition 345/432; rep = 1
+2015-12-10 07:25:39, batch=2: computing condition 345/432; rep = 1
+2015-12-10 07:25:39, batch=1: computing condition 345/432; rep = 2
+2015-12-10 07:25:39, batch=2: computing condition 345/432; rep = 2
+2015-12-10 07:25:40, batch=1: computing condition 345/432; rep = 3
+2015-12-10 07:25:40, batch=2: computing condition 345/432; rep = 3
+2015-12-10 07:25:40, batch=1: computing condition 345/432; rep = 4
+2015-12-10 07:25:40, batch=2: computing condition 345/432; rep = 4
+2015-12-10 07:25:40, batch=1: computing condition 345/432; rep = 5
+2015-12-10 07:25:40, batch=2: computing condition 345/432; rep = 5
+2015-12-10 07:25:40, NEW CONDITION: computing condition 346/432
+2015-12-10 07:25:40, batch=2: computing condition 346/432; rep = 1
+2015-12-10 07:25:40, batch=1: computing condition 346/432; rep = 1
+2015-12-10 07:25:40, batch=1: computing condition 346/432; rep = 2
+2015-12-10 07:25:40, batch=2: computing condition 346/432; rep = 2
+2015-12-10 07:25:40, batch=1: computing condition 346/432; rep = 3
+2015-12-10 07:25:40, batch=2: computing condition 346/432; rep = 3
+2015-12-10 07:25:40, batch=1: computing condition 346/432; rep = 4
+2015-12-10 07:25:40, batch=2: computing condition 346/432; rep = 4
+2015-12-10 07:25:40, batch=1: computing condition 346/432; rep = 5
+2015-12-10 07:25:40, batch=2: computing condition 346/432; rep = 5
+2015-12-10 07:25:40, NEW CONDITION: computing condition 347/432
+2015-12-10 07:25:40, batch=1: computing condition 347/432; rep = 1
+2015-12-10 07:25:40, batch=2: computing condition 347/432; rep = 1
+2015-12-10 07:25:40, batch=2: computing condition 347/432; rep = 2
+2015-12-10 07:25:40, batch=1: computing condition 347/432; rep = 2
+2015-12-10 07:25:40, batch=2: computing condition 347/432; rep = 3
+2015-12-10 07:25:40, batch=1: computing condition 347/432; rep = 3
+2015-12-10 07:25:40, batch=2: computing condition 347/432; rep = 4
+2015-12-10 07:25:40, batch=1: computing condition 347/432; rep = 4
+2015-12-10 07:25:40, batch=1: computing condition 347/432; rep = 5
+2015-12-10 07:25:40, batch=2: computing condition 347/432; rep = 5
+2015-12-10 07:25:40, NEW CONDITION: computing condition 348/432
+2015-12-10 07:25:40, batch=1: computing condition 348/432; rep = 1
+2015-12-10 07:25:40, batch=2: computing condition 348/432; rep = 1
+2015-12-10 07:25:41, batch=1: computing condition 348/432; rep = 2
+2015-12-10 07:25:41, batch=2: computing condition 348/432; rep = 2
+2015-12-10 07:25:41, batch=1: computing condition 348/432; rep = 3
+2015-12-10 07:25:41, batch=2: computing condition 348/432; rep = 3
+2015-12-10 07:25:41, batch=2: computing condition 348/432; rep = 4
+2015-12-10 07:25:41, batch=1: computing condition 348/432; rep = 4
+2015-12-10 07:25:41, batch=2: computing condition 348/432; rep = 5
+2015-12-10 07:25:41, batch=1: computing condition 348/432; rep = 5
+2015-12-10 07:25:41, NEW CONDITION: computing condition 349/432
+2015-12-10 07:25:41, batch=1: computing condition 349/432; rep = 1
+2015-12-10 07:25:41, batch=2: computing condition 349/432; rep = 1
+2015-12-10 07:25:41, batch=1: computing condition 349/432; rep = 2
+2015-12-10 07:25:41, batch=2: computing condition 349/432; rep = 2
+2015-12-10 07:25:41, batch=1: computing condition 349/432; rep = 3
+2015-12-10 07:25:41, batch=2: computing condition 349/432; rep = 3
+2015-12-10 07:25:41, batch=1: computing condition 349/432; rep = 4
+2015-12-10 07:25:41, batch=2: computing condition 349/432; rep = 4
+2015-12-10 07:25:41, batch=1: computing condition 349/432; rep = 5
+2015-12-10 07:25:41, batch=2: computing condition 349/432; rep = 5
+2015-12-10 07:25:41, NEW CONDITION: computing condition 350/432
+2015-12-10 07:25:41, batch=1: computing condition 350/432; rep = 12015-12-10 07:25:41, batch=2: computing condition 350/432; rep = 1
+
+2015-12-10 07:25:41, batch=1: computing condition 350/432; rep = 2
+2015-12-10 07:25:41, batch=2: computing condition 350/432; rep = 2
+2015-12-10 07:25:41, batch=1: computing condition 350/432; rep = 3
+2015-12-10 07:25:41, batch=2: computing condition 350/432; rep = 3
+2015-12-10 07:25:41, batch=1: computing condition 350/432; rep = 4
+2015-12-10 07:25:41, batch=2: computing condition 350/432; rep = 4
+2015-12-10 07:25:41, batch=1: computing condition 350/432; rep = 5
+2015-12-10 07:25:41, batch=2: computing condition 350/432; rep = 5
+2015-12-10 07:25:42, NEW CONDITION: computing condition 351/432
+2015-12-10 07:25:42, batch=1: computing condition 351/432; rep = 1
+2015-12-10 07:25:42, batch=2: computing condition 351/432; rep = 1
+2015-12-10 07:25:42, batch=2: computing condition 351/432; rep = 2
+2015-12-10 07:25:42, batch=1: computing condition 351/432; rep = 2
+2015-12-10 07:25:42, batch=1: computing condition 351/432; rep = 3
+2015-12-10 07:25:42, batch=2: computing condition 351/432; rep = 3
+2015-12-10 07:25:42, batch=2: computing condition 351/432; rep = 4
+2015-12-10 07:25:42, batch=1: computing condition 351/432; rep = 4
+2015-12-10 07:25:42, batch=2: computing condition 351/432; rep = 5
+2015-12-10 07:25:42, batch=1: computing condition 351/432; rep = 5
+2015-12-10 07:25:42, NEW CONDITION: computing condition 352/432
+2015-12-10 07:25:42, batch=2: computing condition 352/432; rep = 12015-12-10 07:25:42, batch=1: computing condition 352/432; rep = 1
+
+2015-12-10 07:25:42, batch=2: computing condition 352/432; rep = 2
+2015-12-10 07:25:42, batch=1: computing condition 352/432; rep = 2
+2015-12-10 07:25:42, batch=2: computing condition 352/432; rep = 3
+2015-12-10 07:25:42, batch=1: computing condition 352/432; rep = 3
+2015-12-10 07:25:43, batch=2: computing condition 352/432; rep = 4
+2015-12-10 07:25:43, batch=1: computing condition 352/432; rep = 4
+2015-12-10 07:25:43, batch=2: computing condition 352/432; rep = 5
+2015-12-10 07:25:43, batch=1: computing condition 352/432; rep = 5
+2015-12-10 07:25:43, NEW CONDITION: computing condition 353/432
+2015-12-10 07:25:43, batch=1: computing condition 353/432; rep = 12015-12-10 07:25:43, batch=2: computing condition 353/432; rep = 1
+
+2015-12-10 07:25:45, batch=2: computing condition 353/432; rep = 2
+2015-12-10 07:25:46, batch=1: computing condition 353/432; rep = 2
+2015-12-10 07:25:47, batch=2: computing condition 353/432; rep = 3
+2015-12-10 07:25:48, batch=1: computing condition 353/432; rep = 3
+2015-12-10 07:25:49, batch=2: computing condition 353/432; rep = 4
+2015-12-10 07:25:50, batch=2: computing condition 353/432; rep = 5
+2015-12-10 07:25:54, batch=1: computing condition 353/432; rep = 4
+2015-12-10 07:25:54, batch=1: computing condition 353/432; rep = 5
+2015-12-10 07:25:56, NEW CONDITION: computing condition 354/432
+2015-12-10 07:25:56, batch=1: computing condition 354/432; rep = 1
+2015-12-10 07:25:56, batch=2: computing condition 354/432; rep = 1
+2015-12-10 07:26:00, batch=2: computing condition 354/432; rep = 2
+2015-12-10 07:26:01, batch=1: computing condition 354/432; rep = 2
+2015-12-10 07:26:06, batch=2: computing condition 354/432; rep = 3
+2015-12-10 07:26:07, batch=1: computing condition 354/432; rep = 3
+2015-12-10 07:26:11, batch=2: computing condition 354/432; rep = 4
+2015-12-10 07:26:11, batch=1: computing condition 354/432; rep = 4
+2015-12-10 07:26:14, batch=2: computing condition 354/432; rep = 5
+2015-12-10 07:26:15, batch=1: computing condition 354/432; rep = 5
+2015-12-10 07:26:20, NEW CONDITION: computing condition 355/432
+2015-12-10 07:26:20, batch=1: computing condition 355/432; rep = 12015-12-10 07:26:20, batch=2: computing condition 355/432; rep = 1
+
+2015-12-10 07:26:29, batch=2: computing condition 355/432; rep = 2
+2015-12-10 07:26:29, batch=1: computing condition 355/432; rep = 2
+2015-12-10 07:26:37, batch=1: computing condition 355/432; rep = 3
+2015-12-10 07:26:41, batch=2: computing condition 355/432; rep = 3
+2015-12-10 07:26:45, batch=1: computing condition 355/432; rep = 4
+2015-12-10 07:26:49, batch=2: computing condition 355/432; rep = 4
+2015-12-10 07:26:58, batch=1: computing condition 355/432; rep = 5
+2015-12-10 07:26:58, batch=2: computing condition 355/432; rep = 5
+2015-12-10 07:27:07, NEW CONDITION: computing condition 356/432
+2015-12-10 07:27:07, batch=1: computing condition 356/432; rep = 1
+2015-12-10 07:27:07, batch=2: computing condition 356/432; rep = 1
+2015-12-10 07:27:21, batch=1: computing condition 356/432; rep = 2
+2015-12-10 07:27:26, batch=2: computing condition 356/432; rep = 2
+2015-12-10 07:27:39, batch=1: computing condition 356/432; rep = 3
+2015-12-10 07:27:45, batch=2: computing condition 356/432; rep = 3
+2015-12-10 07:27:55, batch=1: computing condition 356/432; rep = 4
+2015-12-10 07:28:00, batch=2: computing condition 356/432; rep = 4
+2015-12-10 07:28:10, batch=1: computing condition 356/432; rep = 5
+2015-12-10 07:28:13, batch=2: computing condition 356/432; rep = 5
+2015-12-10 07:28:32, NEW CONDITION: computing condition 357/432
+2015-12-10 07:28:32, batch=2: computing condition 357/432; rep = 12015-12-10 07:28:32, batch=1: computing condition 357/432; rep = 1
+
+2015-12-10 07:28:33, batch=2: computing condition 357/432; rep = 2
+2015-12-10 07:28:33, batch=1: computing condition 357/432; rep = 2
+2015-12-10 07:28:34, batch=2: computing condition 357/432; rep = 3
+2015-12-10 07:28:34, batch=1: computing condition 357/432; rep = 3
+2015-12-10 07:28:34, batch=2: computing condition 357/432; rep = 4
+2015-12-10 07:28:35, batch=1: computing condition 357/432; rep = 4
+2015-12-10 07:28:35, batch=2: computing condition 357/432; rep = 5
+2015-12-10 07:28:36, batch=1: computing condition 357/432; rep = 5
+2015-12-10 07:28:37, NEW CONDITION: computing condition 358/432
+2015-12-10 07:28:37, batch=2: computing condition 358/432; rep = 12015-12-10 07:28:37, batch=1: computing condition 358/432; rep = 1
+
+2015-12-10 07:28:39, batch=1: computing condition 358/432; rep = 2
+2015-12-10 07:28:41, batch=2: computing condition 358/432; rep = 2
+2015-12-10 07:28:42, batch=1: computing condition 358/432; rep = 3
+2015-12-10 07:28:44, batch=2: computing condition 358/432; rep = 3
+2015-12-10 07:28:47, batch=2: computing condition 358/432; rep = 4
+2015-12-10 07:28:47, batch=1: computing condition 358/432; rep = 4
+2015-12-10 07:28:51, batch=1: computing condition 358/432; rep = 5
+2015-12-10 07:28:53, batch=2: computing condition 358/432; rep = 5
+2015-12-10 07:28:58, NEW CONDITION: computing condition 359/432
+2015-12-10 07:28:58, batch=1: computing condition 359/432; rep = 1
+2015-12-10 07:28:58, batch=2: computing condition 359/432; rep = 1
+2015-12-10 07:29:04, batch=1: computing condition 359/432; rep = 2
+2015-12-10 07:29:06, batch=2: computing condition 359/432; rep = 2
+2015-12-10 07:29:10, batch=1: computing condition 359/432; rep = 3
+2015-12-10 07:29:13, batch=2: computing condition 359/432; rep = 3
+2015-12-10 07:29:15, batch=1: computing condition 359/432; rep = 4
+2015-12-10 07:29:19, batch=2: computing condition 359/432; rep = 4
+2015-12-10 07:29:21, batch=1: computing condition 359/432; rep = 5
+2015-12-10 07:29:25, batch=2: computing condition 359/432; rep = 5
+2015-12-10 07:29:32, NEW CONDITION: computing condition 360/432
+2015-12-10 07:29:32, batch=2: computing condition 360/432; rep = 12015-12-10 07:29:32, batch=1: computing condition 360/432; rep = 1
+
+2015-12-10 07:29:43, batch=2: computing condition 360/432; rep = 2
+2015-12-10 07:29:44, batch=1: computing condition 360/432; rep = 2
+2015-12-10 07:29:53, batch=1: computing condition 360/432; rep = 3
+2015-12-10 07:29:55, batch=2: computing condition 360/432; rep = 3
+2015-12-10 07:30:05, batch=2: computing condition 360/432; rep = 4
+2015-12-10 07:30:05, batch=1: computing condition 360/432; rep = 4
+2015-12-10 07:30:18, batch=2: computing condition 360/432; rep = 5
+2015-12-10 07:30:18, batch=1: computing condition 360/432; rep = 5
+2015-12-10 07:30:31, NEW CONDITION: computing condition 361/432
+2015-12-10 07:30:31, batch=1: computing condition 361/432; rep = 12015-12-10 07:30:31, batch=2: computing condition 361/432; rep = 1
+
+2015-12-10 07:30:32, batch=2: computing condition 361/432; rep = 2
+2015-12-10 07:30:32, batch=1: computing condition 361/432; rep = 2
+2015-12-10 07:30:32, batch=2: computing condition 361/432; rep = 3
+2015-12-10 07:30:33, batch=2: computing condition 361/432; rep = 4
+2015-12-10 07:30:33, batch=1: computing condition 361/432; rep = 3
+2015-12-10 07:30:34, batch=1: computing condition 361/432; rep = 4
+2015-12-10 07:30:34, batch=2: computing condition 361/432; rep = 5
+2015-12-10 07:30:34, batch=1: computing condition 361/432; rep = 5
+2015-12-10 07:30:35, NEW CONDITION: computing condition 362/432
+2015-12-10 07:30:35, batch=1: computing condition 362/432; rep = 1
+2015-12-10 07:30:35, batch=2: computing condition 362/432; rep = 1
+2015-12-10 07:30:37, batch=1: computing condition 362/432; rep = 2
+2015-12-10 07:30:37, batch=2: computing condition 362/432; rep = 2
+2015-12-10 07:30:38, batch=1: computing condition 362/432; rep = 3
+2015-12-10 07:30:39, batch=2: computing condition 362/432; rep = 3
+2015-12-10 07:30:40, batch=1: computing condition 362/432; rep = 4
+2015-12-10 07:30:41, batch=2: computing condition 362/432; rep = 4
+2015-12-10 07:30:42, batch=1: computing condition 362/432; rep = 5
+2015-12-10 07:30:43, batch=2: computing condition 362/432; rep = 5
+2015-12-10 07:30:45, NEW CONDITION: computing condition 363/432
+2015-12-10 07:30:45, batch=2: computing condition 363/432; rep = 12015-12-10 07:30:45, batch=1: computing condition 363/432; rep = 1
+
+2015-12-10 07:30:49, batch=1: computing condition 363/432; rep = 2
+2015-12-10 07:30:49, batch=2: computing condition 363/432; rep = 2
+2015-12-10 07:30:54, batch=2: computing condition 363/432; rep = 3
+2015-12-10 07:30:55, batch=1: computing condition 363/432; rep = 3
+2015-12-10 07:30:59, batch=2: computing condition 363/432; rep = 4
+2015-12-10 07:31:01, batch=1: computing condition 363/432; rep = 4
+2015-12-10 07:31:02, batch=2: computing condition 363/432; rep = 5
+2015-12-10 07:31:06, batch=1: computing condition 363/432; rep = 5
+2015-12-10 07:31:09, NEW CONDITION: computing condition 364/432
+2015-12-10 07:31:09, batch=2: computing condition 364/432; rep = 1
+2015-12-10 07:31:09, batch=1: computing condition 364/432; rep = 1
+2015-12-10 07:31:15, batch=1: computing condition 364/432; rep = 2
+2015-12-10 07:31:16, batch=2: computing condition 364/432; rep = 2
+2015-12-10 07:31:22, batch=2: computing condition 364/432; rep = 3
+2015-12-10 07:31:22, batch=1: computing condition 364/432; rep = 3
+2015-12-10 07:31:30, batch=2: computing condition 364/432; rep = 4
+2015-12-10 07:31:31, batch=1: computing condition 364/432; rep = 4
+2015-12-10 07:31:38, batch=2: computing condition 364/432; rep = 5
+2015-12-10 07:31:38, batch=1: computing condition 364/432; rep = 5
+2015-12-10 07:31:49, NEW CONDITION: computing condition 365/432
+2015-12-10 07:31:49, batch=1: computing condition 365/432; rep = 1
+2015-12-10 07:31:49, batch=2: computing condition 365/432; rep = 1
+2015-12-10 07:31:49, batch=2: computing condition 365/432; rep = 2
+2015-12-10 07:31:49, batch=1: computing condition 365/432; rep = 2
+2015-12-10 07:31:50, batch=2: computing condition 365/432; rep = 3
+2015-12-10 07:31:50, batch=1: computing condition 365/432; rep = 3
+2015-12-10 07:31:50, batch=2: computing condition 365/432; rep = 4
+2015-12-10 07:31:51, batch=1: computing condition 365/432; rep = 4
+2015-12-10 07:31:51, batch=2: computing condition 365/432; rep = 5
+2015-12-10 07:31:52, batch=1: computing condition 365/432; rep = 5
+2015-12-10 07:31:53, NEW CONDITION: computing condition 366/432
+2015-12-10 07:31:53, batch=1: computing condition 366/432; rep = 1
+2015-12-10 07:31:53, batch=2: computing condition 366/432; rep = 1
+2015-12-10 07:31:56, batch=1: computing condition 366/432; rep = 2
+2015-12-10 07:31:56, batch=2: computing condition 366/432; rep = 2
+2015-12-10 07:31:57, batch=1: computing condition 366/432; rep = 3
+2015-12-10 07:31:59, batch=2: computing condition 366/432; rep = 3
+2015-12-10 07:32:00, batch=1: computing condition 366/432; rep = 4
+2015-12-10 07:32:01, batch=2: computing condition 366/432; rep = 4
+2015-12-10 07:32:01, batch=1: computing condition 366/432; rep = 5
+2015-12-10 07:32:03, batch=2: computing condition 366/432; rep = 5
+2015-12-10 07:32:06, NEW CONDITION: computing condition 367/432
+2015-12-10 07:32:06, batch=1: computing condition 367/432; rep = 1
+2015-12-10 07:32:06, batch=2: computing condition 367/432; rep = 1
+2015-12-10 07:32:09, batch=2: computing condition 367/432; rep = 2
+2015-12-10 07:32:10, batch=1: computing condition 367/432; rep = 2
+2015-12-10 07:32:12, batch=2: computing condition 367/432; rep = 3
+2015-12-10 07:32:13, batch=1: computing condition 367/432; rep = 3
+2015-12-10 07:32:15, batch=1: computing condition 367/432; rep = 4
+2015-12-10 07:32:16, batch=2: computing condition 367/432; rep = 4
+2015-12-10 07:32:18, batch=1: computing condition 367/432; rep = 5
+2015-12-10 07:32:19, batch=2: computing condition 367/432; rep = 5
+2015-12-10 07:32:21, NEW CONDITION: computing condition 368/432
+2015-12-10 07:32:21, batch=2: computing condition 368/432; rep = 12015-12-10 07:32:21, batch=1: computing condition 368/432; rep = 1
+
+2015-12-10 07:32:26, batch=2: computing condition 368/432; rep = 2
+2015-12-10 07:32:26, batch=1: computing condition 368/432; rep = 2
+2015-12-10 07:32:31, batch=1: computing condition 368/432; rep = 3
+2015-12-10 07:32:31, batch=2: computing condition 368/432; rep = 3
+2015-12-10 07:32:37, batch=2: computing condition 368/432; rep = 4
+2015-12-10 07:32:37, batch=1: computing condition 368/432; rep = 4
+2015-12-10 07:32:41, batch=1: computing condition 368/432; rep = 5
+2015-12-10 07:32:43, batch=2: computing condition 368/432; rep = 5
+2015-12-10 07:32:48, NEW CONDITION: computing condition 369/432
+2015-12-10 07:32:48, batch=1: computing condition 369/432; rep = 1
+2015-12-10 07:32:48, batch=2: computing condition 369/432; rep = 1
+2015-12-10 07:32:50, batch=1: computing condition 369/432; rep = 2
+2015-12-10 07:32:52, batch=1: computing condition 369/432; rep = 3
+2015-12-10 07:32:52, batch=2: computing condition 369/432; rep = 2
+2015-12-10 07:32:54, batch=2: computing condition 369/432; rep = 3
+2015-12-10 07:32:56, batch=1: computing condition 369/432; rep = 4
+2015-12-10 07:32:58, batch=2: computing condition 369/432; rep = 4
+2015-12-10 07:33:00, batch=1: computing condition 369/432; rep = 5
+2015-12-10 07:33:03, batch=2: computing condition 369/432; rep = 5
+2015-12-10 07:33:07, NEW CONDITION: computing condition 370/432
+2015-12-10 07:33:07, batch=1: computing condition 370/432; rep = 12015-12-10 07:33:07, batch=2: computing condition 370/432; rep = 1
+
+2015-12-10 07:33:14, batch=1: computing condition 370/432; rep = 2
+2015-12-10 07:33:18, batch=2: computing condition 370/432; rep = 2
+2015-12-10 07:33:21, batch=1: computing condition 370/432; rep = 3
+2015-12-10 07:33:27, batch=2: computing condition 370/432; rep = 3
+2015-12-10 07:33:33, batch=1: computing condition 370/432; rep = 4
+2015-12-10 07:33:37, batch=2: computing condition 370/432; rep = 4
+2015-12-10 07:33:45, batch=1: computing condition 370/432; rep = 5
+2015-12-10 07:33:49, batch=2: computing condition 370/432; rep = 5
+2015-12-10 07:33:59, NEW CONDITION: computing condition 371/432
+2015-12-10 07:33:59, batch=1: computing condition 371/432; rep = 1
+2015-12-10 07:33:59, batch=2: computing condition 371/432; rep = 1
+2015-12-10 07:34:11, batch=1: computing condition 371/432; rep = 2
+2015-12-10 07:34:12, batch=2: computing condition 371/432; rep = 2
+2015-12-10 07:34:25, batch=1: computing condition 371/432; rep = 3
+2015-12-10 07:34:27, batch=2: computing condition 371/432; rep = 3
+2015-12-10 07:34:37, batch=1: computing condition 371/432; rep = 4
+2015-12-10 07:34:42, batch=2: computing condition 371/432; rep = 4
+2015-12-10 07:34:51, batch=1: computing condition 371/432; rep = 5
+2015-12-10 07:34:53, batch=2: computing condition 371/432; rep = 5
+2015-12-10 07:35:06, NEW CONDITION: computing condition 372/432
+2015-12-10 07:35:06, batch=1: computing condition 372/432; rep = 1
+2015-12-10 07:35:06, batch=2: computing condition 372/432; rep = 1
+2015-12-10 07:35:32, batch=1: computing condition 372/432; rep = 2
+2015-12-10 07:35:36, batch=2: computing condition 372/432; rep = 2
+2015-12-10 07:36:00, batch=1: computing condition 372/432; rep = 3
+2015-12-10 07:36:06, batch=2: computing condition 372/432; rep = 3
+2015-12-10 07:36:22, batch=1: computing condition 372/432; rep = 4
+2015-12-10 07:36:35, batch=2: computing condition 372/432; rep = 4
+2015-12-10 07:36:46, batch=1: computing condition 372/432; rep = 5
+2015-12-10 07:36:57, batch=2: computing condition 372/432; rep = 5
+2015-12-10 07:37:19, NEW CONDITION: computing condition 373/432
+2015-12-10 07:37:19, batch=1: computing condition 373/432; rep = 1
+2015-12-10 07:37:19, batch=2: computing condition 373/432; rep = 1
+2015-12-10 07:37:21, batch=2: computing condition 373/432; rep = 2
+2015-12-10 07:37:21, batch=1: computing condition 373/432; rep = 2
+2015-12-10 07:37:22, batch=2: computing condition 373/432; rep = 3
+2015-12-10 07:37:23, batch=2: computing condition 373/432; rep = 4
+2015-12-10 07:37:24, batch=1: computing condition 373/432; rep = 3
+2015-12-10 07:37:25, batch=2: computing condition 373/432; rep = 5
+2015-12-10 07:37:27, batch=1: computing condition 373/432; rep = 4
+2015-12-10 07:37:28, batch=1: computing condition 373/432; rep = 5
+2015-12-10 07:37:30, NEW CONDITION: computing condition 374/432
+2015-12-10 07:37:30, batch=2: computing condition 374/432; rep = 12015-12-10 07:37:30, batch=1: computing condition 374/432; rep = 1
+
+2015-12-10 07:37:35, batch=2: computing condition 374/432; rep = 2
+2015-12-10 07:37:36, batch=1: computing condition 374/432; rep = 2
+2015-12-10 07:37:40, batch=1: computing condition 374/432; rep = 3
+2015-12-10 07:37:41, batch=2: computing condition 374/432; rep = 3
+2015-12-10 07:37:45, batch=1: computing condition 374/432; rep = 4
+2015-12-10 07:37:49, batch=2: computing condition 374/432; rep = 4
+2015-12-10 07:37:51, batch=1: computing condition 374/432; rep = 5
+2015-12-10 07:37:53, batch=2: computing condition 374/432; rep = 5
+2015-12-10 07:37:57, NEW CONDITION: computing condition 375/432
+2015-12-10 07:37:57, batch=1: computing condition 375/432; rep = 12015-12-10 07:37:57, batch=2: computing condition 375/432; rep = 1
+
+2015-12-10 07:38:12, batch=1: computing condition 375/432; rep = 2
+2015-12-10 07:38:12, batch=2: computing condition 375/432; rep = 2
+2015-12-10 07:38:24, batch=2: computing condition 375/432; rep = 3
+2015-12-10 07:38:25, batch=1: computing condition 375/432; rep = 3
+2015-12-10 07:38:34, batch=2: computing condition 375/432; rep = 4
+2015-12-10 07:38:38, batch=1: computing condition 375/432; rep = 4
+2015-12-10 07:38:48, batch=1: computing condition 375/432; rep = 5
+2015-12-10 07:38:48, batch=2: computing condition 375/432; rep = 5
+2015-12-10 07:39:01, NEW CONDITION: computing condition 376/432
+2015-12-10 07:39:01, batch=1: computing condition 376/432; rep = 1
+2015-12-10 07:39:01, batch=2: computing condition 376/432; rep = 1
+2015-12-10 07:39:21, batch=2: computing condition 376/432; rep = 2
+2015-12-10 07:39:21, batch=1: computing condition 376/432; rep = 2
+2015-12-10 07:39:38, batch=1: computing condition 376/432; rep = 3
+2015-12-10 07:39:41, batch=2: computing condition 376/432; rep = 3
+2015-12-10 07:39:59, batch=1: computing condition 376/432; rep = 4
+2015-12-10 07:40:00, batch=2: computing condition 376/432; rep = 4
+2015-12-10 07:40:21, batch=1: computing condition 376/432; rep = 5
+2015-12-10 07:40:26, batch=2: computing condition 376/432; rep = 5
+2015-12-10 07:40:47, NEW CONDITION: computing condition 377/432
+2015-12-10 07:40:47, batch=2: computing condition 377/432; rep = 1
+2015-12-10 07:40:47, batch=1: computing condition 377/432; rep = 1
+2015-12-10 07:40:48, batch=1: computing condition 377/432; rep = 2
+2015-12-10 07:40:49, batch=2: computing condition 377/432; rep = 2
+2015-12-10 07:40:50, batch=1: computing condition 377/432; rep = 3
+2015-12-10 07:40:51, batch=1: computing condition 377/432; rep = 4
+2015-12-10 07:40:51, batch=2: computing condition 377/432; rep = 3
+2015-12-10 07:40:52, batch=2: computing condition 377/432; rep = 4
+2015-12-10 07:40:52, batch=1: computing condition 377/432; rep = 5
+2015-12-10 07:40:53, batch=2: computing condition 377/432; rep = 5
+2015-12-10 07:40:53, NEW CONDITION: computing condition 378/432
+2015-12-10 07:40:53, batch=1: computing condition 378/432; rep = 1
+2015-12-10 07:40:53, batch=2: computing condition 378/432; rep = 1
+2015-12-10 07:40:56, batch=2: computing condition 378/432; rep = 2
+2015-12-10 07:40:57, batch=1: computing condition 378/432; rep = 2
+2015-12-10 07:40:58, batch=2: computing condition 378/432; rep = 3
+2015-12-10 07:41:00, batch=1: computing condition 378/432; rep = 3
+2015-12-10 07:41:01, batch=2: computing condition 378/432; rep = 4
+2015-12-10 07:41:03, batch=2: computing condition 378/432; rep = 5
+2015-12-10 07:41:04, batch=1: computing condition 378/432; rep = 4
+2015-12-10 07:41:07, batch=1: computing condition 378/432; rep = 5
+2015-12-10 07:41:09, NEW CONDITION: computing condition 379/432
+2015-12-10 07:41:09, batch=1: computing condition 379/432; rep = 1
+2015-12-10 07:41:09, batch=2: computing condition 379/432; rep = 1
+2015-12-10 07:41:14, batch=2: computing condition 379/432; rep = 2
+2015-12-10 07:41:17, batch=1: computing condition 379/432; rep = 2
+2015-12-10 07:41:19, batch=2: computing condition 379/432; rep = 3
+2015-12-10 07:41:25, batch=1: computing condition 379/432; rep = 3
+2015-12-10 07:41:26, batch=2: computing condition 379/432; rep = 4
+2015-12-10 07:41:32, batch=1: computing condition 379/432; rep = 4
+2015-12-10 07:41:33, batch=2: computing condition 379/432; rep = 5
+2015-12-10 07:41:37, batch=1: computing condition 379/432; rep = 5
+2015-12-10 07:41:42, NEW CONDITION: computing condition 380/432
+2015-12-10 07:41:42, batch=1: computing condition 380/432; rep = 1
+2015-12-10 07:41:42, batch=2: computing condition 380/432; rep = 1
+2015-12-10 07:41:51, batch=1: computing condition 380/432; rep = 2
+2015-12-10 07:41:52, batch=2: computing condition 380/432; rep = 2
+2015-12-10 07:42:01, batch=2: computing condition 380/432; rep = 3
+2015-12-10 07:42:02, batch=1: computing condition 380/432; rep = 3
+2015-12-10 07:42:11, batch=1: computing condition 380/432; rep = 4
+2015-12-10 07:42:11, batch=2: computing condition 380/432; rep = 4
+2015-12-10 07:42:20, batch=2: computing condition 380/432; rep = 5
+2015-12-10 07:42:22, batch=1: computing condition 380/432; rep = 5
+2015-12-10 07:42:33, NEW CONDITION: computing condition 381/432
+2015-12-10 07:42:33, batch=1: computing condition 381/432; rep = 1
+2015-12-10 07:42:33, batch=2: computing condition 381/432; rep = 1
+2015-12-10 07:42:33, batch=2: computing condition 381/432; rep = 2
+2015-12-10 07:42:33, batch=1: computing condition 381/432; rep = 2
+2015-12-10 07:42:34, batch=2: computing condition 381/432; rep = 3
+2015-12-10 07:42:34, batch=1: computing condition 381/432; rep = 3
+2015-12-10 07:42:34, batch=2: computing condition 381/432; rep = 4
+2015-12-10 07:42:35, batch=2: computing condition 381/432; rep = 5
+2015-12-10 07:42:35, batch=1: computing condition 381/432; rep = 4
+2015-12-10 07:42:35, batch=1: computing condition 381/432; rep = 5
+2015-12-10 07:42:36, NEW CONDITION: computing condition 382/432
+2015-12-10 07:42:36, batch=1: computing condition 382/432; rep = 1
+2015-12-10 07:42:36, batch=2: computing condition 382/432; rep = 1
+2015-12-10 07:42:38, batch=1: computing condition 382/432; rep = 2
+2015-12-10 07:42:38, batch=2: computing condition 382/432; rep = 2
+2015-12-10 07:42:39, batch=1: computing condition 382/432; rep = 3
+2015-12-10 07:42:40, batch=2: computing condition 382/432; rep = 3
+2015-12-10 07:42:41, batch=1: computing condition 382/432; rep = 4
+2015-12-10 07:42:42, batch=2: computing condition 382/432; rep = 4
+2015-12-10 07:42:42, batch=1: computing condition 382/432; rep = 5
+2015-12-10 07:42:43, batch=2: computing condition 382/432; rep = 5
+2015-12-10 07:42:45, NEW CONDITION: computing condition 383/432
+2015-12-10 07:42:45, batch=1: computing condition 383/432; rep = 12015-12-10 07:42:45, batch=2: computing condition 383/432; rep = 1
+
+2015-12-10 07:42:49, batch=2: computing condition 383/432; rep = 2
+2015-12-10 07:42:49, batch=1: computing condition 383/432; rep = 2
+2015-12-10 07:42:52, batch=2: computing condition 383/432; rep = 3
+2015-12-10 07:42:52, batch=1: computing condition 383/432; rep = 3
+2015-12-10 07:42:55, batch=2: computing condition 383/432; rep = 4
+2015-12-10 07:42:55, batch=1: computing condition 383/432; rep = 4
+2015-12-10 07:42:58, batch=2: computing condition 383/432; rep = 5
+2015-12-10 07:42:58, batch=1: computing condition 383/432; rep = 5
+2015-12-10 07:43:03, NEW CONDITION: computing condition 384/432
+2015-12-10 07:43:03, batch=1: computing condition 384/432; rep = 1
+2015-12-10 07:43:03, batch=2: computing condition 384/432; rep = 1
+2015-12-10 07:43:09, batch=1: computing condition 384/432; rep = 2
+2015-12-10 07:43:09, batch=2: computing condition 384/432; rep = 2
+2015-12-10 07:43:14, batch=2: computing condition 384/432; rep = 3
+2015-12-10 07:43:16, batch=1: computing condition 384/432; rep = 3
+2015-12-10 07:43:22, batch=2: computing condition 384/432; rep = 4
+2015-12-10 07:43:25, batch=1: computing condition 384/432; rep = 4
+2015-12-10 07:43:31, batch=2: computing condition 384/432; rep = 5
+2015-12-10 07:43:32, batch=1: computing condition 384/432; rep = 5
+2015-12-10 07:43:41, NEW CONDITION: computing condition 385/432
+2015-12-10 07:43:41, batch=1: computing condition 385/432; rep = 1
+2015-12-10 07:43:41, batch=2: computing condition 385/432; rep = 1
+2015-12-10 07:43:42, batch=1: computing condition 385/432; rep = 2
+2015-12-10 07:43:42, batch=2: computing condition 385/432; rep = 2
+2015-12-10 07:43:42, batch=2: computing condition 385/432; rep = 3
+2015-12-10 07:43:42, batch=1: computing condition 385/432; rep = 3
+2015-12-10 07:43:42, batch=1: computing condition 385/432; rep = 4
+2015-12-10 07:43:42, batch=2: computing condition 385/432; rep = 4
+2015-12-10 07:43:42, batch=1: computing condition 385/432; rep = 5
+2015-12-10 07:43:42, batch=2: computing condition 385/432; rep = 5
+2015-12-10 07:43:42, NEW CONDITION: computing condition 386/432
+2015-12-10 07:43:42, batch=1: computing condition 386/432; rep = 1
+2015-12-10 07:43:42, batch=2: computing condition 386/432; rep = 1
+2015-12-10 07:43:42, batch=1: computing condition 386/432; rep = 2
+2015-12-10 07:43:42, batch=2: computing condition 386/432; rep = 2
+2015-12-10 07:43:42, batch=1: computing condition 386/432; rep = 3
+2015-12-10 07:43:42, batch=2: computing condition 386/432; rep = 3
+2015-12-10 07:43:43, batch=2: computing condition 386/432; rep = 4
+2015-12-10 07:43:43, batch=1: computing condition 386/432; rep = 4
+2015-12-10 07:43:43, batch=2: computing condition 386/432; rep = 5
+2015-12-10 07:43:43, batch=1: computing condition 386/432; rep = 5
+2015-12-10 07:43:43, NEW CONDITION: computing condition 387/432
+2015-12-10 07:43:43, batch=1: computing condition 387/432; rep = 1
+2015-12-10 07:43:43, batch=2: computing condition 387/432; rep = 1
+2015-12-10 07:43:43, batch=2: computing condition 387/432; rep = 2
+2015-12-10 07:43:43, batch=1: computing condition 387/432; rep = 2
+2015-12-10 07:43:44, batch=2: computing condition 387/432; rep = 3
+2015-12-10 07:43:44, batch=1: computing condition 387/432; rep = 3
+2015-12-10 07:43:44, batch=2: computing condition 387/432; rep = 4
+2015-12-10 07:43:44, batch=1: computing condition 387/432; rep = 4
+2015-12-10 07:43:44, batch=2: computing condition 387/432; rep = 5
+2015-12-10 07:43:44, batch=1: computing condition 387/432; rep = 5
+2015-12-10 07:43:44, NEW CONDITION: computing condition 388/432
+2015-12-10 07:43:44, batch=1: computing condition 388/432; rep = 1
+2015-12-10 07:43:44, batch=2: computing condition 388/432; rep = 1
+2015-12-10 07:43:45, batch=2: computing condition 388/432; rep = 2
+2015-12-10 07:43:45, batch=1: computing condition 388/432; rep = 2
+2015-12-10 07:43:45, batch=2: computing condition 388/432; rep = 3
+2015-12-10 07:43:45, batch=1: computing condition 388/432; rep = 3
+2015-12-10 07:43:46, batch=2: computing condition 388/432; rep = 4
+2015-12-10 07:43:46, batch=1: computing condition 388/432; rep = 4
+2015-12-10 07:43:46, batch=2: computing condition 388/432; rep = 5
+2015-12-10 07:43:46, batch=1: computing condition 388/432; rep = 5
+2015-12-10 07:43:47, NEW CONDITION: computing condition 389/432
+2015-12-10 07:43:47, batch=1: computing condition 389/432; rep = 1
+2015-12-10 07:43:47, batch=2: computing condition 389/432; rep = 1
+2015-12-10 07:43:47, batch=2: computing condition 389/432; rep = 2
+2015-12-10 07:43:47, batch=1: computing condition 389/432; rep = 2
+2015-12-10 07:43:47, batch=2: computing condition 389/432; rep = 3
+2015-12-10 07:43:47, batch=1: computing condition 389/432; rep = 3
+2015-12-10 07:43:47, batch=2: computing condition 389/432; rep = 4
+2015-12-10 07:43:47, batch=2: computing condition 389/432; rep = 5
+2015-12-10 07:43:47, batch=1: computing condition 389/432; rep = 4
+2015-12-10 07:43:47, batch=1: computing condition 389/432; rep = 5
+2015-12-10 07:43:47, NEW CONDITION: computing condition 390/432
+2015-12-10 07:43:47, batch=2: computing condition 390/432; rep = 12015-12-10 07:43:47, batch=1: computing condition 390/432; rep = 1
+
+2015-12-10 07:43:47, batch=2: computing condition 390/432; rep = 2
+2015-12-10 07:43:48, batch=1: computing condition 390/432; rep = 2
+2015-12-10 07:43:48, batch=2: computing condition 390/432; rep = 3
+2015-12-10 07:43:48, batch=1: computing condition 390/432; rep = 3
+2015-12-10 07:43:48, batch=2: computing condition 390/432; rep = 4
+2015-12-10 07:43:48, batch=1: computing condition 390/432; rep = 4
+2015-12-10 07:43:48, batch=2: computing condition 390/432; rep = 5
+2015-12-10 07:43:48, batch=1: computing condition 390/432; rep = 5
+2015-12-10 07:43:48, NEW CONDITION: computing condition 391/432
+2015-12-10 07:43:48, batch=1: computing condition 391/432; rep = 1
+2015-12-10 07:43:48, batch=2: computing condition 391/432; rep = 1
+2015-12-10 07:43:48, batch=1: computing condition 391/432; rep = 2
+2015-12-10 07:43:48, batch=2: computing condition 391/432; rep = 2
+2015-12-10 07:43:49, batch=1: computing condition 391/432; rep = 3
+2015-12-10 07:43:49, batch=2: computing condition 391/432; rep = 3
+2015-12-10 07:43:49, batch=1: computing condition 391/432; rep = 4
+2015-12-10 07:43:49, batch=2: computing condition 391/432; rep = 4
+2015-12-10 07:43:49, batch=1: computing condition 391/432; rep = 5
+2015-12-10 07:43:49, batch=2: computing condition 391/432; rep = 5
+2015-12-10 07:43:49, NEW CONDITION: computing condition 392/432
+2015-12-10 07:43:49, batch=1: computing condition 392/432; rep = 1
+2015-12-10 07:43:49, batch=2: computing condition 392/432; rep = 1
+2015-12-10 07:43:50, batch=1: computing condition 392/432; rep = 2
+2015-12-10 07:43:50, batch=2: computing condition 392/432; rep = 2
+2015-12-10 07:43:50, batch=2: computing condition 392/432; rep = 3
+2015-12-10 07:43:50, batch=1: computing condition 392/432; rep = 3
+2015-12-10 07:43:51, batch=2: computing condition 392/432; rep = 4
+2015-12-10 07:43:51, batch=1: computing condition 392/432; rep = 4
+2015-12-10 07:43:51, batch=1: computing condition 392/432; rep = 5
+2015-12-10 07:43:51, batch=2: computing condition 392/432; rep = 5
+2015-12-10 07:43:51, NEW CONDITION: computing condition 393/432
+2015-12-10 07:43:51, batch=1: computing condition 393/432; rep = 1
+2015-12-10 07:43:51, batch=2: computing condition 393/432; rep = 1
+2015-12-10 07:43:51, batch=1: computing condition 393/432; rep = 2
+2015-12-10 07:43:51, batch=2: computing condition 393/432; rep = 2
+2015-12-10 07:43:51, batch=1: computing condition 393/432; rep = 3
+2015-12-10 07:43:51, batch=2: computing condition 393/432; rep = 3
+2015-12-10 07:43:51, batch=1: computing condition 393/432; rep = 4
+2015-12-10 07:43:52, batch=2: computing condition 393/432; rep = 4
+2015-12-10 07:43:52, batch=1: computing condition 393/432; rep = 5
+2015-12-10 07:43:52, batch=2: computing condition 393/432; rep = 5
+2015-12-10 07:43:52, NEW CONDITION: computing condition 394/432
+2015-12-10 07:43:52, batch=1: computing condition 394/432; rep = 1
+2015-12-10 07:43:52, batch=2: computing condition 394/432; rep = 1
+2015-12-10 07:43:52, batch=1: computing condition 394/432; rep = 2
+2015-12-10 07:43:52, batch=2: computing condition 394/432; rep = 2
+2015-12-10 07:43:52, batch=1: computing condition 394/432; rep = 3
+2015-12-10 07:43:52, batch=2: computing condition 394/432; rep = 3
+2015-12-10 07:43:52, batch=1: computing condition 394/432; rep = 4
+2015-12-10 07:43:52, batch=2: computing condition 394/432; rep = 4
+2015-12-10 07:43:52, batch=1: computing condition 394/432; rep = 5
+2015-12-10 07:43:52, batch=2: computing condition 394/432; rep = 5
+2015-12-10 07:43:52, NEW CONDITION: computing condition 395/432
+2015-12-10 07:43:52, batch=1: computing condition 395/432; rep = 1
+2015-12-10 07:43:52, batch=2: computing condition 395/432; rep = 1
+2015-12-10 07:43:53, batch=1: computing condition 395/432; rep = 2
+2015-12-10 07:43:53, batch=2: computing condition 395/432; rep = 2
+2015-12-10 07:43:53, batch=1: computing condition 395/432; rep = 3
+2015-12-10 07:43:53, batch=2: computing condition 395/432; rep = 3
+2015-12-10 07:43:53, batch=1: computing condition 395/432; rep = 4
+2015-12-10 07:43:53, batch=2: computing condition 395/432; rep = 4
+2015-12-10 07:43:53, batch=1: computing condition 395/432; rep = 5
+2015-12-10 07:43:53, batch=2: computing condition 395/432; rep = 5
+2015-12-10 07:43:53, NEW CONDITION: computing condition 396/432
+2015-12-10 07:43:53, batch=2: computing condition 396/432; rep = 1
+2015-12-10 07:43:53, batch=1: computing condition 396/432; rep = 1
+2015-12-10 07:43:54, batch=1: computing condition 396/432; rep = 2
+2015-12-10 07:43:54, batch=2: computing condition 396/432; rep = 2
+2015-12-10 07:43:54, batch=1: computing condition 396/432; rep = 3
+2015-12-10 07:43:54, batch=2: computing condition 396/432; rep = 3
+2015-12-10 07:43:54, batch=1: computing condition 396/432; rep = 4
+2015-12-10 07:43:54, batch=2: computing condition 396/432; rep = 4
+2015-12-10 07:43:54, batch=1: computing condition 396/432; rep = 5
+2015-12-10 07:43:54, batch=2: computing condition 396/432; rep = 5
+2015-12-10 07:43:54, NEW CONDITION: computing condition 397/432
+2015-12-10 07:43:54, batch=2: computing condition 397/432; rep = 1
+2015-12-10 07:43:54, batch=1: computing condition 397/432; rep = 1
+2015-12-10 07:43:55, batch=2: computing condition 397/432; rep = 2
+2015-12-10 07:43:55, batch=1: computing condition 397/432; rep = 2
+2015-12-10 07:43:55, batch=2: computing condition 397/432; rep = 3
+2015-12-10 07:43:55, batch=1: computing condition 397/432; rep = 3
+2015-12-10 07:43:55, batch=2: computing condition 397/432; rep = 4
+2015-12-10 07:43:55, batch=1: computing condition 397/432; rep = 4
+2015-12-10 07:43:55, batch=2: computing condition 397/432; rep = 5
+2015-12-10 07:43:55, batch=1: computing condition 397/432; rep = 5
+2015-12-10 07:43:55, NEW CONDITION: computing condition 398/432
+2015-12-10 07:43:55, batch=1: computing condition 398/432; rep = 1
+2015-12-10 07:43:55, batch=2: computing condition 398/432; rep = 1
+2015-12-10 07:43:55, batch=2: computing condition 398/432; rep = 2
+2015-12-10 07:43:55, batch=1: computing condition 398/432; rep = 2
+2015-12-10 07:43:55, batch=2: computing condition 398/432; rep = 3
+2015-12-10 07:43:55, batch=1: computing condition 398/432; rep = 3
+2015-12-10 07:43:55, batch=2: computing condition 398/432; rep = 4
+2015-12-10 07:43:55, batch=1: computing condition 398/432; rep = 4
+2015-12-10 07:43:55, batch=2: computing condition 398/432; rep = 5
+2015-12-10 07:43:55, batch=1: computing condition 398/432; rep = 5
+2015-12-10 07:43:55, NEW CONDITION: computing condition 399/432
+2015-12-10 07:43:55, batch=1: computing condition 399/432; rep = 1
+2015-12-10 07:43:55, batch=2: computing condition 399/432; rep = 1
+2015-12-10 07:43:55, batch=1: computing condition 399/432; rep = 2
+2015-12-10 07:43:55, batch=2: computing condition 399/432; rep = 2
+2015-12-10 07:43:56, batch=1: computing condition 399/432; rep = 3
+2015-12-10 07:43:56, batch=2: computing condition 399/432; rep = 3
+2015-12-10 07:43:56, batch=1: computing condition 399/432; rep = 4
+2015-12-10 07:43:56, batch=2: computing condition 399/432; rep = 4
+2015-12-10 07:43:56, batch=1: computing condition 399/432; rep = 5
+2015-12-10 07:43:56, batch=2: computing condition 399/432; rep = 5
+2015-12-10 07:43:56, NEW CONDITION: computing condition 400/432
+2015-12-10 07:43:56, batch=1: computing condition 400/432; rep = 12015-12-10 07:43:56, batch=2: computing condition 400/432; rep = 1
+
+2015-12-10 07:43:56, batch=2: computing condition 400/432; rep = 2
+2015-12-10 07:43:56, batch=1: computing condition 400/432; rep = 2
+2015-12-10 07:43:56, batch=1: computing condition 400/432; rep = 3
+2015-12-10 07:43:56, batch=2: computing condition 400/432; rep = 3
+2015-12-10 07:43:56, batch=1: computing condition 400/432; rep = 4
+2015-12-10 07:43:56, batch=2: computing condition 400/432; rep = 4
+2015-12-10 07:43:57, batch=2: computing condition 400/432; rep = 5
+2015-12-10 07:43:57, batch=1: computing condition 400/432; rep = 5
+2015-12-10 07:43:57, NEW CONDITION: computing condition 401/432
+2015-12-10 07:43:57, batch=1: computing condition 401/432; rep = 1
+2015-12-10 07:43:57, batch=2: computing condition 401/432; rep = 1
+2015-12-10 07:43:59, batch=1: computing condition 401/432; rep = 2
+2015-12-10 07:43:59, batch=2: computing condition 401/432; rep = 2
+2015-12-10 07:44:00, batch=2: computing condition 401/432; rep = 3
+2015-12-10 07:44:01, batch=2: computing condition 401/432; rep = 4
+2015-12-10 07:44:01, batch=1: computing condition 401/432; rep = 3
+2015-12-10 07:44:04, batch=2: computing condition 401/432; rep = 5
+2015-12-10 07:44:04, batch=1: computing condition 401/432; rep = 4
+2015-12-10 07:44:08, batch=1: computing condition 401/432; rep = 5
+2015-12-10 07:44:12, NEW CONDITION: computing condition 402/432
+2015-12-10 07:44:12, batch=1: computing condition 402/432; rep = 1
+2015-12-10 07:44:12, batch=2: computing condition 402/432; rep = 1
+2015-12-10 07:44:21, batch=2: computing condition 402/432; rep = 2
+2015-12-10 07:44:22, batch=1: computing condition 402/432; rep = 2
+2015-12-10 07:44:29, batch=2: computing condition 402/432; rep = 3
+2015-12-10 07:44:30, batch=1: computing condition 402/432; rep = 3
+2015-12-10 07:44:38, batch=2: computing condition 402/432; rep = 4
+2015-12-10 07:44:39, batch=1: computing condition 402/432; rep = 4
+2015-12-10 07:44:47, batch=2: computing condition 402/432; rep = 5
+2015-12-10 07:44:47, batch=1: computing condition 402/432; rep = 5
+2015-12-10 07:44:55, NEW CONDITION: computing condition 403/432
+2015-12-10 07:44:55, batch=1: computing condition 403/432; rep = 1
+2015-12-10 07:44:55, batch=2: computing condition 403/432; rep = 1
+2015-12-10 07:45:11, batch=2: computing condition 403/432; rep = 2
+2015-12-10 07:45:16, batch=1: computing condition 403/432; rep = 2
+2015-12-10 07:45:45, batch=2: computing condition 403/432; rep = 3
+2015-12-10 07:45:48, batch=1: computing condition 403/432; rep = 3
+2015-12-10 07:46:04, batch=1: computing condition 403/432; rep = 4
+2015-12-10 07:46:06, batch=2: computing condition 403/432; rep = 4
+2015-12-10 07:46:21, batch=1: computing condition 403/432; rep = 5
+2015-12-10 07:46:24, batch=2: computing condition 403/432; rep = 5
+2015-12-10 07:46:42, NEW CONDITION: computing condition 404/432
+2015-12-10 07:46:42, batch=2: computing condition 404/432; rep = 1
+2015-12-10 07:46:42, batch=1: computing condition 404/432; rep = 1
+2015-12-10 07:47:17, batch=2: computing condition 404/432; rep = 2
+2015-12-10 07:47:20, batch=1: computing condition 404/432; rep = 2
+2015-12-10 07:47:47, batch=1: computing condition 404/432; rep = 3
+2015-12-10 07:47:50, batch=2: computing condition 404/432; rep = 3
+2015-12-10 07:48:19, batch=1: computing condition 404/432; rep = 4
+2015-12-10 07:48:27, batch=2: computing condition 404/432; rep = 4
+2015-12-10 07:48:46, batch=1: computing condition 404/432; rep = 5
+2015-12-10 07:48:54, batch=2: computing condition 404/432; rep = 5
+2015-12-10 07:49:14, NEW CONDITION: computing condition 405/432
+2015-12-10 07:49:14, batch=1: computing condition 405/432; rep = 1
+2015-12-10 07:49:14, batch=2: computing condition 405/432; rep = 1
+2015-12-10 07:49:16, batch=2: computing condition 405/432; rep = 2
+2015-12-10 07:49:17, batch=1: computing condition 405/432; rep = 2
+2015-12-10 07:49:18, batch=2: computing condition 405/432; rep = 3
+2015-12-10 07:49:18, batch=1: computing condition 405/432; rep = 3
+2015-12-10 07:49:19, batch=2: computing condition 405/432; rep = 4
+2015-12-10 07:49:20, batch=2: computing condition 405/432; rep = 5
+2015-12-10 07:49:21, batch=1: computing condition 405/432; rep = 4
+2015-12-10 07:49:23, batch=1: computing condition 405/432; rep = 5
+2015-12-10 07:49:24, NEW CONDITION: computing condition 406/432
+2015-12-10 07:49:24, batch=1: computing condition 406/432; rep = 1
+2015-12-10 07:49:24, batch=2: computing condition 406/432; rep = 1
+2015-12-10 07:49:28, batch=2: computing condition 406/432; rep = 2
+2015-12-10 07:49:28, batch=1: computing condition 406/432; rep = 2
+2015-12-10 07:49:34, batch=2: computing condition 406/432; rep = 3
+2015-12-10 07:49:34, batch=1: computing condition 406/432; rep = 3
+2015-12-10 07:49:37, batch=2: computing condition 406/432; rep = 4
+2015-12-10 07:49:38, batch=1: computing condition 406/432; rep = 4
+2015-12-10 07:49:42, batch=1: computing condition 406/432; rep = 5
+2015-12-10 07:49:43, batch=2: computing condition 406/432; rep = 5
+2015-12-10 07:49:50, NEW CONDITION: computing condition 407/432
+2015-12-10 07:49:50, batch=1: computing condition 407/432; rep = 1
+2015-12-10 07:49:50, batch=2: computing condition 407/432; rep = 1
+2015-12-10 07:50:01, batch=1: computing condition 407/432; rep = 2
+2015-12-10 07:50:03, batch=2: computing condition 407/432; rep = 2
+2015-12-10 07:50:14, batch=2: computing condition 407/432; rep = 3
+2015-12-10 07:50:17, batch=1: computing condition 407/432; rep = 3
+2015-12-10 07:50:24, batch=2: computing condition 407/432; rep = 4
+2015-12-10 07:50:29, batch=1: computing condition 407/432; rep = 4
+2015-12-10 07:50:39, batch=1: computing condition 407/432; rep = 5
+2015-12-10 07:50:40, batch=2: computing condition 407/432; rep = 5
+2015-12-10 07:50:49, NEW CONDITION: computing condition 408/432
+2015-12-10 07:50:49, batch=1: computing condition 408/432; rep = 1
+2015-12-10 07:50:49, batch=2: computing condition 408/432; rep = 1
+2015-12-10 07:51:04, batch=2: computing condition 408/432; rep = 2
+2015-12-10 07:51:12, batch=1: computing condition 408/432; rep = 2
+2015-12-10 07:51:19, batch=2: computing condition 408/432; rep = 3
+2015-12-10 07:51:33, batch=1: computing condition 408/432; rep = 3
+2015-12-10 07:51:37, batch=2: computing condition 408/432; rep = 4
+2015-12-10 07:51:52, batch=2: computing condition 408/432; rep = 5
+2015-12-10 07:51:52, batch=1: computing condition 408/432; rep = 4
+2015-12-10 07:52:02, batch=1: computing condition 408/432; rep = 5
+2015-12-10 07:52:13, NEW CONDITION: computing condition 409/432
+2015-12-10 07:52:13, batch=1: computing condition 409/432; rep = 1
+2015-12-10 07:52:13, batch=2: computing condition 409/432; rep = 1
+2015-12-10 07:52:14, batch=1: computing condition 409/432; rep = 2
+2015-12-10 07:52:14, batch=2: computing condition 409/432; rep = 2
+2015-12-10 07:52:14, batch=2: computing condition 409/432; rep = 3
+2015-12-10 07:52:15, batch=2: computing condition 409/432; rep = 4
+2015-12-10 07:52:15, batch=1: computing condition 409/432; rep = 3
+2015-12-10 07:52:16, batch=1: computing condition 409/432; rep = 4
+2015-12-10 07:52:16, batch=2: computing condition 409/432; rep = 5
+2015-12-10 07:52:17, batch=1: computing condition 409/432; rep = 5
+2015-12-10 07:52:18, NEW CONDITION: computing condition 410/432
+2015-12-10 07:52:18, batch=1: computing condition 410/432; rep = 1
+2015-12-10 07:52:18, batch=2: computing condition 410/432; rep = 1
+2015-12-10 07:52:21, batch=1: computing condition 410/432; rep = 2
+2015-12-10 07:52:22, batch=2: computing condition 410/432; rep = 2
+2015-12-10 07:52:24, batch=2: computing condition 410/432; rep = 3
+2015-12-10 07:52:24, batch=1: computing condition 410/432; rep = 3
+2015-12-10 07:52:26, batch=2: computing condition 410/432; rep = 4
+2015-12-10 07:52:27, batch=1: computing condition 410/432; rep = 4
+2015-12-10 07:52:28, batch=2: computing condition 410/432; rep = 5
+2015-12-10 07:52:30, batch=1: computing condition 410/432; rep = 5
+2015-12-10 07:52:32, NEW CONDITION: computing condition 411/432
+2015-12-10 07:52:32, batch=1: computing condition 411/432; rep = 1
+2015-12-10 07:52:32, batch=2: computing condition 411/432; rep = 1
+2015-12-10 07:52:40, batch=2: computing condition 411/432; rep = 2
+2015-12-10 07:52:41, batch=1: computing condition 411/432; rep = 2
+2015-12-10 07:52:46, batch=2: computing condition 411/432; rep = 3
+2015-12-10 07:52:47, batch=1: computing condition 411/432; rep = 3
+2015-12-10 07:52:53, batch=2: computing condition 411/432; rep = 4
+2015-12-10 07:52:57, batch=1: computing condition 411/432; rep = 4
+2015-12-10 07:52:59, batch=2: computing condition 411/432; rep = 5
+2015-12-10 07:53:04, batch=1: computing condition 411/432; rep = 5
+2015-12-10 07:53:09, NEW CONDITION: computing condition 412/432
+2015-12-10 07:53:09, batch=1: computing condition 412/432; rep = 1
+2015-12-10 07:53:09, batch=2: computing condition 412/432; rep = 1
+2015-12-10 07:53:18, batch=1: computing condition 412/432; rep = 2
+2015-12-10 07:53:20, batch=2: computing condition 412/432; rep = 2
+2015-12-10 07:53:28, batch=1: computing condition 412/432; rep = 3
+2015-12-10 07:53:29, batch=2: computing condition 412/432; rep = 3
+2015-12-10 07:53:36, batch=1: computing condition 412/432; rep = 4
+2015-12-10 07:53:37, batch=2: computing condition 412/432; rep = 4
+2015-12-10 07:53:46, batch=1: computing condition 412/432; rep = 5
+2015-12-10 07:53:48, batch=2: computing condition 412/432; rep = 5
+2015-12-10 07:53:57, NEW CONDITION: computing condition 413/432
+2015-12-10 07:53:57, batch=2: computing condition 413/432; rep = 12015-12-10 07:53:57, batch=1: computing condition 413/432; rep = 1
+
+2015-12-10 07:53:58, batch=2: computing condition 413/432; rep = 2
+2015-12-10 07:53:58, batch=1: computing condition 413/432; rep = 2
+2015-12-10 07:53:58, batch=1: computing condition 413/432; rep = 3
+2015-12-10 07:53:58, batch=2: computing condition 413/432; rep = 3
+2015-12-10 07:53:58, batch=1: computing condition 413/432; rep = 4
+2015-12-10 07:53:59, batch=2: computing condition 413/432; rep = 4
+2015-12-10 07:53:59, batch=1: computing condition 413/432; rep = 5
+2015-12-10 07:53:59, batch=2: computing condition 413/432; rep = 5
+2015-12-10 07:53:59, NEW CONDITION: computing condition 414/432
+2015-12-10 07:53:59, batch=2: computing condition 414/432; rep = 1
+2015-12-10 07:53:59, batch=1: computing condition 414/432; rep = 1
+2015-12-10 07:54:01, batch=1: computing condition 414/432; rep = 2
+2015-12-10 07:54:01, batch=2: computing condition 414/432; rep = 2
+2015-12-10 07:54:03, batch=2: computing condition 414/432; rep = 3
+2015-12-10 07:54:03, batch=1: computing condition 414/432; rep = 3
+2015-12-10 07:54:04, batch=2: computing condition 414/432; rep = 4
+2015-12-10 07:54:04, batch=1: computing condition 414/432; rep = 4
+2015-12-10 07:54:05, batch=2: computing condition 414/432; rep = 5
+2015-12-10 07:54:06, batch=1: computing condition 414/432; rep = 5
+2015-12-10 07:54:07, NEW CONDITION: computing condition 415/432
+2015-12-10 07:54:07, batch=1: computing condition 415/432; rep = 1
+2015-12-10 07:54:07, batch=2: computing condition 415/432; rep = 1
+2015-12-10 07:54:10, batch=1: computing condition 415/432; rep = 2
+2015-12-10 07:54:10, batch=2: computing condition 415/432; rep = 2
+2015-12-10 07:54:12, batch=1: computing condition 415/432; rep = 3
+2015-12-10 07:54:14, batch=2: computing condition 415/432; rep = 3
+2015-12-10 07:54:15, batch=1: computing condition 415/432; rep = 4
+2015-12-10 07:54:18, batch=2: computing condition 415/432; rep = 4
+2015-12-10 07:54:18, batch=1: computing condition 415/432; rep = 5
+2015-12-10 07:54:21, batch=2: computing condition 415/432; rep = 5
+2015-12-10 07:54:23, NEW CONDITION: computing condition 416/432
+2015-12-10 07:54:23, batch=1: computing condition 416/432; rep = 1
+2015-12-10 07:54:23, batch=2: computing condition 416/432; rep = 1
+2015-12-10 07:54:28, batch=1: computing condition 416/432; rep = 2
+2015-12-10 07:54:29, batch=2: computing condition 416/432; rep = 2
+2015-12-10 07:54:33, batch=2: computing condition 416/432; rep = 3
+2015-12-10 07:54:34, batch=1: computing condition 416/432; rep = 3
+2015-12-10 07:54:38, batch=1: computing condition 416/432; rep = 4
+2015-12-10 07:54:38, batch=2: computing condition 416/432; rep = 4
+2015-12-10 07:54:43, batch=2: computing condition 416/432; rep = 5
+2015-12-10 07:54:43, batch=1: computing condition 416/432; rep = 5
+2015-12-10 07:54:48, NEW CONDITION: computing condition 417/432
+2015-12-10 07:54:48, batch=1: computing condition 417/432; rep = 1
+2015-12-10 07:54:48, batch=2: computing condition 417/432; rep = 1
+2015-12-10 07:54:54, batch=2: computing condition 417/432; rep = 2
+2015-12-10 07:54:54, batch=1: computing condition 417/432; rep = 2
+2015-12-10 07:54:56, batch=2: computing condition 417/432; rep = 3
+2015-12-10 07:54:56, batch=1: computing condition 417/432; rep = 3
+2015-12-10 07:54:59, batch=2: computing condition 417/432; rep = 4
+2015-12-10 07:55:00, batch=1: computing condition 417/432; rep = 4
+2015-12-10 07:55:02, batch=2: computing condition 417/432; rep = 5
+2015-12-10 07:55:04, batch=1: computing condition 417/432; rep = 5
+2015-12-10 07:55:06, NEW CONDITION: computing condition 418/432
+2015-12-10 07:55:06, batch=2: computing condition 418/432; rep = 1
+2015-12-10 07:55:06, batch=1: computing condition 418/432; rep = 1
+2015-12-10 07:55:14, batch=1: computing condition 418/432; rep = 2
+2015-12-10 07:55:14, batch=2: computing condition 418/432; rep = 2
+2015-12-10 07:55:25, batch=2: computing condition 418/432; rep = 3
+2015-12-10 07:55:30, batch=1: computing condition 418/432; rep = 3
+2015-12-10 07:55:38, batch=2: computing condition 418/432; rep = 4
+2015-12-10 07:55:40, batch=1: computing condition 418/432; rep = 4
+2015-12-10 07:55:44, batch=2: computing condition 418/432; rep = 5
+2015-12-10 07:55:47, batch=1: computing condition 418/432; rep = 5
+2015-12-10 07:55:56, NEW CONDITION: computing condition 419/432
+2015-12-10 07:55:56, batch=1: computing condition 419/432; rep = 1
+2015-12-10 07:55:56, batch=2: computing condition 419/432; rep = 1
+2015-12-10 07:56:16, batch=1: computing condition 419/432; rep = 2
+2015-12-10 07:56:21, batch=2: computing condition 419/432; rep = 2
+2015-12-10 07:56:36, batch=1: computing condition 419/432; rep = 3
+2015-12-10 07:56:40, batch=2: computing condition 419/432; rep = 3
+2015-12-10 07:56:54, batch=1: computing condition 419/432; rep = 4
+2015-12-10 07:56:57, batch=2: computing condition 419/432; rep = 4
+2015-12-10 07:57:14, batch=1: computing condition 419/432; rep = 5
+2015-12-10 07:57:17, batch=2: computing condition 419/432; rep = 5
+2015-12-10 07:57:35, NEW CONDITION: computing condition 420/432
+2015-12-10 07:57:35, batch=1: computing condition 420/432; rep = 1
+2015-12-10 07:57:35, batch=2: computing condition 420/432; rep = 1
+2015-12-10 07:58:07, batch=2: computing condition 420/432; rep = 2
+2015-12-10 07:58:10, batch=1: computing condition 420/432; rep = 2
+2015-12-10 07:58:34, batch=2: computing condition 420/432; rep = 3
+2015-12-10 07:58:38, batch=1: computing condition 420/432; rep = 3
+2015-12-10 07:59:06, batch=2: computing condition 420/432; rep = 4
+2015-12-10 07:59:07, batch=1: computing condition 420/432; rep = 4
+2015-12-10 07:59:37, batch=1: computing condition 420/432; rep = 5
+2015-12-10 07:59:38, batch=2: computing condition 420/432; rep = 5
+2015-12-10 08:00:09, NEW CONDITION: computing condition 421/432
+2015-12-10 08:00:09, batch=1: computing condition 421/432; rep = 1
+2015-12-10 08:00:09, batch=2: computing condition 421/432; rep = 1
+2015-12-10 08:00:11, batch=1: computing condition 421/432; rep = 2
+2015-12-10 08:00:11, batch=2: computing condition 421/432; rep = 2
+2015-12-10 08:00:12, batch=2: computing condition 421/432; rep = 3
+2015-12-10 08:00:13, batch=1: computing condition 421/432; rep = 3
+2015-12-10 08:00:14, batch=1: computing condition 421/432; rep = 4
+2015-12-10 08:00:14, batch=2: computing condition 421/432; rep = 4
+2015-12-10 08:00:16, batch=2: computing condition 421/432; rep = 5
+2015-12-10 08:00:16, batch=1: computing condition 421/432; rep = 5
+2015-12-10 08:00:17, NEW CONDITION: computing condition 422/432
+2015-12-10 08:00:17, batch=1: computing condition 422/432; rep = 1
+2015-12-10 08:00:17, batch=2: computing condition 422/432; rep = 1
+2015-12-10 08:00:23, batch=2: computing condition 422/432; rep = 2
+2015-12-10 08:00:24, batch=1: computing condition 422/432; rep = 2
+2015-12-10 08:00:30, batch=2: computing condition 422/432; rep = 3
+2015-12-10 08:00:30, batch=1: computing condition 422/432; rep = 3
+2015-12-10 08:00:35, batch=2: computing condition 422/432; rep = 4
+2015-12-10 08:00:37, batch=1: computing condition 422/432; rep = 4
+2015-12-10 08:00:42, batch=1: computing condition 422/432; rep = 5
+2015-12-10 08:00:42, batch=2: computing condition 422/432; rep = 5
+2015-12-10 08:00:48, NEW CONDITION: computing condition 423/432
+2015-12-10 08:00:48, batch=1: computing condition 423/432; rep = 1
+2015-12-10 08:00:48, batch=2: computing condition 423/432; rep = 1
+2015-12-10 08:01:02, batch=2: computing condition 423/432; rep = 2
+2015-12-10 08:01:03, batch=1: computing condition 423/432; rep = 2
+2015-12-10 08:01:13, batch=2: computing condition 423/432; rep = 3
+2015-12-10 08:01:14, batch=1: computing condition 423/432; rep = 3
+2015-12-10 08:01:24, batch=2: computing condition 423/432; rep = 4
+2015-12-10 08:01:25, batch=1: computing condition 423/432; rep = 4
+2015-12-10 08:01:34, batch=1: computing condition 423/432; rep = 5
+2015-12-10 08:01:37, batch=2: computing condition 423/432; rep = 5
+2015-12-10 08:01:49, NEW CONDITION: computing condition 424/432
+2015-12-10 08:01:49, batch=1: computing condition 424/432; rep = 12015-12-10 08:01:49, batch=2: computing condition 424/432; rep = 1
+
+2015-12-10 08:02:09, batch=2: computing condition 424/432; rep = 2
+2015-12-10 08:02:11, batch=1: computing condition 424/432; rep = 2
+2015-12-10 08:02:27, batch=2: computing condition 424/432; rep = 3
+2015-12-10 08:02:34, batch=1: computing condition 424/432; rep = 3
+2015-12-10 08:02:45, batch=2: computing condition 424/432; rep = 4
+2015-12-10 08:02:52, batch=1: computing condition 424/432; rep = 4
+2015-12-10 08:03:03, batch=2: computing condition 424/432; rep = 5
+2015-12-10 08:03:10, batch=1: computing condition 424/432; rep = 5
+2015-12-10 08:03:34, NEW CONDITION: computing condition 425/432
+2015-12-10 08:03:34, batch=1: computing condition 425/432; rep = 1
+2015-12-10 08:03:34, batch=2: computing condition 425/432; rep = 1
+2015-12-10 08:03:35, batch=1: computing condition 425/432; rep = 2
+2015-12-10 08:03:36, batch=2: computing condition 425/432; rep = 2
+2015-12-10 08:03:36, batch=2: computing condition 425/432; rep = 3
+2015-12-10 08:03:36, batch=1: computing condition 425/432; rep = 3
+2015-12-10 08:03:37, batch=2: computing condition 425/432; rep = 4
+2015-12-10 08:03:37, batch=1: computing condition 425/432; rep = 4
+2015-12-10 08:03:38, batch=2: computing condition 425/432; rep = 5
+2015-12-10 08:03:38, batch=1: computing condition 425/432; rep = 5
+2015-12-10 08:03:39, NEW CONDITION: computing condition 426/432
+2015-12-10 08:03:39, batch=1: computing condition 426/432; rep = 1
+2015-12-10 08:03:39, batch=2: computing condition 426/432; rep = 1
+2015-12-10 08:03:41, batch=2: computing condition 426/432; rep = 2
+2015-12-10 08:03:43, batch=1: computing condition 426/432; rep = 2
+2015-12-10 08:03:44, batch=2: computing condition 426/432; rep = 3
+2015-12-10 08:03:46, batch=1: computing condition 426/432; rep = 3
+2015-12-10 08:03:46, batch=2: computing condition 426/432; rep = 4
+2015-12-10 08:03:48, batch=1: computing condition 426/432; rep = 4
+2015-12-10 08:03:50, batch=2: computing condition 426/432; rep = 5
+2015-12-10 08:03:51, batch=1: computing condition 426/432; rep = 5
+2015-12-10 08:03:54, NEW CONDITION: computing condition 427/432
+2015-12-10 08:03:54, batch=1: computing condition 427/432; rep = 1
+2015-12-10 08:03:54, batch=2: computing condition 427/432; rep = 1
+2015-12-10 08:03:59, batch=2: computing condition 427/432; rep = 2
+2015-12-10 08:04:00, batch=1: computing condition 427/432; rep = 2
+2015-12-10 08:04:05, batch=1: computing condition 427/432; rep = 3
+2015-12-10 08:04:07, batch=2: computing condition 427/432; rep = 3
+2015-12-10 08:04:11, batch=1: computing condition 427/432; rep = 4
+2015-12-10 08:04:13, batch=2: computing condition 427/432; rep = 4
+2015-12-10 08:04:19, batch=2: computing condition 427/432; rep = 5
+2015-12-10 08:04:19, batch=1: computing condition 427/432; rep = 5
+2015-12-10 08:04:26, NEW CONDITION: computing condition 428/432
+2015-12-10 08:04:26, batch=2: computing condition 428/432; rep = 1
+2015-12-10 08:04:26, batch=1: computing condition 428/432; rep = 1
+2015-12-10 08:04:35, batch=2: computing condition 428/432; rep = 2
+2015-12-10 08:04:37, batch=1: computing condition 428/432; rep = 2
+2015-12-10 08:04:43, batch=2: computing condition 428/432; rep = 3
+2015-12-10 08:04:49, batch=1: computing condition 428/432; rep = 3
+2015-12-10 08:04:52, batch=2: computing condition 428/432; rep = 4
+2015-12-10 08:04:58, batch=1: computing condition 428/432; rep = 4
+2015-12-10 08:05:02, batch=2: computing condition 428/432; rep = 5
+2015-12-10 08:05:09, batch=1: computing condition 428/432; rep = 5
+2015-12-10 08:05:17, NEW CONDITION: computing condition 429/432
+2015-12-10 08:05:17, batch=1: computing condition 429/432; rep = 1
+2015-12-10 08:05:17, batch=2: computing condition 429/432; rep = 1
+2015-12-10 08:05:18, batch=2: computing condition 429/432; rep = 2
+2015-12-10 08:05:18, batch=1: computing condition 429/432; rep = 2
+2015-12-10 08:05:18, batch=2: computing condition 429/432; rep = 3
+2015-12-10 08:05:19, batch=1: computing condition 429/432; rep = 3
+2015-12-10 08:05:19, batch=2: computing condition 429/432; rep = 4
+2015-12-10 08:05:19, batch=1: computing condition 429/432; rep = 4
+2015-12-10 08:05:19, batch=2: computing condition 429/432; rep = 5
+2015-12-10 08:05:19, batch=1: computing condition 429/432; rep = 5
+2015-12-10 08:05:20, NEW CONDITION: computing condition 430/432
+2015-12-10 08:05:20, batch=1: computing condition 430/432; rep = 1
+2015-12-10 08:05:20, batch=2: computing condition 430/432; rep = 1
+2015-12-10 08:05:21, batch=2: computing condition 430/432; rep = 2
+2015-12-10 08:05:21, batch=1: computing condition 430/432; rep = 2
+2015-12-10 08:05:23, batch=2: computing condition 430/432; rep = 3
+2015-12-10 08:05:23, batch=1: computing condition 430/432; rep = 3
+2015-12-10 08:05:25, batch=2: computing condition 430/432; rep = 4
+2015-12-10 08:05:25, batch=1: computing condition 430/432; rep = 4
+2015-12-10 08:05:27, batch=2: computing condition 430/432; rep = 5
+2015-12-10 08:05:27, batch=1: computing condition 430/432; rep = 5
+2015-12-10 08:05:29, NEW CONDITION: computing condition 431/432
+2015-12-10 08:05:29, batch=1: computing condition 431/432; rep = 1
+2015-12-10 08:05:29, batch=2: computing condition 431/432; rep = 1
+2015-12-10 08:05:32, batch=2: computing condition 431/432; rep = 2
+2015-12-10 08:05:32, batch=1: computing condition 431/432; rep = 2
+2015-12-10 08:05:36, batch=2: computing condition 431/432; rep = 3
+2015-12-10 08:05:36, batch=1: computing condition 431/432; rep = 3
+2015-12-10 08:05:40, batch=1: computing condition 431/432; rep = 4
+2015-12-10 08:05:40, batch=2: computing condition 431/432; rep = 4
+2015-12-10 08:05:43, batch=2: computing condition 431/432; rep = 5
+2015-12-10 08:05:43, batch=1: computing condition 431/432; rep = 5
+2015-12-10 08:05:46, NEW CONDITION: computing condition 432/432
+2015-12-10 08:05:46, batch=1: computing condition 432/432; rep = 12015-12-10 08:05:46, batch=2: computing condition 432/432; rep = 1
+
+2015-12-10 08:05:52, batch=2: computing condition 432/432; rep = 2
+2015-12-10 08:05:52, batch=1: computing condition 432/432; rep = 2
+2015-12-10 08:05:58, batch=2: computing condition 432/432; rep = 3
+2015-12-10 08:05:58, batch=1: computing condition 432/432; rep = 3
+2015-12-10 08:06:03, batch=2: computing condition 432/432; rep = 4
+2015-12-10 08:06:04, batch=1: computing condition 432/432; rep = 4
+2015-12-10 08:06:08, batch=2: computing condition 432/432; rep = 5
+2015-12-10 08:06:09, batch=1: computing condition 432/432; rep = 5

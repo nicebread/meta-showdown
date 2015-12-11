@@ -35,7 +35,7 @@ print(paste0(nrow(params), " fully crossed experimental conditions have been gen
 
 
 # other settings
-B <- 2	# number of simulation replications per condition (should be dividable by getDoParWorkers())
+B <- 10	# number of simulation replications per condition (should be dividable by getDoParWorkers())
 
 
 ## ======================================================================
@@ -47,7 +47,7 @@ cat(paste0("New simulation started at: ", start), file="output.txt", append=FALS
 
 
 
-for (j in 1:nrow(params)) {
+for (j in 335:nrow(params)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
 	cat(log1, file="output.txt", append=TRUE, sep = "\n")
@@ -103,11 +103,11 @@ for (j in 1:nrow(params)) {
 	} # of foreach loop
 		
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
-	save(sim, file=paste0("simParts/simData_condition_", j, ".RData"))
+	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"))
 	
 	# send a push notification after each finished condition:
-	userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
-	send_push(userkey, paste0("Condition ", j, "/", nrow(params), " finished"))
+	# userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
+	# send_push(userkey, paste0("Condition ", j, "/", nrow(params), " finished"))
 } # of j (loop through parameter combinations)
 
 
