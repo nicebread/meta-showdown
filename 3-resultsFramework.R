@@ -14,7 +14,9 @@ print(paste0("Collecting results from ", length(analysisFiles), " analysis files
 # loop through all files
 res_list <- list()
 for (f in analysisFiles) {
+	print(f)
 	load(f)	# the simulation data frame always is called "res"
+	res$id <- paste0(f, "_", res$id)
 	res_list[[f]] <- res
 }
 res.final <- bind_rows(res_list)
@@ -28,7 +30,7 @@ print(tab, n=50)
 res2 <- res.final %>% filter(variable != "tauEst", method!="FAT") %>% droplevels()
 
 # reshape long format to wide format
-res.wide <- dcast(res2, id + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
+res.wide <- dcast(res2, id + condition + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
 head(res.wide)
 
 # define some meaningful labels for the plots
@@ -38,7 +40,7 @@ res.wide$qrp.label <- factor(res.wide$qrpEnv, labels=paste0("QRP = ", unique(res
 
 
 # Compute summary measures across replications
-summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% summarise(
+summ <- res.wide %>% filter(method!="FAT") %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% summarise(
 	meanEst		= round(mean(d, na.rm=TRUE), 3),
 	meanD		= round(mean(D.mean, na.rm=TRUE), 3),
 	meanD.sig	= round(mean(D.mean.sig, na.rm=TRUE), 3),
@@ -66,11 +68,30 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(k, k.label, delta, delta
 
 print(summ, n=nrow(summ))
 
+
+# Compare 1000 vs. 5000 replications
+summ.1000 <- res.wide %>% filter(method!="FAT", condition < 150) %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% filter(row_number() <= 1008) %>% summarise(
+	meanEst.1000	= round(mean(d, na.rm=TRUE), 3),
+	ME.1000			= round(mean(d - delta, na.rm=TRUE), 3),
+	MSE.1000		= round(mean(d - delta, na.rm=TRUE)^2, 3),
+	n.1000			= n()
+)
+summ.5000 <- res.wide %>% filter(method!="FAT", condition < 150) %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% summarise(
+	meanEst.5000	= round(mean(d, na.rm=TRUE), 3),
+	ME.5000			= round(mean(d - delta, na.rm=TRUE), 3),
+	MSE.5000		= round(mean(d - delta, na.rm=TRUE)^2, 3),
+	n.5000			= n()	
+)
+
+inner_join(summ.1000, summ.5000)
+
+print(summ, n=nrow(summ))
+
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
-export(summ, file="summ.csv")
-save(summ, file="summ.RData")
-
+export(summ, file="summ5000.csv")
+save(summ, file="summ5000.RData")
+load("summ5000.RData")
 # ---------------------------------------------------------------------
 #  visualize
 library(ggplot2)
