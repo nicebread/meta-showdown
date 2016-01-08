@@ -20,7 +20,7 @@ for (f in analysisFiles) {
 	res_list[[f]] <- res
 }
 res.final <- bind_rows(res_list)
-
+str(res.final)
 
 # Show conditions
 tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
@@ -68,24 +68,6 @@ summ <- res.wide %>% filter(method!="FAT") %>% group_by(condition, k, k.label, d
 
 print(summ, n=nrow(summ))
 
-
-# Compare 1000 vs. 5000 replications
-summ.1000 <- res.wide %>% filter(method!="FAT", condition < 150) %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% filter(row_number() <= 1008) %>% summarise(
-	meanEst.1000	= round(mean(d, na.rm=TRUE), 3),
-	ME.1000			= round(mean(d - delta, na.rm=TRUE), 3),
-	MSE.1000		= round(mean(d - delta, na.rm=TRUE)^2, 3),
-	n.1000			= n()
-)
-summ.5000 <- res.wide %>% filter(method!="FAT", condition < 150) %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, tau, method) %>% summarise(
-	meanEst.5000	= round(mean(d, na.rm=TRUE), 3),
-	ME.5000			= round(mean(d - delta, na.rm=TRUE), 3),
-	MSE.5000		= round(mean(d - delta, na.rm=TRUE)^2, 3),
-	n.5000			= n()	
-)
-
-inner_join(summ.1000, summ.5000)
-
-print(summ, n=nrow(summ))
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
