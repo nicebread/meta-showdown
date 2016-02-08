@@ -38,14 +38,18 @@ res2 <- res.final %>% filter(variable != "tauEst", method!="FAT") %>% droplevels
 res.wide <- dcast(res2, id + condition + k + delta + qrpEnv + selProp + tau + method ~ variable, value.var="value")
 head(res.wide)
 
-# final data set in wide format:
-save(res.wide, file="res.wide.RData")
-load(file="res.wide.RData")
-
 # define some meaningful labels for the plots
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
 res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
+
+# save compressed version
+tab <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
+print(tab, n=50)
+
+save(res.wide, file="res.wide.RData", compress="gzip")
+#load(file="res.wide.RData")
+
 
 
 # Compute summary measures across replications
