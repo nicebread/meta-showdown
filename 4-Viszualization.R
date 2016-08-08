@@ -50,18 +50,17 @@ summ %>%
 # ---------------------------------------------------------------------
 #  show violin plots in partly loop style
 library(gtools)
-load(res.wide)
 
 # order two variables into one loop
-res.wide <- res.wide %>% 
+summ <- summ %>% 
   mutate(k_method = paste0(k, "_", method))
 
 # order loop factor alphabetically
-res.wide$k_method <- factor(res.wide$k_method, 
-                            levels = mixedsort(unique(res.wide$k_method)))
+summ$k_method <- factor(summ$k_method, 
+                            levels = mixedsort(unique(summ$k_method)))
 
 # with loop
-res.wide %>% 
+summ %>% 
   filter(method != "FAT", tau == 0, selProp == 1) %>% 
   ggplot(aes(x = k_method, y = d, color = method, group = k_method)) + 
   geom_violin() + 
@@ -71,7 +70,7 @@ res.wide %>%
   theme(axis.text.x = element_text(angle = 90, size=3))
 
 # without loop
-res.wide %>% 
+summ %>% 
   filter(method != "FAT", tau == 0, selProp == 1) %>% 
   ggplot(aes(x = k.label, y = d, color = method, group = k_method)) +
   geom_violin(position = position_dodge()) +
@@ -94,14 +93,14 @@ summ %>%
 # ---------------------------------------------------------------------
 # pcurve follow up
 
-res.wide %>% 
+summ %>% 
   filter(method=="pcurve") %>% 
   group_by(k, delta, qrpEnv, selProp, tau) %>% 
   summarise(
     nStudies = round(mean(sig.studies, na.rm=TRUE), 2)
   )
 
-res.wide %>% 
+summ %>% 
   filter(method=="pcurve") %>% 
   head()	
 
