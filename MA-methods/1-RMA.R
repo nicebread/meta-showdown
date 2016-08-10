@@ -4,38 +4,45 @@ reEst <- function(d, v, long=TRUE) {
   #analyzes MA data set using standard RE model estimators
   #produces estimate of true effect, CI around estimate,
   #and estimate of tau (could get CIs if wanted)
- 
-  
-  out = matrix(NA,1,8)
-  colnames(out) = c("dRE","lbRE","ubRE","tauRE","dTF","lbTF","ubTF","filledTF")
-  
-  reMA = rma(d, v, method="DL")
+
+  reMA <- rma(d, v, method="DL")
   
   # assign NULL to tfMA if an error is raised
   tfMA <- tryCatch({
 	  tfMA = trimfill(reMA)
-  }, error=function(e) NULL)
+  }, error=function(e) NULL)  
   
-  out[1,1] = as.numeric(reMA$b[,1])
-  out[1,2] = reMA$ci.lb
-  out[1,3] = reMA$ci.ub
-  
-  out[1,4] = as.numeric(sqrt(reMA$tau2))
+  res <- data.frame(method="reMA", tidyRMA(reMA))
+  res <- plyr::rbind.fill(res, data.frame(
+	  method="reMA",
+	  term="tau2",
+	  estimate=reMA$tau2,
+	  std.error=reMA$se.tau2
+	))		
+	  
     
-  if (!is.null(tfMA)) {
-	  out[1,5] = as.numeric(tfMA$b[,1])
-	  out[1,6] = tfMA$ci.lb
-	  out[1,7] = tfMA$ci.ub  
-	  out[1,8] = tfMA$k0
+  if (!is.null(tfMA)) {	  
+	  res <- rbind(res, data.frame(method="TF", tidyRMA(tfMA)))
+	  res <- plyr::rbind.fill(res, data.frame(
+		  method="TF",
+		  term="tau2",
+		  estimate=tfMA$tau2,
+		  std.error=tfMA$se.tau2
+		))
+  	  res <- plyr::rbind.fill(res, data.frame(
+  		  method="TF",
+  		  term="kFilled",
+  		  estimate=tfMA$k0
+  		))
   }
-
+    
   if (long==FALSE) {
-  	return(out)
+	  # return wide format
+	  return(res)
   } else {
-        outlong <- data.frame(method=c(rep("RE", 3), "Tau", rep("TF", 3), "fill"), 
-                              variable=c(c("d", "lb", "ub"), "tauEst", c("d", "lb", "ub"),"kFilled"), 
-                              value=out[1, ])
-	  rownames(outlong) <- NULL
-	  return(outlong)
+	  # transform to long format
+	  long <- melt(res, id.vars=c("method", "term"))
+	  long <- long %>% filter(!is.na(value)) %>% arrange(method, term, variable)
+	  return(long)
   }
 }

@@ -1,5 +1,6 @@
 #### functions for p-curve ES. Code adapted from Uri Simonsohn ####
 
+
 ##########################
 # pcurveEst is the function that should be called to provide p-curve
 # estimates of effect size, in addition to bootstrapped confidence intervals

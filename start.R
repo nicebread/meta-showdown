@@ -1,6 +1,9 @@
 #source("start.R")
 #install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR")) 
 
+# devtools::install_github("RobbievanAert/puniform")
+# installed version 0.0.0 [sic] on 2016/08/10
+
 library(MASS)
 library(pwr)
 library(compiler)
@@ -15,12 +18,15 @@ library(meta)
 library(metafor)
 library(progress)
 library(notifyR)
+library(broom)
+library(puniform)
 
 source("helpers/helpers.R")
 source("sim-studies/sim-studies.R")
 source("MA-methods/1-RMA.R")
 source("MA-methods/2-p-curve.R")
 source("MA-methods/3-PET-PEESE.R")
+source("MA-methods/4-p-curve skewness.R")
 
 # load empirical sample sizes into workspace
 perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")

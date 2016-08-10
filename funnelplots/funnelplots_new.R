@@ -29,3 +29,16 @@ library(meta)
 (meta1 <- metagen(dat$d, dat$se))
 meta::funnel(meta1, ref=0, xlab="Effect size", cex=.5, pch=19, xlim=c(-1.5, 1.5))
 meta::funnel(meta1, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1.5, 1.5))
+
+
+dat <- data.frame(dataMA(k = 20, delta = 0.4, tau = 0.1, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.6, qrpEnv = "med"))
+d <- dat$d
+v <- dat$v
+
+reEst(d, v)
+lmVarEst(d, v)
+pc_skew(dat$t, dat$N-2)
+puniformEst(dat$t, dat$n1, dat$n2)
+topN(d, v, dat$n1, dat$n2, est="fixed", fixed.effect=0.3)
+topN(d, v, dat$n1, dat$n2, est="rma")
+topN(d, v, dat$n1, dat$n2, est="PEESE")
