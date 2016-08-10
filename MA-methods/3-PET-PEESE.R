@@ -8,8 +8,8 @@ lmVarEst <- function(d, v, long=TRUE) {
   
   PET.lm <- lm(d~sqrt(v), weights=1/v)
   PEESE.lm <- lm(d~v, weights=1/v)
-  PET.rma <- rma(d, v, mods=sqrt(v), method="REML")
-  PEESE.rma <- rma(d, v, mods=v, method="REML")  
+  PET.rma <- rma(d, v, mods=sqrt(v), method="DL")
+  PEESE.rma <- rma(d, v, mods=v, method="DL")  
   
   res <- rbind(
 		data.frame(method="PET.lm", tidyLM(PET.lm)),
@@ -32,13 +32,5 @@ lmVarEst <- function(d, v, long=TRUE) {
 		data.frame(method="PETPEESE.rma", if (usePET.rma == TRUE) {tidyRMA(PET.rma)} else {tidyRMA(PEESE.rma)})
 	  )
 
-  if (long==FALSE) {
-	  # return wide format
-	  return(res)
-  } else {
-	  # transform to long format
-	  long <- melt(res, id.vars=c("method", "term"))
-	  long <- long %>% filter(!is.na(value)) %>% arrange(method, term, variable)
-	  return(long)
-  }
+  returnRes(res, long)
 }

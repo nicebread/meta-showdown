@@ -1,5 +1,6 @@
 #### functions for p-curve ES. Code adapted from Uri Simonsohn ####
 
+## TODO: Change res output to new format
 
 ##########################
 # pcurveEst is the function that should be called to provide p-curve

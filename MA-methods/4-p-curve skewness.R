@@ -210,28 +210,20 @@ theoretical_power_curve <- function(power=1/3, p.max=.05, normalize=TRUE) {
 
 pc_skew <- function(t.value, df, long=TRUE) {
 	pp <- get_pp_values(type=rep("t", length(t.value)), statistic=t.value, df=df, df2=NA)
-	pc_skew <- p_curve_3(pp$res)
+	PC_skew <- p_curve_3(pp$res)
 
-	pc_skew.long <- melt(data.frame(pc_skew[1:6]), id.var=NULL)
+	PC_skew.long <- melt(data.frame(PC_skew[1:6]), id.var=NULL)
 	
 	res <- data.frame(
 		method="pcurve",
 		term = c("evidence", "hack", "lack"),
 		estimate = NA,
 		std.error = NA,
-		statistic = pc_skew.long$value[c(1, 3, 5)],
-		p.value = pc_skew.long$value[c(2, 4, 6)],
+		statistic = PC_skew.long$value[c(1, 3, 5)],
+		p.value = PC_skew.long$value[c(2, 4, 6)],
 		conf.low = NA,
 		conf.high = NA
 	)
 			
-    if (long==FALSE) {
-  	  # return wide format
-  	  return(res)
-    } else {
-  	  # transform to long format
-  	  long <- melt(res, id.vars=c("method", "term"))
-  	  long <- long %>% filter(!is.na(value)) %>% arrange(method, term, variable)
-  	  return(long)
-    }
+    returnRes(res, long, reduce=FALSE)
 }

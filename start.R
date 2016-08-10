@@ -27,6 +27,8 @@ source("MA-methods/1-RMA.R")
 source("MA-methods/2-p-curve.R")
 source("MA-methods/3-PET-PEESE.R")
 source("MA-methods/4-p-curve skewness.R")
+source("MA-methods/5-p-uniform.R")
+source("MA-methods/6-topN.R")
 
 # load empirical sample sizes into workspace
 perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")

@@ -36,13 +36,5 @@ reEst <- function(d, v, long=TRUE) {
   		))
   }
     
-  if (long==FALSE) {
-	  # return wide format
-	  return(res)
-  } else {
-	  # transform to long format
-	  long <- melt(res, id.vars=c("method", "term"))
-	  long <- long %>% filter(!is.na(value)) %>% arrange(method, term, variable)
-	  return(long)
-  }
+  returnRes(res, long)
 }

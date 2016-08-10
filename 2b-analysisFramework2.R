@@ -5,14 +5,14 @@
 ## ======================================================================
 
 # run this file:
-# source("2-analysisFramework.R", echo=TRUE)
+# source("2b-analysisFramework2.R", echo=TRUE)
 
 # load all functions and packages
 source("start.R")
 
 library(doParallel)
 # detectCores()
-registerDoParallel(cores=2)
+registerDoParallel(cores=1)
 
 (ncores <- getDoParWorkers())	# number of parallel processes
 
@@ -60,12 +60,16 @@ for (f in simDatFiles) {
 			rownames(MAdat) <- NULL
 	
 			# analyze with all MA techniques
-			re.est <- reEst(d=MAdat$d, v=MAdat$v, long=TRUE)
-			lm.est <- lmVarEst(MAdat$d, MAdat$v, long=TRUE)
-			pcurve.skew <- pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE)
-	
-			# combine analysis results
-			res0 <- rbind(re.est, lm.est, pcurve.skew)
+			res0 <- rbind(
+				reEst(d=MAdat$d, v=MAdat$v, long=TRUE),
+				lmVarEst(MAdat$d, MAdat$v, long=TRUE),
+				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
+				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
+				topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="fixed", fixed.effect=0.3),
+				topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="rma"),
+				topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE")	
+			)
+			
 	
 			# collect results
 			res1 <- cbind(
@@ -85,10 +89,19 @@ for (f in simDatFiles) {
 	} # of dopar
 	
 	save(res, file=paste0("analysisParts/analysis_", basename(f)))
+	
+	# send a push notification after each 200 finished conditions:
+	if (which(simDatFiles == f) %% 200 == 0) {
+	  userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
+	  send_push(userkey, paste0("Condition ", which(simDatFiles == f), " finished"))
+	}
 } # of "f in simDatFiles"
 
 
 print(paste0(Sys.time(), ": Finished analyzing."))
+userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
+send_push(userkey, "Analyses finished!", title="Linux")
 
 
-load("analysisParts/analysis_simData_B1_condition_1.RData")
+#load("analysisParts/analysis_simData_B1_condition_1.RData")
+#res %>% filter(term=="b0", variable=="estimate") %>% ggplot(aes(x=method, y=value)) + geom_point()

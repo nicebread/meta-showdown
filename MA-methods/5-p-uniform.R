@@ -1,4 +1,21 @@
 puniformEst <- function(t.value, n1, n2, long=TRUE) {
+	
+	# check if there are at least 1 studies in the correct significant direction
+	if (sum(pt(t.value, n1+n2-2, lower.tail=FALSE)<.025) < 1) {
+		res <- data.frame(
+			method = "puniform",
+			term = "b0",
+			estimate = NA,
+			std.error = NA,
+			statistic = NA,
+			p.value = NA,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect
+			conf.low = NA,
+			conf.high = NA
+		)
+		
+		return(returnRes(res, long))
+	}
+	
 	PU <- puniform(tobs=t.value, n1i=n1, n2i=n2, alpha = 0.05, side="right", method="P", plot = FALSE)
 	
 	res <- data.frame(
@@ -23,13 +40,5 @@ puniformEst <- function(t.value, n1, n2, long=TRUE) {
 		p.value=PU$pval.pb
 	))
 	
-    if (long==FALSE) {
-  	  # return wide format
-  	  return(res)
-    } else {
-  	  # transform to long format
-  	  long <- melt(res, id.vars=c("method", "term"))
-  	  long <- long %>% filter(!is.na(value)) %>% arrange(method, term, variable)
-  	  return(long)
-    }
+    returnRes(res, long)
 }
