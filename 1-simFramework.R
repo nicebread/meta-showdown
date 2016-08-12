@@ -103,7 +103,7 @@ for (j in 335:nrow(params)) {
 	} # of foreach loop
 		
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
-	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"))
+	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"), compression="gzip")
 	
 	# send a push notification after each finished condition:
 	# userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key

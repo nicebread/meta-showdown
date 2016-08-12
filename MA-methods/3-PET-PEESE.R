@@ -8,8 +8,8 @@ lmVarEst <- function(d, v, long=TRUE) {
   
   PET.lm <- lm(d~sqrt(v), weights=1/v)
   PEESE.lm <- lm(d~v, weights=1/v)
-  PET.rma <- rma(d, v, mods=sqrt(v), method="DL")
-  PEESE.rma <- rma(d, v, mods=v, method="DL")  
+  PET.rma <- rma(yi = d, vi = v, mods=sqrt(v), method="DL")
+  PEESE.rma <- rma(yi = d, vi = v, mods=v, method="DL")  
   
   res <- rbind(
 		data.frame(method="PET.lm", tidyLM(PET.lm)),

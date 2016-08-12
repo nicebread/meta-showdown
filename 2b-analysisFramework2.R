@@ -88,7 +88,9 @@ for (f in simDatFiles) {
 		return(res2)
 	} # of dopar
 	
-	save(res, file=paste0("analysisParts/analysis_", basename(f)))
+	save(res, file=paste0("analysisParts/1analysis_", basename(f)), compress="gzip")
+	save(res, file=paste0("analysisParts/2analysis_", basename(f)), compress="bzip2")
+	save(res, file=paste0("analysisParts/3analysis_", basename(f)), compress="xz")
 	
 	# send a push notification after each 200 finished conditions:
 	if (which(simDatFiles == f) %% 200 == 0) {
@@ -103,5 +105,7 @@ userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
 send_push(userkey, "Analyses finished!", title="Linux")
 
 
-#load("analysisParts/analysis_simData_B1_condition_1.RData")
+#load("analysisParts/analysis_simData_B1_condition_3.RData")
 #res %>% filter(term=="b0", variable=="estimate") %>% ggplot(aes(x=method, y=value)) + geom_point()
+
+res %>% filter(term=="b0", variable=="estimate") %>% group_by(method) %>% summarise(M=mean(value, tr=.2))
