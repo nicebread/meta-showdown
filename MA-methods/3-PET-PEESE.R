@@ -1,5 +1,5 @@
 #' @param long Should the results be returned in long format?
-lmVarEst <- function(d, v, long=TRUE) {
+PETPEESE.est <- function(d, v, long=TRUE) {
   
   #analyzes MA data set using two lm() models
   #produces estimates of true effect (and CIs) for

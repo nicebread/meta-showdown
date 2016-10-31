@@ -1,5 +1,5 @@
 #' @param long Should the results be returned in long format?
-reEst <- function(d, v, long=TRUE) {
+RMA.est <- function(d, v, long=TRUE) {
   
   #analyzes MA data set using standard RE model estimators
   #produces estimate of true effect, CI around estimate,

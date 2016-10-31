@@ -23,6 +23,7 @@ tidyLM <- function(...) {
 
 # returns a result data frame either in wide or long format
 returnRes <- function(res, long=TRUE, reduce=TRUE) {
+	if (is.null(res)) return(NULL)
 	if (long==FALSE) {
 	  # return wide format
 	  return(res)

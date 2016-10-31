@@ -15,6 +15,10 @@ vignettes/*.pdf
 # shell script for automatically adding files > 50 MB:
 # find . -size +50M  | cut -c 3-1000 >> .gitignore
 
+
+.git/objects/2a/4f0159e13a8b6d52548f4f3b4e2b6b68dc1216
+.git/objects/e0/79da0cc150b01a6e072cc82024a6bac9c22406
 .git/objects/pack/pack-daa47ad88db4b24e4e8bb2f94b36c3ff72f727b0.pack
-res.wide.old.RData
+Appendices/A-10,000 vs 1,000 sims/10,000vs_1,000_sims_cache/latex/unnamed-chunk-1_3660b7646acee64f926f09fa9c3909c6.rdb
+res.final.RData
 res.wide.RData

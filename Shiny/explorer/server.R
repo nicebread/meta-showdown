@@ -33,8 +33,8 @@ shinyServer(function(input, output, session) {
 		simDat$currentDataSet <- filter_(simDat$sim, filt)
 		
 		if (nrow(simDat$currentDataSet) > 0) {
-			re.est <- reEst(d=simDat$currentDataSet$d, v=simDat$currentDataSet$v, long=TRUE)
-			lm.est <- lmVarEst(simDat$currentDataSet$d, simDat$currentDataSet$v, long=TRUE)
+			re.est <- RMA.est(d=simDat$currentDataSet$d, v=simDat$currentDataSet$v, long=TRUE)
+			lm.est <- PETPEESE.est(simDat$currentDataSet$d, simDat$currentDataSet$v, long=TRUE)
 			pcurve.est <- pcurveEst(t=simDat$currentDataSet$t, df=simDat$currentDataSet$N-2, B=500, progress=FALSE, long=TRUE, CI=FALSE)
 			
 			# add average study ES (D.mean, D.median) and # of significant studies to results object

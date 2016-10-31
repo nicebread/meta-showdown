@@ -28,13 +28,12 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-expFinU = function(delta,tau,
-                   empN,meanN,minN){
+expFinU = function(delta, tau, empN, meanN, minN){
   
   #get the per-group sample size 
-  if (empN==T){
+  if (empN==TRUE){
     n = sample(perGrp$x,1)
-  }else{
+  } else {
     n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
   }
   
@@ -324,16 +323,14 @@ analyB <- function(g1,g2,g3,g4,D,multDV,out,mod){
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-expFinB = function(delta,tau,
-                   empN,maxN,meanN,minN,
-                   strat){
+expFinB = function(delta, tau, empN, maxN, meanN, minN, strat){
   
   #correlation between multiple DVs is set to 0.50 as default
   cbdv = 0.5
   
   # if QRP strategy is NONE
   if (strat=='none'){
-    a = expFinU(delta,tau,empN,meanN,minN)
+    a = expFinU(delta, tau, empN, meanN, minN)
   }
   
   #if QRP strategy is MODERATE
@@ -457,9 +454,9 @@ expFinB = function(delta,tau,
 #' @param selProp the proportion of the sample affected by bias
 #' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
 
-dataMA <- function(k,delta,tau,
-                   empN,maxN,meanN,minN,
-                   selProp,qrpEnv) {  
+dataMA <- function(k, delta, tau,
+                   empN, maxN, meanN, minN,
+                   selProp, qrpEnv) {  
   
   #get the number of studies exposed to publication selection bias (and those now exposed)
   kB = round(k*selProp)
@@ -498,7 +495,7 @@ dataMA <- function(k,delta,tau,
   #Produce data *unaffected* by publication selection bias or from QRP (strat = none)
   if (kU_None > 0){
     for (i in 1: kU_None){
-      rU_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+      rU_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN,strat='none') 
       rU_None[i,11] = 0 #number file drawered
       rU_None[i,12] = 0 #no sel
       rU_None[i,13] = 0 #no QRP

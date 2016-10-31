@@ -25,7 +25,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   pc_data = pcurve_prep(t_obs = t, df_obs = df)
   # next we check to make sure we have more than 0 rows (at least 1 study); if not, return a null
   if(nrow(pc_data) == 0){
-	outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=NA)
+	outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate"), value=NA)
     return(outlong)
   }
   # now let's get the pcurve ES estimate
@@ -39,7 +39,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   if (long==FALSE) {
     return(out)
   } else {
-    outlong <- data.frame(method="pcurve", variable=c("d", "lb", "ub"), value=out[1, ])
+    outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate", "conf.low", "conf.high"), value=out[1, ])
     rownames(outlong) <- NULL
     return(outlong)
   }
@@ -121,6 +121,9 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 }
 
 
+#dat <- dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low")
+#dat <- data.frame(dat)
+
 
 # # test: Unbiased set of studies
 # dat <- dataMA(50, meanD=0.5, sigma=0, sel=0, propB=0)
@@ -132,7 +135,10 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 #pcurveEst(dat$t, dat$N-2, CI=TRUE, long=TRUE)
 
 # # test: biased set of studies
-# dat2 <- dataMA(500, meanD=0.3, sel=1, propB=0.8)
+# dat <- dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low")
 # system.time({
-# 	pcurveEst(dat2$t, dat2$N-2, CI=TRUE)
+# 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
 # })
+
+
+#McShane.est(dat$t, dat$n1, dat$n2)

@@ -215,7 +215,7 @@ pc_skew <- function(t.value, df, long=TRUE) {
 	PC_skew.long <- melt(data.frame(PC_skew[1:6]), id.var=NULL)
 	
 	res <- data.frame(
-		method="pcurve",
+		method=c("pcurve.evidence", "pcurve.hack", "pcurve.lack"),
 		term = c("evidence", "hack", "lack"),
 		estimate = NA,
 		std.error = NA,

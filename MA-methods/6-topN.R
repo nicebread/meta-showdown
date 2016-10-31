@@ -4,11 +4,11 @@ topN <- function(d, v, n1, n2, est=c("fixed", "rma", "PEESE"), fixed.effect=0.3,
 		eff <- fixed.effect
 	}
 	if (est == "rma") {
-		RE <- reEst(d, v, long=FALSE)
+		RE <- RMA.est(d, v, long=FALSE)
 		eff <- RE[RE$method=="reMA" & RE$term=="b0", "estimate"]
 	}
 	if (est == "PEESE") {
-		PEESE <- lmVarEst(d, v, long=FALSE)
+		PEESE <- PETPEESE.est(d, v, long=FALSE)
 		eff <- PEESE[PEESE$method=="PEESE.rma" & PEESE$term=="b0", "estimate"]
 	}
 

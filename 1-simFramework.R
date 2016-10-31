@@ -6,7 +6,7 @@ source("start.R")
 
 # register CPU cores for parallel processing
 library(doParallel)
-registerDoParallel(cores=2)
+registerDoParallel(cores=20)
 
 ## ======================================================================
 ## SETTINGS
@@ -24,8 +24,8 @@ registerDoParallel(cores=2)
 k_set <- c(10, 30, 60, 100)
 delta_set <- c(0, .2, .5, .8)
 qrpEnv_Set <- c("none", "med", "high")
-selProp_set <- c(0, .6, 1)
-tau_set <- c(0, .25, .5)
+selProp_set <- c(0, .6, .95)
+tau_set <- c(0, .2, .4)
 
 # params stores all possible combinations of experimental factors
 # Here, I always use strong pub bias with 100%
@@ -33,9 +33,14 @@ params <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, selProp=selPr
 rownames(params) <- NULL
 print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))
 
+# write conditions to file
+sink(file("conditions.txt", open = "wt"))
+print(data.frame(condition=1:nrow(params), params), row.names=FALSE)
+sink()
+
 
 # other settings
-B <- 10	# number of simulation replications per condition (should be dividable by getDoParWorkers())
+B <- 1000	# number of simulation replications per condition (should be dividable by getDoParWorkers())
 
 
 ## ======================================================================
@@ -46,8 +51,7 @@ print(start <- Sys.time())
 cat(paste0("New simulation started at: ", start), file="output.txt", append=FALSE, sep = "\n")
 
 
-
-for (j in 335:nrow(params)) {
+for (j in 1:nrow(param)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
 	cat(log1, file="output.txt", append=TRUE, sep = "\n")
