@@ -47,11 +47,6 @@ ncp33chi <- function(df, power=1/3, p.crit=.05) {
 }
 
 
-type=c("t", "p")
-statistic=c(2.5, 0.01588969)
-df=c(48, NA)
-df2=c(NA, NA)
-
 
 get_pp_values <- function(type, statistic, df, df2, p.crit=.05, power=1/3) {
 
@@ -209,21 +204,39 @@ theoretical_power_curve <- function(power=1/3, p.max=.05, normalize=TRUE) {
 
 
 pc_skew <- function(t.value, df, long=TRUE) {
-	pp <- get_pp_values(type=rep("t", length(t.value)), statistic=t.value, df=df, df2=NA)
-	PC_skew <- p_curve_3(pp$res)
-
-	PC_skew.long <- melt(data.frame(PC_skew[1:6]), id.var=NULL)
 	
-	res <- data.frame(
-		method=c("pcurve.evidence", "pcurve.hack", "pcurve.lack"),
-		term = c("evidence", "hack", "lack"),
-		estimate = NA,
-		std.error = NA,
-		statistic = PC_skew.long$value[c(1, 3, 5)],
-		p.value = PC_skew.long$value[c(2, 4, 6)],
-		conf.low = NA,
-		conf.high = NA
-	)
+	# only select directionally consistent effects
+	df <- df[t.value > 0]
+	t.value <- t.value[t.value > 0]
+	
+	if (length(t.value) >= 1) {
+	
+		pp <- get_pp_values(type=rep("t", length(t.value)), statistic=t.value, df=df, df2=NA)
+	
+		PC_skew <- p_curve_3(pp$res)
+
+		PC_skew.long <- melt(data.frame(PC_skew[1:6]), id.var=NULL)
+	
+		res <- data.frame(
+			method=c("pcurve.evidence", "pcurve.hack", "pcurve.lack"),
+			term = "skewtest",
+			statistic = PC_skew.long$value[c(1, 3, 5)],
+			p.value = PC_skew.long$value[c(2, 4, 6)]
+		)
+		
+		res <- plyr::rbind.fill(res, data.frame(
+			method=c("pcurve.evidence", "pcurve.hack", "pcurve.lack"),
+			term="kSig",
+			estimate=sum(!is.na(pp$res$p))
+		))
+	} else {
+		res <- data.frame(
+			method=c("pcurve.evidence", "pcurve.hack", "pcurve.lack"),
+			term="kSig",
+			estimate=0
+		)
+	}
 			
-    returnRes(res, long, reduce=FALSE)
+    returnRes(res, long)
 }
+

@@ -13,7 +13,7 @@ print(paste0("Collecting results from ", length(analysisFiles), " analysis files
 
 # loop through all files
 res_list <- list()
-for (f in analysisFiles) {
+for (f in analysisFiles[2]) {
 	print(f)
 	load(f)	# the simulation data frame always is called "res"
 	#res$id <- paste0(f, "_", res$id)
@@ -31,9 +31,8 @@ save(res.final, file="res.final.RData")
 tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
-## reduce to relevant variables, drop unused factor levels
-#res2 <- res.final %>% filter(variable != "tauEst", method!="FAT") %>% droplevels()
-res2 <- res.final
+## remove p-curve and p-uniform with < 4 studies, drop unused factor levels
+res2 <- res.final %>% droplevels()
 
 # reshape long format to wide format
 res.wide <- dcast(res2, id + condition + k + delta + qrpEnv + selProp + tau + method ~ term + variable, value.var="value")
@@ -54,38 +53,33 @@ save(res.wide, file="res.wide.RData", compress="gzip")
 #load(file="res.wide.RData")
 
 
+# save a filtered version
+res.wide.red <- res.wide %>% 
+  filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack")) %>% 
+  filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") | 
+         (method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & kSig_estimate >= 4))
+          
+save(res.wide.red, file="res.wide.red.RData", compress="gzip")
+#load(file="res.wide.red.RData")
 
-# Compute summary measures across replications
-summ <- res.wide %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% dplyr::summarise(
-	meanEst		= mean(b0_estimate, na.rm=TRUE),
-	#meanD		= mean(D.mean, na.rm=TRUE),
-	#meanD.sig	= mean(D.mean.sig, na.rm=TRUE),
-	
-	# relative to true population mean ("delta")
-	ME 			= mean(b0_estimate - delta, na.rm=TRUE),
-	RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
-	MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
-	perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
-	perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
-	coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high)/sum(!is.na(b0_conf.high)),
-	consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high)/n()
-	
-	# # relative to mean of entered ES ("D")
-	# ME.D		= mean(d - meanD, na.rm=TRUE),
-	# RMSE.D		= sqrt(mean((d - meanD)^2, na.rm=TRUE)),
-	#
-	# # relative to mean of significant entered ES ("D.sig")
-	# ME.D.sig	= mean(d - meanD.sig, na.rm=TRUE),
-	# RMSE.D.sig	= sqrt(mean((d - meanD.sig)^2, na.rm=TRUE)),
-	
-	# # coverage etc.
-	# coverage.D	= sum(meanD > lb & meanD < ub)/sum(!is.na(lb)),
-	# consisZero.D = sum(0 > lb & 0 < ub)/n(),
-	# n.simulations = n()
-)
+
+# ---------------------------------------------------------------------
+#  Compute summary measures across replications
+
+summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
+	dplyr::summarise(
+		meanEst		= mean(b0_estimate, na.rm=TRUE),
+		ME 			= mean(b0_estimate - delta, na.rm=TRUE),
+		RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
+		MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
+		perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
+		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
+		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high)/sum(!is.na(b0_conf.high)),
+		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high)/n()
+	)
 
 print(summ, n=50)
-#print(summ, n=nrow(summ))
+
 
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.

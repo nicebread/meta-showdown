@@ -11,16 +11,15 @@ load("summ.RData")
 
 # remove selProp = 0 (unrealistic; show in Appendix)
 summ2 <- summ %>% filter(
-	!method %in% c("PET.lm", "PEESE.lm", "PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack", "pcurve.evidence", "pcurve.lack"),
-	selProp != 0
+	!method %in% c("PET.lm", "PEESE.lm", "pcurve.evidence", "pcurve.lack")
 	)
 
-summ2 %>% filter(selProp==0.6) %>% 
+summ2 %>% filter(selProp==0.6, tau==0.4) %>% 
 	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
-	geom_pointrange(position=position_dodge(width=0.3)) + 
+	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
-	coord_flip(ylim=c(-0.3, 1)) +
-	facet_grid(qrp.label~tau.label~method) + 
+	coord_flip(ylim=c(-0.6, 1.1)) +
+	facet_grid(qrp.label~method) + 
 	theme_bw()
 
 

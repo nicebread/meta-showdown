@@ -69,7 +69,7 @@ for (f in simDatFiles) {
 				topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="fixed", fixed.effect=0.3),
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="rma"),
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE"),
-				McShane.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE)
+				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE)
 			)
 			
 	

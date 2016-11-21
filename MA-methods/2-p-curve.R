@@ -40,6 +40,14 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
     return(out)
   } else {
     outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate", "conf.low", "conf.high"), value=out[1, ])
+	
+	outlong <- plyr::rbind.fill(outlong, data.frame(
+		method="pcurve",
+		term="kSig",
+		variable="estimate",
+		value=nrow(pc_data)
+	))
+	
     rownames(outlong) <- NULL
     return(outlong)
   }
@@ -120,25 +128,17 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 	return(d.boot)
 }
 
-
-#dat <- dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low")
+# set.seed(1)
+#dat <- dataMA(k = 10, delta = -0.7, tau = 0, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0, qrpEnv = "none")
 #dat <- data.frame(dat)
 
 
-# # test: Unbiased set of studies
-# dat <- dataMA(50, meanD=0.5, sigma=0, sel=0, propB=0)
-# system.time({
-# 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
-# })
-
-## Test long format
-#pcurveEst(dat$t, dat$N-2, CI=TRUE, long=TRUE)
-
 # # test: biased set of studies
-# dat <- dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low")
-# system.time({
+# dat <- data.frame(dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low"))
 # 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
-# })
+#	pc_skew(dat$t, dat$N-2)
 
+# Compare with p-curve.com
+# cat(paste(paste0("t(", dat$N-2, ")=", round(dat$t, 4)), collapse="\n"))
 
-#McShane.est(dat$t, dat$n1, dat$n2)
+#TPSM.est(dat$t, dat$n1, dat$n2)

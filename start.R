@@ -1,8 +1,8 @@
 #source("start.R")
-#install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR", "broom", "doParallel")) 
+#install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR", "broom", "weightr", "doParallel", "gtools")) 
 
 # devtools::install_github("RobbievanAert/puniform")
-# installed version 0.0.0 [sic] on 2016/08/10
+# installed version 0.0.2 on 2016/11/14
 
 library(MASS)
 library(pwr)
@@ -31,7 +31,7 @@ source("MA-methods/5-p-uniform.R")
 source("MA-methods/6-topN.R")
 source("MA-methods/6-topN.R")
 source("MA-methods/7b-selection.meta.functions.R")
-source("MA-methods/7-McShane.R")
+source("MA-methods/7-3PSM.R")
 
 # load empirical sample sizes into workspace
 perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")
