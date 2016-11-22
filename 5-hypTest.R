@@ -13,7 +13,7 @@ library(tidyr)
 library(reshape2)
 
 load("res.wide.red.RData")
-res.hyp <- res.wide.red %>% select(1:8, b0_p.value, skewtest_p.value, 41:45) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
+res.hyp <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value, skewtest_p.value, 41:45) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
 
 # define critical p-value for each method
 res.hyp$p.crit <- .05
@@ -22,8 +22,10 @@ res.hyp$p.crit <- .05
 res.hyp$p.value <- ifelse(!is.na(res.hyp$b0_p.value), res.hyp$b0_p.value, res.hyp$skewtest_p.value)
 res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
 
-# compute rejection
-res.hyp$H0.reject <- res.hyp$p.value < res.hyp$p.crit
+# compute rejection: 
+# Reject H0 if test is significant AND estimate in correct direction.
+# In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
+res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
 
 # Add combined hypothesis test: PETPEESE + 3PSM
 PP3 <- res.hyp %>% filter(method %in% c("PETPEESE.lm", "3PSM")) %>% group_by(id, condition, k, delta, qrpEnv, selProp, tau, delta.label, k.label, qrp.label, selProp.label, tau.label, p.crit) %>% summarise(
@@ -141,3 +143,22 @@ ggplot(RR.wide %>% filter(selProp == 0.95), aes(x=loop, y=log(rejectionRatio), g
 	facet_grid(qrp.label ~ method) + theme_bw() + geom_hline(yintercept=log(16), linetype="dotted") + 
 	theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) + coord_cartesian(ylim=c(0, 10)) +
 	ggtitle("Rejection Ratio (for selProp = 95%, H0 against delta=0.5)")
+	
+	
+# ---------------------------------------------------------------------
+# Rate of significant results in the wrong direction
+
+wrongSig <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value) %>% 
+	filter(!method %in% c("pcurve.evidence", "pcurve.lack"), delta < 0.5) %>% 
+	group_by(condition, k, delta, qrpEnv, selProp, tau, method) %>% 
+	summarise(
+		wrongSig = sum((b0_estimate < 0) & (b0_p.value < .05)) / n()
+	) %>% 
+	mutate(loop = paste0(k, "_", tau))
+
+# order loop factor alphabetically
+wrongSig$loop <- factor(wrongSig$loop, levels = mixedsort(unique(wrongSig$loop)))
+
+
+ggplot(wrongSig, aes(x=loop, y=wrongSig, color=factor(delta))) + geom_point() + facet_grid(selProp ~ qrpEnv ~ method) + theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) + ylab("Percentage of significant estimates in wrong direction")
+
