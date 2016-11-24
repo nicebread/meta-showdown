@@ -75,14 +75,14 @@ hyp.summ %>%
   ggtitle("Under H0 - nominal Type I error? (for selProp = 60%)")
   
 hyp.summ %>% 
-	filter(selProp == 0.95, delta==0) %>% 
+	filter(selProp == 0.90, delta==0) %>% 
 	ggplot(aes(x = loop, y = H0.reject, group = loop)) + 
 	geom_point() + 
 	facet_grid(qrp.label ~ method) + 
 	geom_hline(aes(yintercept = 0.05)) + 
 	theme_bw() +
 	theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) +
-	ggtitle("Under H0 - nominal Type I error? (for selProp = 95%)")
+	ggtitle("Under H0 - nominal Type I error? (for selProp = 90%)")
 	 
 
 # H1: delta = 0.5
@@ -97,14 +97,14 @@ theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) +
 ggtitle("Under H1 - Power? (for selProp = 60%, delta=0.5)")
 
 hyp.summ %>% 
-filter(selProp == 0.95, delta==0.5) %>% 
+filter(selProp == 0.90, delta==0.5) %>% 
 ggplot(aes(x = loop, y = H0.reject, group = loop)) + 
 geom_point() + 
 facet_grid(qrp.label ~ method) + 
 geom_hline(aes(yintercept = 0.80), linetype="dotted") + 
 theme_bw() +
 theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) +
-ggtitle("Under H1 - Power? (for selProp = 95%, delta=0.5)")
+ggtitle("Under H1 - Power? (for selProp = 90%, delta=0.5)")
 
 # ---------------------------------------------------------------------
 # Compute rejection ratios
@@ -132,24 +132,25 @@ glimpse(RR.wide)
 
 RR.wide$rejectionRatio <- RR.wide$Power/RR.wide$TypeI
 
+#+ echo=FALSE, fig.width=11, fig.height=8, warning=FALSE
 ggplot(RR.wide %>% filter(selProp == 0.6), aes(x=loop, y=log(rejectionRatio), group=loop)) + 
 	geom_point() + 
 	facet_grid(qrp.label ~ method) + theme_bw() + geom_hline(yintercept=log(16), linetype="dotted") + 
 	theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) + coord_cartesian(ylim=c(0, 10)) +
 	ggtitle("Rejection Ratio (for selProp = 60%, H0 against delta=0.5)")
 
-ggplot(RR.wide %>% filter(selProp == 0.95), aes(x=loop, y=log(rejectionRatio), group=loop)) + 
+ggplot(RR.wide %>% filter(selProp == 0.90), aes(x=loop, y=log(rejectionRatio), group=loop)) + 
 	geom_point() + 
 	facet_grid(qrp.label ~ method) + theme_bw() + geom_hline(yintercept=log(16), linetype="dotted") + 
 	theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) + coord_cartesian(ylim=c(0, 10)) +
-	ggtitle("Rejection Ratio (for selProp = 95%, H0 against delta=0.5)")
+	ggtitle("Rejection Ratio (for selProp = 90%, H0 against delta=0.5)")
 	
 	
 # ---------------------------------------------------------------------
 # Rate of significant results in the wrong direction
 
 wrongSig <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value) %>% 
-	filter(!method %in% c("pcurve.evidence", "pcurve.lack"), delta < 0.5) %>% 
+	filter(!method %in% c("pcurve.evidence", "pcurve.lack"), delta < 0.5, !is.na(b0_estimate), !is.na(b0_p.value)) %>% 
 	group_by(condition, k, delta, qrpEnv, selProp, tau, method) %>% 
 	summarise(
 		wrongSig = sum((b0_estimate < 0) & (b0_p.value < .05)) / n()
@@ -159,6 +160,7 @@ wrongSig <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value) %>%
 # order loop factor alphabetically
 wrongSig$loop <- factor(wrongSig$loop, levels = mixedsort(unique(wrongSig$loop)))
 
-
+#' #Percentage of significant estimates in the *wrong* direction
+#+ echo=FALSE, fig.width=11, fig.height=8, warning=FALSE
 ggplot(wrongSig, aes(x=loop, y=wrongSig, color=factor(delta))) + geom_point() + facet_grid(selProp ~ qrpEnv ~ method) + theme(axis.text.x = element_text(angle = 90, size=6, hjust=1, vjust=.5)) + ylab("Percentage of significant estimates in wrong direction")
 

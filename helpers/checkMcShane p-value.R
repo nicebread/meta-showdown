@@ -16,3 +16,4 @@ res2 <- res %>% filter(method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.l
 		zeroInCI=conf.low < 0 & conf.high > 0,
 		reject = p.value < .05
 	)
+

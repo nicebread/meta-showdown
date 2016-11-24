@@ -25,7 +25,7 @@ TPSM.est <- function(t, n1, n2, long=TRUE) {
 			estimate = mm[[1]],
 			std.error = SE,
 			statistic = NA,
-			p.value = pnorm(abs(mm[[1]][1]) / SE[1], lower.tail=FALSE)*2,
+			p.value = pnorm(abs(mm[[1]]) / SE, lower.tail=FALSE)*2,
 			conf.low = mm[[1]] + qnorm(alpha/2)*SE,
 			conf.high = mm[[1]] + qnorm(1-alpha/2)*SE
 		)

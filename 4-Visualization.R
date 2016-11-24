@@ -21,47 +21,46 @@ summ2 <- summ %>% filter(
 	)
 
 #+ echo=FALSE, fig.width=11, fig.height=8
-
 summ2 %>% filter(selProp==0, tau==0.2) %>% 
-	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
+	ggplot(aes(x=qrp.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
-	facet_grid(qrp.label~method) + 
+	facet_grid(k.label~method) + 
 	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 0% and tau=0.2)")
 
 
 summ2 %>% filter(selProp==0.6, tau==0.2) %>% 
-	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
+	ggplot(aes(x=qrp.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
-	facet_grid(qrp.label~method) + 
+	facet_grid(k.label~method) + 
 	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 60% and tau=0.2)")
 
 summ2 %>% filter(selProp==0.6, tau==0.4) %>% 
-	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
+	ggplot(aes(x=qrp.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
-	facet_grid(qrp.label~method) + 
+	facet_grid(k.label~method) + 
 	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 60% and tau=0.4)")
 	
 	
-summ2 %>% filter(selProp==0.95, tau==0.2) %>% 
-	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
+summ2 %>% filter(selProp==0.90, tau==0.2) %>% 
+	ggplot(aes(x=qrp.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
-	facet_grid(qrp.label~method) + 
+	facet_grid(k.label~method) + 
 	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 95% and tau=0.2)")
 	
 	
-summ2 %>% filter(selProp==0.95, tau==0.4) %>% 
-	ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
+summ2 %>% filter(selProp==0.90, tau==0.4) %>% 
+	ggplot(aes(x=qrp.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 	geom_pointrange(position=position_dodge(width=0.7)) + 
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
-	facet_grid(qrp.label~method) + 
+	facet_grid(k.label~method) + 
 	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 95% and tau=0.4)")
 
