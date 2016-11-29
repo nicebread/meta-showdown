@@ -28,13 +28,13 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-expFinU = function(delta, tau, empN, meanN, minN){
+expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
   
   #get the per-group sample size 
   if (empN==TRUE){
-    n = sample(perGrp$x,1)
+    n <- sample(perGrp$x,1) + empN.boost
   } else {
-    n = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+    n <- rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
   }
   
   #generate two independent vectors of raw data 
@@ -323,14 +323,14 @@ analyB <- function(g1,g2,g3,g4,D,multDV,out,mod){
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-expFinB = function(delta, tau, empN, maxN, meanN, minN, strat){
+expFinB = function(delta, tau, empN, maxN, meanN, minN, strat, empN.boost=empN.boost){
   
   #correlation between multiple DVs is set to 0.50 as default
   cbdv = 0.5
   
   # if QRP strategy is NONE
   if (strat=='none'){
-    a = expFinU(delta, tau, empN, meanN, minN)
+    a = expFinU(delta, tau, empN, meanN, minN, empN.boost=empN.boost)
   }
   
   #if QRP strategy is MODERATE
@@ -341,10 +341,10 @@ expFinB = function(delta, tau, empN, maxN, meanN, minN, strat){
     
     #determine the starting per-group sample size
     #using either a specified distribution OR the empirical distribition
-    if (empN==T){
-      s = sample(perGrp$x,1)
+    if (empN == TRUE){
+      s <- sample(perGrp$x,1) + empN.boost
     }else{
-      s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+      s <- rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
     }
     
     s = round(s/2)
@@ -388,10 +388,10 @@ expFinB = function(delta, tau, empN, maxN, meanN, minN, strat){
     
     #determine the starting per-group sample size
     #using either a specified distribution OR the empirical distribition
-    if (empN==T){
-      s = sample(perGrp$x,1)
+    if (empN == TRUE){
+      s <- sample(perGrp$x,1) + empN.boost
     }else{
-      s = rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
+      s <- rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
     }
     
     s = round(s/2)
@@ -453,10 +453,11 @@ expFinB = function(delta, tau, empN, maxN, meanN, minN, strat){
 #' @param meanN the average of the truncated normal for sample size
 #' @param selProp the proportion of the sample affected by bias
 #' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
+#' @param empN.boost A constant that is added to the empirical effect sizes
 
 dataMA <- function(k, delta, tau,
                    empN, maxN, meanN, minN,
-                   selProp, qrpEnv) {  
+                   selProp, qrpEnv, empN.boost = 0) {  
   
   #get the number of studies exposed to publication selection bias (and those now exposed)
   kB = round(k*selProp)
@@ -495,7 +496,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias or from QRP (strat = none)
   if (kU_None > 0){
     for (i in 1: kU_None){
-      rU_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN,strat='none') 
+      rU_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost) 
       rU_None[i,11] = 0 #number file drawered
       rU_None[i,12] = 0 #no sel
       rU_None[i,13] = 0 #no QRP
@@ -505,7 +506,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias but affected by QRP strat = mod
   if (kU_Mod > 0){
     for (i in 1: kU_Mod){
-      rU_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+      rU_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost) 
       rU_Mod[i,11] = 0 #number file drawered
       rU_Mod[i,12] = 0 #no sel
       rU_Mod[i,13] = 1 #mod qrp
@@ -515,7 +516,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias and from QRP strat = agg
   if (kU_Agg > 0){
     for (i in 1: kU_Agg){
-      rU_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+      rU_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost) 
       rU_Agg[i,11] = 0 #number file drawered
       rU_Agg[i,12] = 0 #no sel
       rU_Agg[i,13] = 2 #agg qrp
@@ -526,12 +527,12 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and by QRP strat = none
   if (kB_None > 0){
     for (i in 1:kB_None){
-      rB_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+      rB_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost) 
       rB_None[i,11] = 0 #number of file drawered studes
       rB_None[i,12] = 1 #selection
       rB_None[i,13] = 0 #no QRP
       repeat {if (rB_None[i,1]>0 & rB_None[i,2]<.05) break else{
-        rB_None[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='none') 
+        rB_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost) 
         rB_None[i,11] = rB_None[i,11] + 1} #count file-drawered studies
         rB_None[i,12] = 1 #sel
         rB_None[i,13] = 0 #no QRP
@@ -542,12 +543,12 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and from QRP strat = mod
   if (kB_Mod > 0){
     for (i in 1:kB_Mod){
-      rB_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+      rB_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost) 
       rB_Mod[i,11] = 0 #number of file drawered studes
       rB_Mod[i,12] = 1 #sel
       rB_Mod[i,13] = 1 #mod QRP
       repeat {if (rB_Mod[i,1]>0 & rB_Mod[i,2]<.05) break else{
-        rB_Mod[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='mod') 
+        rB_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost) 
         rB_Mod[i,11] = rB_Mod[i,11] + 1} #count file-drawered studies
         rB_Mod[i,12] = 1 #sel
         rB_Mod[i,13] = 1 #mod QRP
@@ -558,12 +559,12 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and from QRP strat = agg
   if (kB_Agg > 0){
     for (i in 1:kB_Agg){
-      rB_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+      rB_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost) 
       rB_Agg[i,11] = 0 #number of file drawered studes
       rB_Agg[i,12] = 1 #sel
       rB_Agg[i,13] = 2 #Agg QRP
       repeat {if (rB_Agg[i,1]>0 & rB_Agg[i,2]<.05) break else{
-        rB_Agg[i,1:10] = expFinB(delta,tau,empN,maxN,meanN,minN,strat='agg') 
+        rB_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost) 
         rB_Agg[i,11] = rB_Agg[i,11] + 1} #count file-drawered studies
         rB_Agg[i,12] = 1 #sel
         rB_Agg[i,13] = 2 #Agg QRP
