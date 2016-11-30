@@ -1,6 +1,33 @@
 #### functions for p-curve ES. Code adapted from Uri Simonsohn ####
 
-## TODO: Change res output to new format
+######################################
+# pcurve_loss function
+# this code mirrors the functionality of the original loss function
+# written by Simonsohn et al.
+pcurve_loss <- function(pc_data, dobs) {
+  options(warn=-1)
+  t.sig <- pc_data$t_obs
+  df.sig <- pc_data$df_obs
+  ncp_est <- sqrt((df.sig+2)/4)*dobs                          
+  tc <- qt(.975, df.sig)                     
+  power_est <- 1-pt(tc, df.sig, ncp_est)
+  p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
+  ppr <- (p_larger-(1-power_est))/power_est
+  
+  # Problem: ks.test gives an error if the number of test statistics is small and
+  # bootstrapping selects a weird sample. In case of errors, return a large loss value
+ KSD <- tryCatch({
+      ks.test(ppr, punif)$statistic
+  }, error = function(e) {
+	  return(1e10) # return a large loss function value
+  })
+  
+  # print progression of loss function
+  #cat(paste0("dobs=", round(dobs, 3), "; loss=", round(KSD, 3), "\n"))
+  
+  options(warn=0)
+  return(KSD)          
+}
 
 ##########################
 # pcurveEst is the function that should be called to provide p-curve
@@ -18,9 +45,11 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   require(dplyr) # dplyr is needed for filter functions below
   out <- matrix(NA, 1, 3)
   colnames(out) <- c("dPcurve","lbPcurve","ubPcurve")
-  # here let's define dmin and dmax? 
-  dmin = -2
-  dmax = 4
+
+  # define dmin and dmax (the range of parameter search)
+  dmin <- -2
+  dmax <- 4
+  
   # pcurve_prep is called first to sort the data into a frame and verify it is compatible
   pc_data = pcurve_prep(t_obs = t, df_obs = df)
   # next we check to make sure we have more than 0 rows (at least 1 study); if not, return a null
@@ -28,12 +57,15 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
 	outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate"), value=NA)
     return(outlong)
   }
+  
   # now let's get the pcurve ES estimate
-  out[1, 1] <- optimize(pcurve_loss, c(dmin, dmax), pc_data = pc_data)$minimum
+  out[1, 1] <- optim(par=0, fn=pcurve_loss, pc_data = pc_data, method="BFGS")$par
+  
   if (CI==TRUE) {
-    d.boot <- pcurve_estimate_d_CI(pc_data = pc_data, dmin=dmin, dmax=dmax, B=B, progress=progress)
-    CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
-    out[1, 2:3] <- CI.est
+	  warning("CI not properly implemented.")
+    #d.boot <- pcurve_estimate_d_CI(pc_data = pc_data, dmin=dmin, dmax=dmax, B=B, progress=progress)
+    #CI.est <- quantile(d.boot, prob=c((1-level)/2, 1-(1-level)/2))
+    #out[1, 2:3] <- CI.est
   }
   
   if (long==FALSE) {
@@ -73,34 +105,6 @@ pcurve_prep <- function(t_obs, df_obs){
   clean_data = filter(unfiltered_data, p_vals < .05)
   # all done!
   return(clean_data)
-}
-
-
-######################################
-# pcurve_loss function
-# this code mirrors the functionality of the original loss function
-# written by Simonsohn et al.
-pcurve_loss <- function(pc_data, dobs) {
-  options(warn=-1)
-  t.sig = pc_data$t_obs
-  df.sig = pc_data$df_obs
-  ncp_est <- sqrt((df.sig+2)/4)*dobs                          
-  tc <- qt(.975, df.sig)                     
-  power_est <- 1-pt(tc, df.sig, ncp_est)
-  p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
-  ppr <- (p_larger-(1-power_est))/power_est
-  
-  # TODO: Check if this is valid!
-  # Problem: ks.test gives an error if the number of test statistics is small and
-  # bootstrapping selects a weird sample
- KSD <- tryCatch({
-      ks.test(ppr, punif)$statistic
-  }, error = function(e) {
-	  return(1e10) # return a large loss function value
-  })
-  
-  options(warn=0)
-  return(KSD)          
 }
 
 

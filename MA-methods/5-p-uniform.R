@@ -16,6 +16,7 @@ puniformEst <- function(t.value, n1, n2, long=TRUE) {
 		return(returnRes(res, long))
 	}
 	
+	# by using side="right", the p-uniform already does a one-sided selection
 	PU <- puniform(tobs=t.value, n1i=n1, n2i=n2, alpha = 0.05, side="right", method="P", plot = FALSE)
 	
 	res <- data.frame(
