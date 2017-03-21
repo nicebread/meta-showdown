@@ -17,7 +17,8 @@ load("summ.RData")
 
 # remove selProp = 0 (unrealistic; show in Appendix)
 summ2 <- summ %>% filter(
-	!method %in% c("PET.lm", "PEESE.lm", "pcurve.evidence", "pcurve.lack")
+	#!method %in% c("PET.lm", "PEESE.lm", "pcurve.evidence", "pcurve.lack")
+	!method %in% c("pcurve.evidence", "pcurve.lack")
 	)
 
 #+ echo=FALSE, fig.width=11, fig.height=8
@@ -53,7 +54,7 @@ summ2 %>% filter(selProp==0.90, tau==0.2) %>%
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
 	facet_grid(k.label~method) + 
-	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 95% and tau=0.2)")
+	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 90% and tau=0.2)")
 	
 	
 summ2 %>% filter(selProp==0.90, tau==0.4) %>% 
@@ -62,5 +63,5 @@ summ2 %>% filter(selProp==0.90, tau==0.4) %>%
 	geom_hline(aes(yintercept=delta, color=factor(delta))) + 
 	coord_flip(ylim=c(-0.6, 1.1)) +
 	facet_grid(k.label~method) + 
-	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 95% and tau=0.4)")
+	theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 90% and tau=0.4)")
 
