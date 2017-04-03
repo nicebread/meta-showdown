@@ -15,20 +15,13 @@ registerDoParallel(cores=20)
 
 # ---------------------------------------------------------------------
 #  experimental factors
-# Delta = 0, .2, .5, .8
-# Tau = 0, .25, .5
-# k = 10, 30, 60, 100
-# selProp = 0, .6, 1
-# qrpEnv = none, med, high
-
-k_set <- c(10, 30, 60, 100)
-delta_set <- c(0, .2, .5, .8)
-qrpEnv_Set <- c("none", "med", "high")
-selProp_set <- c(0, .6, .95)
-tau_set <- c(0, .2, .4)
+k_set <- c(10, 30, 60, 100)							# number of studies in each MA
+delta_set <- c(0, .2, .5, .8)						# true mean of effect sizes
+qrpEnv_Set <- c("none", "med", "high")	# QRP environment
+selProp_set <- c(0, .6, .9)							# publication bias
+tau_set <- c(0, .2, .4)									# heterogeneity
 
 # params stores all possible combinations of experimental factors
-# Here, I always use strong pub bias with 100%
 params <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, selProp=selProp_set, tau=tau_set)
 rownames(params) <- NULL
 print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))

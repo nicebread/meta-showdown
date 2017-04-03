@@ -13,7 +13,7 @@ print(paste0("Collecting results from ", length(analysisFiles), " analysis files
 
 # loop through all files
 res_list <- list()
-for (f in analysisFiles[2]) {
+for (f in analysisFiles) {
 	print(f)
 	load(f)	# the simulation data frame always is called "res"
 	#res$id <- paste0(f, "_", res$id)
@@ -31,12 +31,11 @@ save(res.final, file="res.final.RData")
 tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
-## remove p-curve and p-uniform with < 4 studies, drop unused factor levels
-res2 <- res.final %>% droplevels()
+res.final <- res.final %>% droplevels()
 
 # reshape long format to wide format
-res.wide <- dcast(res2, id + condition + k + delta + qrpEnv + selProp + tau + method ~ term + variable, value.var="value")
-head(res.wide)
+res.wide <- dcast(res.final, id + condition + k + delta + qrpEnv + selProp + tau + method ~ term + variable, value.var="value")
+head(res.wide, 16)
 
 # define some meaningful labels for the plots
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
@@ -54,6 +53,7 @@ save(res.wide, file="res.wide.RData", compress="gzip")
 
 
 # save a filtered version
+## remove p-curve and p-uniform with < 4 studies, drop unused factor levels
 res.wide.red <- res.wide %>% 
   filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack")) %>% 
   filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") | 
