@@ -16,6 +16,12 @@ summ2 <- summ %>% filter(
 )
 
 
+#change the text that appears in facet columns
+lev2 = levels(summ2$method)
+lev2[3] = "PET"
+lev2[4] = "PEESE"
+lev2[7] = "PET-PEESE"
+levels(summ2$method) <- lev2
 
 #Extract Legend 
 g_legend<-function(a.gplot){ 
