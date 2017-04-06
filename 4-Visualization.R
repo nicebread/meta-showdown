@@ -144,11 +144,3 @@ grid.arrange(plotA,plotB,plotC,legend,nrow=19,layout_matrix = cbind(c(1,1,1,1,1,
 
 dev.off()
 
-
-
-
-
-
-
-
-

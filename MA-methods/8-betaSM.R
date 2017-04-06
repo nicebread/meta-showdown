@@ -1,7 +1,10 @@
 # ---------------------------------------------------------------------
 # These functions are from Citkowicz, M., & Vevea, J. L. (2017). A parsimonious weight function for modeling publication bias. Psychological Methods, 22(1), 28–41. http://doi.org/10.1037/met0000119
 
-# we only run random effects
+# They have been adapted from the code in the Word files of the supplemental material. Several adjustments had to be made to ensure variable scopes, and the code still is far from ideal.
+# BE CAREFUL: The adjusted model frequently gives completely off estimates.
+
+# we only run random effects here
 source("betaSM_functions/RE.models.R")
 source("betaSM_functions/SERE.functions.R")
 source("betaSM_functions/SEFE.adjusted.R")
@@ -111,6 +114,11 @@ betaSM.est <- function(d, v, long=TRUE, full=FALSE) {
 		pLRRE <- 1-pchisq(LRRE,dfLRRE)
 		print("Likelihood-ratio test:"); print("Chi-squared estimate, degrees of freedom, and p-value"); print(c(LRRE,dfLRRE,pLRRE))
 		print("Assess convergence:"); print("Unadjusted model Adjusted model"); print(c(REunadjusted$conv,REadjusted$conv))
+		
+		print("Unadjusted parameter estimates:"); print("vc beta0"); print(REunadjustedest)
+		print("Standard errors:"); print(UnadjustedRESEs)
+		print("Covariance matrix:"); print(UnadjustedREcovmat)
+		
 	}
 
 	#Estimate the data variability using Q-within and I-squared.
@@ -149,20 +157,3 @@ betaSM.est <- function(d, v, long=TRUE, full=FALSE) {
 
 	returnRes(res.wide, long)
 }
-
-
-# set.seed(5)
-# dat <- dataMA(k = 20, delta = 0.41, tau = 0.10, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.3, qrpEnv = "none")
-# dat <- data.frame(dat)
-# TPSM.est(t=dat$t, n1=dat$n1, n2=dat$n2)
-# betaSM.est(d=dat$d, v=dat$v)
-# RMA.est(d=dat$d, v=dat$v)
-#
-# # check Citkowicz own data set
-#
-# d <- c(1.01, 0.82, 0.59, 0.44, 0.84, 0.73, 1.12, 0.04, 0.24, 0.32, 1.04, 1.31, 0.59, 0.66, 0.62, 0.47, 1.08, 0.98, 0.26, 0.39, 0.60, 0.94, 0.11)
-# v <- c(0.2704, 0.2116, 0.0529, 0.0324, 0.0841, 0.0841, 0.1296, 0.1369, 0.0225, 0.1600, 0.1024, 0.3249, 0.0841, 0.0361, 0.0961, 0.0729, 0.1024, 0.1024, 0.0324, 0.0324, 0.0961, 0.2809, 0.0729)
-#
-# RMA.est(d=d, v=v)
-# betaSM.est(d=d, v=v, full=TRUE)
-# betaSM.est(d=d, v=v, full=FALSE)
