@@ -8,7 +8,8 @@ FEmean <- sum(w*y)/sum(w)
 Qwithinmeanonly <- function(FEmean) {
    resid <- y-FEmean
    w <- 1/v
-   return(sum(w*resid^2)) }
+   return(sum(w*resid^2)) 
+ }
 
 Qw <- Qwithinmeanonly(FEmean)
 dfQw <- k-1

@@ -1,7 +1,7 @@
 
 #2) Calculate the gradient.
 
-gradient <- function(SEREadjustedest, y, v, p) {
+SERE.gradient <- function(SEREadjustedest, y, v, p) {
    a2 <- SEREadjustedest[1]
    b2 <- SEREadjustedest[2]
    vc2 <- SEREadjustedest[3]

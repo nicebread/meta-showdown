@@ -1,7 +1,7 @@
 
 #2) Calculate the gradient.
 
-gradient <- function(SEFEadjustedest, y, v, p) {
+SEFE.gradient <- function(SEFEadjustedest, y, v, p) {
    a2 <- SEFEadjustedest[1]
    b2 <- SEFEadjustedest[2]
    vc2 <- 0
