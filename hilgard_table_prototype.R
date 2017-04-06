@@ -8,7 +8,7 @@ summ2 <- summ %>%
   ungroup() %>% 
   select(-condition, -k.label, -delta.label, -qrp.label,
          -selProp.label, -tau.label, -meanEst) %>% 
-  filter(!(method %in% c("pcurve.evidence", "pcurve.lack")))
+  filter(!(method %in% c("pcurve.evidence", "pcurve.lack", "pcurve.hack")))
 
 # maybe comparison against RE is useful, e.g. method - RE difference in ME, RMSE, etc?
 
