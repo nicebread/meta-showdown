@@ -1,5 +1,6 @@
 # Thinking about tables...
 source("start.R")
+library(tidyr)
 
 load("summ.Rdata")
 
@@ -25,6 +26,37 @@ summ.rmse <- summ2 %>%
 
 # How should I filter these? How should I arrange these?
 # Could start by filtering for some delta, selProp, tau
+# given biasing influence of QRP, maybe makes more sense to arrange by QRP
+# then by k
+
+# delta = .5, selProp = 0, tau = .2 ----
+summ.me %>% 
+  filter(delta == .5, 
+         selProp == 0,
+         tau == .2) %>% 
+  View
+# RE has slight upward bias under QRP
+# TF has very slight downward bias (-.02) that gets bigger under QRP (-.06)
+# PET has modest downward bias (-.05) but QRP badly exacerbates (-.20ish)
+# PEESE has very slight downward bias (-.03) but QRP exacerbates (-.09, -.1)
+# PETPEESE inherits PET's bias
+# p-curve and p-uniform, as ever, tau upward bias, QRP downward bias
+# TopN is unbiased
+# 3PSM is unbiased, but QRPs can inflict downward bias (-.1 -- -.18)
+
+summ.rmse %>% 
+  filter(delta == .5, 
+         selProp == 0,
+         tau == .2) %>% 
+  View
+# naturally nothing can be RE in this scenario
+# TF is only slightly worse
+# PET is substantially worse due to its bias
+# PEESE is rather more variable than RE and TF (2-3x variance)
+# p-curve/uniform suffer for their bias (from tau), 2-3x variance
+# TopN is less efficient than p-curve
+# 3psm starts out worse than TF, passes it at k => 60,
+#   but QRPs will inflict bad bias
 
 
 # delta = .5, selProp = .6, tau = .2. ----
@@ -65,12 +97,29 @@ summ.me %>%
          selProp == .6,
          tau == .2) %>% 
   View
+# TF cuts bias slightly
+# PET cuts it further but is still upward biased, which is surprising
+# PEESE cuts it a bit more than TF, has compensating downward bias from QRPS
+# p-curve has bias due to tau, compensating downward bias from QRP
+# ditto p-uniform
+# TopN cuts bias a little better than TAF but not so well as PET, PEESE, p
+# 3PSM looks great but has downward bias from QRPs
 
 summ.rmse %>% 
-  filter(delta == .5, 
+  filter(delta == 0, 
          selProp == .6,
          tau == .2) %>% 
   View
+# TF provides slight benefit to RMSE relative to RE
+# PET is an improvement at k => 30, better than TF unless QRP = high
+# PEESE is better than TF for k=> 30, and downward bias from QRP helps
+# PETPEESE is an improvement from TF for k => 30; downward QRP bias helps
+# p-curve is an improvement by k = 30 
+#   but depends on competing bias of tau and QRP
+# p-uniform seems slightly more efficient than p-curve somehow
+# TopN is worse than TF at k < 60, only slightly better thereafter
+# 3PSM looks quite good but underestimation can be an issue under QRPs
+
 
 # delta = 0, tau = 0, selProp = .6 ----
 # e.g., the effect is definitely zero
@@ -103,3 +152,42 @@ summ.rmse %>%
 # p-uniform is somehow more efficient than p-curve
 # TopN really does help a bit, moreso than trim-and-fill (but not PEESE)
 # 3PSM looks beautiful
+
+
+# Bigger table, better arrangement
+# I think we should set aside QRPs for the main results,
+# just mention that they generally inflict downward bias on many estimators
+
+# accuracy of techniques when no bias or QRP
+summ.me %>% 
+  filter(tau != .4,
+         selProp == 0, qrpEnv == "none") %>% # other arguments to come
+  arrange(delta, tau, k) %>% 
+  View()
+summ.mse %>% 
+  filter(tau != .4,
+         selProp == 0, qrpEnv == "none") %>% # other arguments to come
+  arrange(delta, tau, k) %>% 
+  View()
+
+# accuracy of techniques when selProp = 60%, no QRP
+summ.me %>% 
+  filter(tau != .4,
+         selProp == 0.6, qrpEnv == "none") %>% # other arguments to come
+  arrange(delta, tau, k) %>% 
+  View()
+summ.rmse %>% 
+  filter(tau != .4,
+         selProp == 0.6, qrpEnv == "none") %>% # other arguments to come
+  arrange(delta, tau, k) %>% 
+  View()
+
+n1 <- 50; n2 <- 50
+df <- n1+n2-2
+d <- seq(0, 1, .01)
+vard.1 <- (n1 + n2)/(n1 * n2) + (d^2 / (2 *df)) * (n1 + n2) / df
+vard.2 <- 2/n1 + (d*2)/(2*(n1-3.94))
+vard.3 <- (n1 + n2)/(n1 * n2)
+plot(d, vard.2, type = 'l')
+lines(d, vard.1, col = 'darkred')
+abline(h = vard.3, col = "blue")
