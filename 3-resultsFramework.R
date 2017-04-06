@@ -55,7 +55,7 @@ save(res.wide, file="res.wide.RData", compress="gzip")
 # save a filtered version
 ## remove p-curve and p-uniform with < 4 studies, drop unused factor levels
 res.wide.red <- res.wide %>% 
-  filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack")) %>% 
+  #filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack")) %>% 
   filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") | 
          (method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & kSig_estimate >= 4))
           
