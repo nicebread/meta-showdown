@@ -9,10 +9,9 @@ load("summ.RData")
 # ---------------------------------------------------------------------
 # Show estimate
 
-# remove selProp = 0 (unrealistic; show in Appendix)
 summ2 <- summ %>% filter(
   #!method %in% c("PET.lm", "PEESE.lm", "pcurve.evidence", "pcurve.lack")
-  !method %in% c("pcurve.evidence", "pcurve.lack","topN.fixed")
+  !method %in% c("pcurve.evidence", "pcurve.lack", "pcurve.hack", "topN.fixed")
 )
 
 

@@ -62,6 +62,15 @@ res.wide.red <- res.wide %>%
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
 
+# how many simulations do we have in each condition, after we removed all k<4 fpr p-curve etc.?
+tab2 <- res.wide.red %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id, method) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=length(unique(id)))
+print(tab2, n=54)
+
+# remove pcurve and puniform estimates for all conditions which have less than 500/1000 successful meta-analyses
+res.wide.red <- inner_join(res.wide.red, tab2)
+
+res.wide.red <- res.wide.red %>% filter(nMA.with.kSig.larger.3 >= 500)
+
 
 # ---------------------------------------------------------------------
 #  Compute summary measures across replications
