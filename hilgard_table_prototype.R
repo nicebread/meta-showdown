@@ -118,7 +118,7 @@ summ.rmse %>%
   facet_grid(delta~tau) +
   geom_hline(yintercept = 0)
 
-# does moving from selProp .6 to .9 change bias of techniques?
+# does moving from selProp .6 to .9 change bias of techniques? ----
 summ.me %>% 
   filter(selProp %in% c(0.6, 0.9),
          qrpEnv == 'none',
@@ -139,7 +139,7 @@ summ.rmse %>%
   gather(key = method, value = bias, reMA, topN.fixed, 
          TF, puniform, `3PSM`, PETPEESE.lm) %>% 
   ggplot(aes(x = as.factor(selProp), y = bias, col = as.factor(delta))) +
-  geom_point() +
+  geom_jitter(height = 0, width = .1) +
   facet_wrap(~method)
 
 # selProp == .9, no QRP ---
