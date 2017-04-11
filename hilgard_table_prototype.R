@@ -1,5 +1,8 @@
 # Thinking about tables...
 source("start.R")
+# install.packages('tidyr')
+library(tidyr)
+library(ggplot2)
 
 load("summ.Rdata")
 
@@ -25,6 +28,191 @@ summ.rmse <- summ2 %>%
 
 # How should I filter these? How should I arrange these?
 # Could start by filtering for some delta, selProp, tau
+
+# No pub bias and no QRP ----
+
+summ.me %>% 
+  filter(selProp == 0,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+# RE and TopN are unbiased
+# PET is downward biased when d > 0
+# PEESE is unbiased at d = 0, 
+#   shows slight downward bias when d is large (maybe due to SE being a function of d)
+#   downward bias increases as tau increases
+# p-curve / p-uniform are unbiased but become upward biased as tau increases
+# 3PSM is perfectly unbiased
+
+summ.rmse %>% 
+  filter(selProp == 0,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+# everything is strictly less efficient than RE, of course
+# PET and PEESE are less efficient even under best-case scenario
+  # no difference between lm and rma
+# p-curve and p-uniform quite inefficient, particularly when delta is small
+# TopN loses efficiency, of course
+# 3PSM's loss of efficiency is not bad -- more efficient than TF
+
+# selProp = .6, no QRP ----
+# Bias
+summ.me %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  arrange(delta, k, tau) %>% 
+  View
+
+# PET and tau
+summ.me %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PET.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# PEESE and tau
+summ.me %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PEESE.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# PETPEESE and tau
+summ.me %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PETPEESE.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# RMSE
+summ.rmse %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  arrange(delta, tau, k) %>% 
+  View
+
+# metaregression vs naive
+summ.rmse %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
+  ggplot(aes(x = k, y = rmse, col = method)) +
+  geom_jitter(height = 0, width = 2, size = 3) +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# loss of efficiency from TopN vs naive
+summ.rmse %>% 
+  filter(selProp == .6,  
+         qrpEnv == "none") %>% 
+  gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
+  ggplot(aes(x = k, y = rmse, col = method)) +
+  geom_jitter(height = 0, width = 4, size = 2) +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# does moving from selProp .6 to .9 change bias of techniques?
+summ.me %>% 
+  filter(selProp %in% c(0.6, 0.9),
+         qrpEnv == 'none',
+         tau == 0) %>% 
+  gather(key = method, value = bias, reMA, topN.fixed, 
+         TF, puniform, `3PSM`, PETPEESE.lm) %>% 
+  ggplot(aes(x = as.factor(selProp), y = bias, col = as.factor(delta))) +
+  geom_point() +
+  facet_wrap(~method)
+# just makes bias moreso in reMA, TF, topN,
+# can lead to more wild underadjustments in PETPEESE,
+# actually helps pcurve/uniform
+
+summ.rmse %>% 
+  filter(selProp %in% c(0.6, 0.9),
+         qrpEnv == 'none',
+         tau == 0) %>% 
+  gather(key = method, value = bias, reMA, topN.fixed, 
+         TF, puniform, `3PSM`, PETPEESE.lm) %>% 
+  ggplot(aes(x = as.factor(selProp), y = bias, col = as.factor(delta))) +
+  geom_point() +
+  facet_wrap(~method)
+
+# selProp == .9, no QRP ---
+summ.me %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  arrange(delta, k, tau) %>% 
+  View
+
+# PET and tau
+summ.me %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PET.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# PEESE and tau
+summ.me %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PEESE.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# PETPEESE and tau
+summ.me %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  ggplot(aes(x = k, y = PETPEESE.lm)) +
+  geom_point() +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# And the rest
+summ.me %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  gather(key = method, value = bias, reMA, topN.fixed, TF, puniform, `3PSM`, PETPEESE.lm) %>% 
+  #mutate(method = relevel(method, "reMA")) %>% 
+  ggplot(aes(x = k, y = bias, col = method)) +
+  geom_jitter(width = 3, height = 0, size = 3) +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# RMSE
+summ.rmse %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  arrange(delta, tau, k) %>% 
+  View
+
+# metaregression vs naive
+summ.rmse %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
+  ggplot(aes(x = k, y = rmse, col = method)) +
+  geom_jitter(height = 0, width = 2, size = 3) +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
+
+# loss of efficiency from TopN vs naive
+summ.rmse %>% 
+  filter(selProp == .9,  
+         qrpEnv == "none") %>% 
+  gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
+  ggplot(aes(x = k, y = rmse, col = method)) +
+  geom_jitter(height = 0, width = 4, size = 3) +
+  facet_grid(delta~tau) +
+  geom_hline(yintercept = 0)
 
 
 # delta = .5, selProp = .6, tau = .2. ----
@@ -72,12 +260,12 @@ summ.rmse %>%
          tau == .2) %>% 
   View
 
-# delta = 0, tau = 0, selProp = .6 ----
+# delta = 0, tau = 0 ----
 # e.g., the effect is definitely zero
 summ.me %>% 
   filter(delta == 0, 
-         selProp == .6,
          tau == 0) %>% 
+  arrange(selProp, qrpEnv) %>% 
   View
 # TF fails miserably at adjusting to zero
 # PET adjusts to zero, overadjusts when QRPs present
@@ -103,3 +291,64 @@ summ.rmse %>%
 # p-uniform is somehow more efficient than p-curve
 # TopN really does help a bit, moreso than trim-and-fill (but not PEESE)
 # 3PSM looks beautiful
+
+# Under what conditions does PEESE outperform reMA, TF, puniform, topN?
+summ.me %>% 
+  filter(abs(PEESE.lm) < abs(TF), abs(PEESE.lm) < abs(reMA)) %>% 
+  arrange(selProp, delta) %>% 
+  View()
+# Casual inspection, may not apply to all cases
+# PEESE is less biased than reMA and TF when 
+  # 1) The effect size is small (d =< .5) and there is pub bias (selProp >= .6)
+  #     a) PEESE's advantage increases with selProp, decreases with delta and QRP
+summ.rmse %>% 
+  filter(abs(PEESE.lm) < abs(TF), abs(PEESE.lm) < abs(reMA)) %>% 
+  arrange(selProp, delta) %>% 
+  View()
+# PEESE has lower RMSE than reMA and TF when when its bias is small, 
+# e.g. when the advantage of accounting for selProp outweights downward bias of 
+# high delta or QRP
+# I guess it does not perform well at delta = .8
+# Seems to always guess a smallish d.
+
+# Under what conditions do lm and rma differ?
+# first, in ME
+ggplot(summ.me, aes(x = PET.lm, y = PET.rma)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+
+ggplot(summ.me, aes(x = abs(PET.lm), y = abs(PET.rma))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) 
+# I think this indicates PET.rma has greater downward bias than PET.lm?
+
+ggplot(summ.me, aes(x = abs(PET.lm), y = abs(PET.rma), col = as.factor(delta))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  facet_wrap(~tau)
+
+ggplot(summ.me, aes(x = abs(PET.lm), y = abs(PET.rma), col = as.factor(delta))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  facet_grid(selProp~tau)
+# Difference between PET.lm and PET.rma seems to depend on tau
+
+ggplot(summ.me, aes(x = PEESE.lm, y = PEESE.rma)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+
+ggplot(summ.me, aes(x = abs(PEESE.lm), y = abs(PEESE.rma))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+# Difference between PEESE.lm and PEESE.rma seems quite subtle
+
+# Second, in RMSE
+ggplot(summ.rmse, aes(x = PET.lm, y = PET.rma)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+# Seem very comparable
+
+ggplot(summ.rmse, aes(x = PEESE.lm, y = PEESE.rma)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+# PEESE.lm may be slightly more efficient than PEESE.rma
