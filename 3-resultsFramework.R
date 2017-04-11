@@ -24,7 +24,7 @@ str(res.final)
 
 # final data set in long format:
 save(res.final, file="res.final.RData")
-
+#load(file="res.final.RData")
 
 
 # Show conditions
@@ -48,28 +48,29 @@ res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=p
 tab <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
+
+# how many simulations do we have in each condition, after we removed all k<4 fpr p-curve etc.?
+tab2 <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id, method, kSig_estimate) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=sum(!is.na(kSig_estimate) & kSig_estimate >= 4))
+print(tab2, n=54)
+
+res.wide <- inner_join(res.wide, tab2)
+
 save(res.wide, file="res.wide.RData", compress="gzip")
 #load(file="res.wide.RData")
 
+# ---------------------------------------------------------------------
+#  save a filtered version
 
-# save a filtered version
-## remove p-curve and p-uniform with < 4 studies, drop unused factor levels
+## remove p-curve and p-uniform with < 4 studies
+# remove pcurve and puniform estimates for all conditions which have less than 500/1000 successful meta-analyses
+
 res.wide.red <- res.wide %>% 
-  #filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma", "pcurve.hack")) %>% 
   filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") | 
-         (method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & kSig_estimate >= 4))
-          
+         (method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & kSig_estimate >= 4)) %>%
+	filter(!(method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & nMA.with.kSig.larger.3 < 500))
+
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
-
-# how many simulations do we have in each condition, after we removed all k<4 fpr p-curve etc.?
-tab2 <- res.wide.red %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id, method) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=length(unique(id)))
-print(tab2, n=54)
-
-# remove pcurve and puniform estimates for all conditions which have less than 500/1000 successful meta-analyses
-res.wide.red <- inner_join(res.wide.red, tab2)
-
-res.wide.red <- res.wide.red %>% filter(nMA.with.kSig.larger.3 >= 500)
 
 
 # ---------------------------------------------------------------------
@@ -89,10 +90,38 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 
 print(summ, n=50)
 
-
-
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
 export(summ, file="summ.csv")
 save(summ, file="summ.RData")
 #load("summ.RData")
+
+
+# ---------------------------------------------------------------------
+# Compute summary file for hypothesis test plot
+
+# load("res.wide.red.RData")
+res.hyp <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value, skewtest_p.value, 41:45) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
+
+# define critical p-value for each method
+res.hyp$p.crit <- .05
+
+# merge two p-value columns into one
+res.hyp$p.value <- ifelse(!is.na(res.hyp$b0_p.value), res.hyp$b0_p.value, res.hyp$skewtest_p.value)
+res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
+
+# compute rejection:
+# Reject H0 if test is significant AND estimate in correct direction.
+# In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
+res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
+
+# Add combined hypothesis test: PETPEESE + 3PSM
+PP3 <- res.hyp %>% filter(method %in% c("PETPEESE.lm", "3PSM")) %>% group_by(id, condition, k, delta, qrpEnv, selProp, tau, delta.label, k.label, qrp.label, selProp.label, tau.label, p.crit) %>% summarise(
+	H0.reject = H0.reject[1] & H0.reject[2] & !is.na(H0.reject[1]) & !is.na(H0.reject[2]),
+	method="PP3",
+	p.value = NA
+)
+
+res.hyp <- bind_rows(res.hyp, PP3)
+
+save(res.hyp, file="res.hyp.RData", compress="gzip")
