@@ -1,5 +1,6 @@
 - Always assume heterogeneity (even in direct replications when multiple labs are involved --> cite ML1, McShane)
 - If a bias-correction method gives a significant result in the opposite direction, ignore the result; do not reject H0
+	- (In general: Set bias-corrected estimates in the wrong direction (regardless of their significance) to zero?)
 	- (Additionally: Set estimate to zero?)
 - Do not run p-curve and p-uniform on less than 4 significant studies
 - 3PSM works best if you have k>=30 studies

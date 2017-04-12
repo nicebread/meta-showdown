@@ -1,12 +1,5 @@
-#' ---
-#' title: "Hypothesis test"
-#' author: "Felix Schönbrodt"
-#' output: pdf_document
-#' classoption: landscape
-#' ---
+#' The hypothesis test plot
 
-
-# plotting of results
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -17,21 +10,24 @@ load(file="res.hyp.RData")
 
 # ---------------------------------------------------------------------
 # Compute summary measures across replications
-hyp.summ <- res.hyp %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% dplyr::summarise(
-	H0.reject = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
-	n.simulations = n()
-)
+
+hyp.summ <- res.hyp %>% 
+	group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
+	dplyr::summarise(
+		H0.reject = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
+		n.simulations = n()
+	) %>% 
+	filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM")) %>% 
+	mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM"), labels=c("reMA", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
+	
+
+	hyp.summ %>% filter()
 
 # ---------------------------------------------------------------------
 # Compute rejection ratios
 
-RR <- hyp.summ %>% ungroup() %>% 
-	select(condition, k, delta, qrp.label, selProp, tau, method, H0.reject) %>% 
-	filter(
-	  !method %in% c("pcurve.hack", "topN.fixed", "PET.rma", "PEESE.rma", "PETPEESE.rma")
-	)
+RR <- hyp.summ %>% ungroup() %>% select(condition, k, delta, qrp.label, selProp, tau, method, H0.reject)
 	
-
 RR$TypeI <- RR$H0.reject
 RR$TypeI[RR$delta!=0] <- NA
 
@@ -68,20 +64,83 @@ theme_metashowdown <- theme(
   legend.position = "none"#c("bottom")
 )
 
-RR.wide %>% filter(selProp==0) %>%
+
+plotA <- RR.wide %>% filter(selProp==0) %>%
   ggplot(aes(x=factor(k), shape=qrp.label)) + 
   geom_hline(yintercept=c(.05, .80), linetype="dotted", color="grey60") +
-  geom_point(aes(y=TypeI), position=position_dodge(width=.7), size = 0.4, color=1, fill=1) +	
-	geom_point(aes(y=Power), position=position_dodge(width=.7), size = 0.4, color=2, fill=2) +	
+  geom_point(aes(y=TypeI), position=position_dodge(width=.7), size = 2, color="red", fill="grey60") +	
+	geom_point(aes(y=Power), position=position_dodge(width=.7), size = 1, color="black", fill="black") +	
   coord_flip() +
   facet_grid(tau.label~method) + 
   scale_y_continuous(limits=c(0, 1), breaks = c(.05, .5, .8)) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  scale_color_manual(values=c("0"="grey60","0.5"="black")) +
-  scale_fill_manual(values=c("0"="grey60","0.5"="black")) +
   labs(shape="k", colour="Delta") +
-  ylab("Error rates") +
+  ylab("% false positives / Statistical Power") +
   xlab("Meta-analytic sample size (k)") +
-  ggtitle("(A) False positive and false negative error rates, 0% publication bias") + 
+  ggtitle("(A) False positive error rates and statistical power, 0% publication bias") + 
 	theme_metashowdown
+
+plotB <- RR.wide %>% filter(selProp==0.6) %>%
+  ggplot(aes(x=factor(k), shape=qrp.label)) + 
+  geom_hline(yintercept=c(.05, .80), linetype="dotted", color="grey60") +
+  geom_point(aes(y=TypeI), position=position_dodge(width=.7), size = 2, color="red", fill="grey60") +	
+	geom_point(aes(y=Power), position=position_dodge(width=.7), size = 1, color="black", fill="black") +	
+  coord_flip() +
+  facet_grid(tau.label~method) + 
+  scale_y_continuous(limits=c(0, 1), breaks = c(.05, .5, .8)) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  labs(shape="k", colour="Delta") +
+  ylab("% false positives / Statistical Power") +
+  xlab("Meta-analytic sample size (k)") +
+  ggtitle("(B) False positive error rates and statistical power, 60% publication bias") + 
+	theme_metashowdown
+
+
+plotC <- RR.wide %>% filter(selProp==0.9) %>%
+  ggplot(aes(x=factor(k), shape=qrp.label)) + 
+  geom_hline(yintercept=c(.05, .80), linetype="dotted", color="grey60") +
+  geom_point(aes(y=TypeI), position=position_dodge(width=.7), size = 2, color="red", fill="grey60") +	
+	geom_point(aes(y=Power), position=position_dodge(width=.7), size = 1, color="black", fill="black") +	
+  coord_flip() +
+  facet_grid(tau.label~method) + 
+  scale_y_continuous(limits=c(0, 1), breaks = c(.05, .5, .8)) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  labs(shape="k", colour="Delta") +
+  ylab("% false positives / Statistical Power") +
+  xlab("Meta-analytic sample size (k)") +
+  ggtitle("(C) False positive error rates and statistical power, 90% publication bias") + 
+	theme_metashowdown
+
+
+
+	legOnlyPlot <- RR.wide %>% filter(selProp==0.9) %>%
+	  ggplot() + geom_point(x="False positive rate", y="Power") +
+	  theme(
+	    panel.background = element_rect(fill="white"),
+	    legend.position = c("bottom")
+	  ) + 
+	  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
+	  scale_color_manual(values=c("0"="grey60","0.5"="black"),guide = guide_legend(title = "Delta")) +
+	  scale_fill_manual(values=c("0"="grey60","0.5"="black"),guide = guide_legend(title = "Delta"))
+
+
+		legOnlyPlot <- data.frame(qrp.label=factor(c("none", "med", "high"), ordered=TRUE), rate=c("False positive rate", "Power", "Power")) %>% 
+		  ggplot(aes(x=1, y=1, shape=qrp.label, color=rate, fill=rate)) + 
+			geom_point()+
+			theme(
+	    	panel.background = element_rect(fill="white"),
+	    	legend.position = c("bottom")
+	  		) + 
+		  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
+		  scale_color_manual(values=c("False positive rate"="grey60","Power"="black"), guide = guide_legend(title = "Rates")) +
+		  scale_fill_manual(values=c("False positive rate"="grey60","Power"="black"), guide = guide_legend(title = "Rates"))
+
+	legend <- g_legend(legOnlyPlot) 
+
+
+	pdf("Plots/hyptest.pdf", width=15, height=22)
+
+	grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
+
+	dev.off()
 

@@ -76,14 +76,19 @@ save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 # ---------------------------------------------------------------------
 #  Compute summary measures across replications
 
+posify <- function(x) {x[x<0] <- 0; return(x)}
+
 summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
 	dplyr::summarise(
 		meanEst		= mean(b0_estimate, na.rm=TRUE),
+		meanEst.pos	= mean(posify(b0_estimate), na.rm=TRUE),
 		ME 			= mean(b0_estimate - delta, na.rm=TRUE),
 		RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
 		MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
 		perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
 		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
+		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
+		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE),
 		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high)/sum(!is.na(b0_conf.high)),
 		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high)/n()
 	)

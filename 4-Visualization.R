@@ -7,9 +7,6 @@ library(gridExtra)
 load("summ.RData")
 
 # ---------------------------------------------------------------------
-# Show estimate
-
-# ---------------------------------------------------------------------
 # Plot settings
 
 YLIM <- c(-1, 1.3)
@@ -50,7 +47,7 @@ g_legend<-function(a.gplot){
 
 plotA = summ2 %>% filter(selProp==0,delta==0 | delta==.5) %>%
   ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
-             ymax=perc97.5,shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
+             ymax=perc97.5, shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
   geom_hline(aes(yintercept=delta)) + 
   #geom_hline(aes(yintercept=-.5)) + 
 	geom_pointrange(position=position_dodge(width=.7),size = 0.4) +	
@@ -69,7 +66,7 @@ plotA = summ2 %>% filter(selProp==0,delta==0 | delta==.5) %>%
 
 plotB = summ2 %>% filter(selProp==0.6, delta==0 | delta==.5) %>%
   ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
-             ymax=perc97.5,shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
+             ymax=perc97.5, shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
   geom_hline(aes(yintercept=delta)) + 
   #geom_hline(aes(yintercept=-.5)) + 
   geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
@@ -87,7 +84,7 @@ plotB = summ2 %>% filter(selProp==0.6, delta==0 | delta==.5) %>%
 
 plotC = summ2 %>% filter(selProp==0.9, delta==0 | delta==.5) %>%
   ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
-             ymax=perc97.5,shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
+             ymax=perc97.5, shape=qrp.label,color=factor(delta),fill=factor(delta))) + 
   geom_hline(aes(yintercept=delta)) + 
   #geom_hline(aes(yintercept=-.5)) + 
   geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
@@ -106,7 +103,7 @@ plotC = summ2 %>% filter(selProp==0.9, delta==0 | delta==.5) %>%
 
 legOnlyPlot = summ2 %>% filter(selProp==0.9,delta==0 | delta==.5) %>%
   ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
-             ymax=perc97.5,shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+             ymax=perc97.5, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
   geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
   coord_flip(ylim=YLIM) +
   facet_grid(tau.label~method) +
