@@ -9,6 +9,12 @@ library(gridExtra)
 load(file="res.hyp.RData")
 
 # ---------------------------------------------------------------------
+# SETTINGS
+
+# compare delta==0 (for false positive rate) against delta==0.5 (for power)
+H1 <- 0.5
+
+# ---------------------------------------------------------------------
 # Compute summary measures across replications
 
 hyp.summ <- res.hyp %>% 
@@ -18,7 +24,7 @@ hyp.summ <- res.hyp %>%
 		n.simulations = n()
 	) %>% 
 	filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
-	mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("reMA", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
+	mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
 	
 
 # ---------------------------------------------------------------------
@@ -38,8 +44,6 @@ RR$selProp.label <- factor(RR$selProp, levels=unique(RR$selProp), labels=paste0(
 
 save(RR, file="RR.RData")
 
-# compare delta==0 against delta==0.5
-H1 <- 0.5
 RR.H0 <- RR %>% filter(delta == 0) %>% select(condition, k, qrp.label, selProp, tau.label, method, TypeI)
 RR.H1 <- RR %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, Power)
 
@@ -80,7 +84,6 @@ buildFacet <- function(dat, title) {
 	  facet_grid(tau.label~method) + 
 	  scale_y_continuous(labels=scales::percent, limits=c(0, 1), breaks = c(.05, .5, .8, 1)) + 
 	  scale_shape_manual(values=c(21, 22, 24)) + 
-	  labs(shape="k", colour="Delta") +
 	  ylab("% False positives / Statistical Power") +
 	  xlab("Meta-analytic sample size (k)") +
 	  ggtitle(title) + 
@@ -89,9 +92,9 @@ buildFacet <- function(dat, title) {
 }
 
 
-plotA <- buildFacet(RR.wide %>% filter(selProp==0), expression("(A) False positive error rates and statistical power at"~delta~" = 0.5, 0% publication bias"))
-plotB <- buildFacet(RR.wide %>% filter(selProp==0.6), expression("(B) False positive error rates and statistical power at"~delta~" = 0.5, 60% publication bias"))
-plotC <- buildFacet(RR.wide %>% filter(selProp==0.9), expression("(C) False positive error rates and statistical power at"~delta~" = 0.5, 90% publication bias"))
+plotA <- buildFacet(RR.wide %>% filter(selProp==0), bquote("(A) False positive error rates and statistical power at"~delta~" = "~.(H1)~", 0% publication bias"))
+plotB <- buildFacet(RR.wide %>% filter(selProp==0.6), bquote("(B) False positive error rates and statistical power at"~delta~" = "~.(H1)~", 60% publication bias"))
+plotC <- buildFacet(RR.wide %>% filter(selProp==0.9), bquote("(C) False positive error rates and statistical power at"~delta~" = "~.(H1)~", 90% publication bias"))
 
 
 # ---------------------------------------------------------------------

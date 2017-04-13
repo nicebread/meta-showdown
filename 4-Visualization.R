@@ -9,6 +9,9 @@ load("summ.RData")
 # ---------------------------------------------------------------------
 # Plot settings
 
+YLIM <- c(-0.1, 1.2)
+DELTAS <- c(0, 0.5)
+
 theme_metashowdown <- theme(
     panel.spacing =unit(.5, "lines"),
     panel.background = element_rect(fill="white"),
@@ -21,37 +24,25 @@ theme_metashowdown <- theme(
 )
 
 
-summ2 <- summ %>% filter(
-  #!method %in% c("PET.lm", "PEESE.lm", "pcurve.evidence", "pcurve.lack")
-  !method %in% c("pcurve.evidence", "pcurve.lack", "pcurve.hack", "topN.fixed", "PET.rma", "PEESE.rma", "PETPEESE.rma")
-)
+summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM")) %>% 
+	mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
 
 
-#change the text that appears in facet columns
-lev2 = levels(summ2$method)
-lev2[3] = "PET"
-lev2[4] = "PEESE"
-lev2[7] = "PET-PEESE"
-levels(summ2$method) <- lev2
-
-YLIM <- c(-0.1, 1.2)
 
 
 buildFacet <- function(dat, title) {
-	
 		PLOT <- dat %>%
 	  ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
-	  geom_hline(yintercept=0, color="skyblue") + 
-		geom_hline(yintercept=0.5, color="black") + 
+	  geom_hline(yintercept=DELTAS[1], color="skyblue") + 
+		geom_hline(yintercept=DELTAS[2], color="black") + 
 		geom_pointrange(position=position_dodge(width=.7),size = 0.4) +	
 	  coord_flip(ylim=YLIM) +
 	  facet_grid(tau.label~method) + 
 		theme_metashowdown +
 	  scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
 	  scale_shape_manual(values=c(21,22,24)) + 
-	  scale_color_manual(values=c("0"="steelblue3","0.5"="black")) +
-	  scale_fill_manual(values=c("0"="skyblue","0.5"="black")) +
-	  labs(shape="k", colour="Delta") +
+	  scale_color_manual(values=c("steelblue3", "black")) +
+	  scale_fill_manual(values=c("skyblue", "black")) +
 	  ylab("Estimated effect size") +
 	  xlab("Meta-analytic sample size (k)") +
 	  ggtitle(title)
@@ -60,13 +51,16 @@ buildFacet <- function(dat, title) {
 }
 
 
-plotA <- buildFacet(summ2 %>% filter(selProp==0, delta==0 | delta==.5), "(A) Estimate and 95% bootstrap percentiles, 0% publication bias")
-plotB <- buildFacet(summ2 %>% filter(selProp==0.6, delta==0 | delta==.5), "(B) Estimate and 95% bootstrap percentiles, 60% publication bias")
-plotC <- buildFacet(summ2 %>% filter(selProp==0.9, delta==0 | delta==.5), "(C) Estimate and 95% bootstrap percentiles, 90% publication bias")
+plotA <- buildFacet(summ2 %>% filter(selProp==0, delta %in% DELTAS), bquote("(A) Estimate and 95% percentiles at"~delta~" = "~.(DELTAS[2])~", 0% publication bias"))
+plotB <- buildFacet(summ2 %>% filter(selProp==0.6, delta %in% DELTAS), bquote("(B) Estimate and 95% percentiles at"~delta~" = "~.(DELTAS[2])~", 60% publication bias"))
+plotC <- buildFacet(summ2 %>% filter(selProp==0.9, delta %in% DELTAS), bquote("(C)Estimate and 95% percentiles at"~delta~" = "~.(DELTAS[2])~", 90% publication bias"))
 
 
 # ---------------------------------------------------------------------
 # Build legend
+
+values <- c("skyblue", "black")
+names(values) <- DELTAS
 
 #Extract Legend 
 g_legend<-function(a.gplot){ 
@@ -75,7 +69,7 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]] 
   return(legend)} 
 
-legOnlyPlot = summ2 %>% filter(selProp==0.9,delta==0 | delta==.5) %>%
+legOnlyPlot = summ2 %>% filter(selProp==0.9, delta %in% DELTAS) %>%
   ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
              ymax=perc97.5, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
   geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
@@ -87,8 +81,8 @@ legOnlyPlot = summ2 %>% filter(selProp==0.9,delta==0 | delta==.5) %>%
   ) + 
   scale_shape_manual(values=c(21,22,24)) +
   scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
-  scale_color_manual(values=c("0"="skyblue","0.5"="black"),guide = guide_legend(title = "Delta")) +
-  scale_fill_manual(values=c("0"="skyblue","0.5"="black"),guide = guide_legend(title = "Delta"))
+  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta))) +
+  scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))
 
 
 legend <- g_legend(legOnlyPlot) 
