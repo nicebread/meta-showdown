@@ -120,13 +120,5 @@ res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
 # In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
 res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
 
-# Add combined hypothesis test: PETPEESE + 3PSM
-PP3 <- res.hyp %>% filter(method %in% c("PETPEESE.lm", "3PSM")) %>% group_by(id, condition, k, delta, qrpEnv, selProp, tau, delta.label, k.label, qrp.label, selProp.label, tau.label, p.crit) %>% summarise(
-	H0.reject = H0.reject[1] & H0.reject[2] & !is.na(H0.reject[1]) & !is.na(H0.reject[2]),
-	method="PP3",
-	p.value = NA
-)
-
-res.hyp <- bind_rows(res.hyp, PP3)
 
 save(res.hyp, file="res.hyp.RData", compress="gzip")
