@@ -87,9 +87,7 @@ legOnlyPlot = summ2 %>% filter(selProp==0.9, delta %in% DELTAS) %>%
   theme(
     panel.background = element_rect(fill="white"),
     legend.position = c("bottom"),
-    legend.key = element_rect(fil='white'),
-    legend.key.size = unit(0.3,"cm"),
-    legend.box = 'vertical'
+    legend.key = element_rect(fil='white')
   ) + 
   scale_shape_manual(values=c(21,22,24)) +
   scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
