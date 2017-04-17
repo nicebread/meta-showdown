@@ -6,6 +6,9 @@ library(ggplot2)
 
 load("summ.Rdata")
 
+summ <- summ %>% 
+  mutate(ME.pos = meanEst.pos - delta)
+
 summ2 <- summ %>% 
   ungroup() %>% 
   select(-condition, -k.label, -delta.label, -qrp.label,
@@ -20,6 +23,10 @@ summ2 <- summ %>%
 summ.me <- summ2 %>% 
   select(k:method, ME) %>% 
   spread(key = method, value = ME) %>% 
+  mutate_each(funs(round(., 3)), reMA:`3PSM`)
+summ.me.pos <- summ2 %>% 
+  select(k:method, ME.pos) %>% 
+  spread(key = method, value = ME.pos) %>% 
   mutate_each(funs(round(., 3)), reMA:`3PSM`)
 summ.rmse <- summ2 %>% 
   select(k:method, RMSE) %>% 
@@ -352,3 +359,47 @@ ggplot(summ.rmse, aes(x = PEESE.lm, y = PEESE.rma)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1)
 # PEESE.lm may be slightly more efficient than PEESE.rma
+
+
+# Posified estimates? ----
+# when do ME and ME.pos substantially differ?
+hist(summ$ME.pos - summ$ME)
+arrange(summ, desc(ME.pos - ME)) %>% 
+  select(k:tau, method, ME, ME.pos, everything()) %>% 
+  View()
+# Posification seems to dramatically reduce bias from undershoots for 
+#   PET, PETPEESE, and p-curve/p-uniform
+# These undershoots happened mostly when delta = 0, k is small, there's heavy QRP,
+# and in the case of PET/PETPEESE, heterogeneity
+
+summ %>% 
+  filter(method %in% c("reMA", "PET.lm", "PEESE.lm", "PETPEESE.lm", 
+                       "pcurve", "puniform", "3PSM")) %>% 
+  ggplot(aes(x = ME, y = ME.pos, col = qrpEnv)) +
+  geom_point() + 
+  facet_grid(method ~ delta) +
+  geom_hline(aes(yintercept = -delta), col = "grey50") +
+  geom_hline(yintercept = 0)
+# when delta <= 0, you see some benefits from points flattening out at grey line towards 0 ME
+# although there are some upward biases introduced 
+#   e.g. when there's no QRP, PET/PETPEESE have upward bias
+# In general I think this is a reasonable bias/variance tradeoff;
+#   gains a little bias sometimes but generally cuts a lot of variance
+
+
+# what does posification do to bias?
+summ.me.pos %>% 
+  filter(selProp == 0,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+summ.me.pos %>% 
+  gather(key = key, value = ME.pos, reMA:`3PSM`) %>% 
+  filter(selProp == 0, qrpEnv == "none", 
+         key %in% c("3PSM", "pcurve", "puniform", "reMA", "TF")) %>% 
+  ggplot(aes(x = key, y = ME.pos, col = key)) +
+  geom_point() +
+  facet_grid(delta ~ tau)
+# Posification seems to cause some upward bias when delta = 0
+# because the results are no longer symmetrical
+# This is probably good for RMSE, though, right?
