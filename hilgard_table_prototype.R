@@ -32,6 +32,10 @@ summ.rmse <- summ2 %>%
   select(k:method, RMSE) %>% 
   spread(key = method, value = RMSE) %>% 
   mutate_each(funs(round(., 3)), reMA:`3PSM`)
+summ.ci <- summ2 %>% 
+  select(k:method, coverage) %>% 
+  spread(key = method, value = coverage) %>% 
+  mutate_each(funs(round(., 3)), reMA:`3PSM`)
 
 # How should I filter these? How should I arrange these?
 # Could start by filtering for some delta, selProp, tau
@@ -379,12 +383,24 @@ summ %>%
   geom_point() + 
   facet_grid(method ~ delta) +
   geom_hline(aes(yintercept = -delta), col = "grey50") +
-  geom_hline(yintercept = 0)
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
 # when delta <= 0, you see some benefits from points flattening out at grey line towards 0 ME
 # although there are some upward biases introduced 
 #   e.g. when there's no QRP, PET/PETPEESE have upward bias
 # In general I think this is a reasonable bias/variance tradeoff;
 #   gains a little bias sometimes but generally cuts a lot of variance
+
+summ %>% 
+  filter(method %in% c("reMA", "PET.lm", "PEESE.lm", "PETPEESE.lm", 
+                       "pcurve", "puniform", "3PSM")) %>% 
+  filter(k == 100) %>% 
+  ggplot(aes(x = ME, y = ME.pos, col = qrpEnv)) +
+  geom_point() + 
+  facet_grid(method ~ delta) +
+  geom_hline(aes(yintercept = -delta), col = "grey50") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
 
 
 # what does posification do to bias?
@@ -403,3 +419,147 @@ summ.me.pos %>%
 # Posification seems to cause some upward bias when delta = 0
 # because the results are no longer symmetrical
 # This is probably good for RMSE, though, right?
+
+# 95% CI coverage ----
+# No pub bias and no QRP
+summ.ci %>% 
+  filter(selProp == 0,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+# reMA seems to have slight overcoverage for tau = 0, undercoverage for tau > 0 
+# TF has stronger undercoverage all around, exacerbated by increasing d and tau 
+#   (often 90%ish coverage but can be as bad as 55%)
+# PET has increasing undercoverage problem as tau and delta increase
+# PEESE has undercoverage problem under tau, plus the downward bias thing
+# PETPEESE has same undercoverage issues as PET
+# rma versions provide better coverage than lm versions
+# p-uniform shows good coverage until tau > 0 blows it up
+# 3PSM very similar to reMA -- slight undercoverage for tau > 0, esp when k = 10
+
+# 60% pub bias and no QRP
+summ.ci %>% 
+  filter(selProp == 0.6,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+# reMA completely misses it of course. best case is 96% coverage when delta = 0.8
+# TF coverage is terrible unless delta >= 0.5. 60, 70, 80% coverage there, 
+#  ~95% when delta = 0.8 and k = 10 and tau = 0
+# PET has good coverage for d = 0 tau = 0 but it rapidly goes to hell away from that
+# PEESE has decent (80%) coverage for delta >= 0.5
+# PET PEESE has decent coverage (80-90%) but can be very bad when delta = 0.2
+# p-uniform shows good coverage (~95%) so long as tau = 0
+# 3PSM shows good coverage throughout, never worse than 83% (small k, big tau)
+
+# 90% pub bias and no QRP
+summ.ci %>% 
+  filter(selProp == 0.9,
+         qrpEnv == "none") %>% 
+  arrange(tau, delta) %>% 
+  View()
+# Obviously reMA and TF coverage are terrible unless d = 0.8
+# PET: Coverage can be good when delta = 0. Kind of a mess otherwise, heavily dependent on bias
+# PEESE: Coverage is uniformly bad, starts at 90% and works its way south quickly
+# PETPEESE: Highly variable coverage rates, often bad (<70%)
+# p-uniform coverage is spot-on until tau > 0
+# TopN returning NAs, not sure why
+# 3PSM column has a lot of NAs. 
+#   I'm guessing it refuses to return a CI when there aren't many (any?) non-sig studies
+#   Question is, should there be an na.rm = T somewhere up the pipeline?
+
+
+
+# What does QRP do to coverage?
+
+
+
+
+# lm metaregression vs rma metaregression ----
+# In the absence of QRPs, it seems .rma method is preferable, yielding slightly greater
+#   efficiency and 95% CI coverage
+# Given QRPs, however, .rma performance degenerates more than .lm performance
+
+# bias
+# above line means rma better, below line means lm better (but reversed above y = 0)
+# Differences in the two in bias seem minimal, but QRPs bias rma worse than lm
+summ.me %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PET.lm, y = PET.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = 0, col = "grey40") +
+  geom_vline(xintercept = 0, col = "grey40") +
+  #facet_wrap(~selProp) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Bias, PET")
+summ.me %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PEESE.lm, y = PEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = 0, col = "grey40") +
+  geom_vline(xintercept = 0, col = "grey40") +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Bias, PEESE")
+summ.me %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PETPEESE.lm, y = PETPEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = 0, col = "grey40") +
+  geom_vline(xintercept = 0, col = "grey40") +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Bias, PETPEESE")
+
+# RMSE
+# below line means rma better, above line means lm better
+summ.rmse %>%
+  ggplot(aes(x = PET.lm, y = PET.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("RMSE, PET")
+summ.rmse %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PEESE.lm, y = PEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("RMSE, PEESE")
+summ.rmse %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PETPEESE.lm, y = PETPEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  facet_grid(qrpEnv~selProp) +
+  #facet_wrap(~selProp) +
+  ggtitle("RMSE, PETPEESE")
+
+# Coverage probability
+# above line means rma better, below line means lm better
+# rma seems to show better coverage, except QRPs can wreck it
+summ.ci %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PET.lm, y = PET.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = .95) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Coverage probability, PET")
+summ.ci %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PEESE.lm, y = PEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = .95) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Coverage probability, PEESE")
+summ.ci %>%
+  #filter(qrpEnv == "none") %>%
+  ggplot(aes(x = PETPEESE.lm, y = PETPEESE.rma)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) +
+  geom_hline(yintercept = .95) +
+  facet_grid(qrpEnv~selProp) +
+  ggtitle("Coverage probability, PETPEESE")
