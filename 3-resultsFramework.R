@@ -84,6 +84,8 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		meanEst.pos	= mean(posify(b0_estimate), na.rm=TRUE),
 		ME 			= mean(b0_estimate - delta, na.rm=TRUE),
 		RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
+		ME.pos = mean(posify(b0_estimate) - delta, na.rm=TRUE),
+		RMSE.pos = sqrt(mean((posify(b0_estimate) - delta)^2, na.rm=TRUE)),
 		MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
 		perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
 		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
