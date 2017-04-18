@@ -72,8 +72,6 @@ res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurv
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
 
-# show a critical condition:
-res.wide.red %>% filter(method=="puniform", tau==0, selProp==0, k==10) %>% head(.)
 
 # ---------------------------------------------------------------------
 #  Compute summary measures across replications
@@ -93,14 +91,21 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
 		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
 		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE),
-		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high)/sum(!is.na(b0_conf.high)),
-		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high)/n()
+		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
+		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
+		n.ci = sum(!is.na(b0_conf.high))
 	)
 
 print(summ, n=50)
 
-# show a critical condition:
-summ %>% filter(method=="puniform", tau==0, selProp==0, k==10) %>% head(.)
+# How many 3PSM estimates have no CI?
+t3 <- res.wide.red %>% filter(method=="3PSM") %>% group_by(selProp, delta, k, tau, qrpEnv) %>% summarise(
+	n.CI = sum(!is.na(b0_conf.high)),
+	n.p_value = sum(!is.na(b0_p.value))
+)
+summary(t3$n.CI)
+print(t3, n=432)
+
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)

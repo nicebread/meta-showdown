@@ -16,7 +16,10 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		# ---------------------------------------------------------------------
 		# The input panels, on the left side
 		
-		column(width=4,						
+		column(width=4,
+			br(),
+			br(),
+			br(),
 				radioButtons("selProp", "How many % of original studies are submitted to publication bias?:",
 				 			             c("0%" = 0, "60%" = 0.6, "90%" = 0.9), inline=TRUE),
 				radioButtons("tau.label", "Heterogeneity (tau):",
@@ -25,11 +28,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
   			             c("10" = 10, "30" = 30, "60" = 60, "100"=100)),
   			radioButtons("delta", "True effect size under H1 (for power computation)",
   			             c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8)),
- 				conditionalPanel(
- 					condition = "input.tabs1 == 'Estimation'",
-					radioButtons("qrpEnv", "QRP environment:",
-							             c("none", "med", "high"), inline=TRUE)
-				)
+				radioButtons("qrpEnv", "QRP environment:",
+				             c("none", "med", "high"), inline=TRUE)
 		),
 		
 		# ---------------------------------------------------------------------

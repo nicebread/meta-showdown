@@ -17,8 +17,9 @@ H1.fill <- "skyblue"
 
 
 RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
+RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
-RR.H1 <- RR %>% select(k, delta, qrp.label, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power, shape)
+RR.H1 <- RR %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power, shape)
 RR.H0 <- RR.H1 %>% filter(delta == 0)
 
 summ$stroke <- ifelse(summ$delta == 0, H0.stroke, H1.stroke)
@@ -40,7 +41,7 @@ shinyServer(function(input, output, session) {
 
 	ggDat.H0 <- reactive({
 		gg0 <- RR.H0 %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp) %>% 
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
 			select(qrp.label, method, TypeI, Power, shape)
 
 			return(gg0)			
@@ -49,7 +50,7 @@ shinyServer(function(input, output, session) {
 	
 	ggDat.H1 <- reactive({
 		gg1 <- RR.H1 %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, delta == input$delta) %>% 
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, delta == input$delta, qrpEnv == input$qrpEnv) %>% 
 			select(qrp.label, method, TypeI, Power, shape)
 			
 			return(gg1)			
@@ -61,7 +62,7 @@ shinyServer(function(input, output, session) {
 	
 	# ---------------------------------------------------------------------
 	# Type I error plot
-	ggvis(ggDat.H0, y=~method, x=~TypeI, shape := ~shape, stroke:=H0.stroke, fill := H0.fill) %>% 
+	ggvis(ggDat.H0, y=~method, x=~TypeI, stroke:=H0.stroke, fill := H0.fill) %>% 
 		layer_points()  %>% 		
 		add_axis("x", properties=axis_props(
 				title = list(fontSize = 16, text="False positive rate"),
@@ -72,13 +73,13 @@ shinyServer(function(input, output, session) {
 				title = list(fontSize = 16, text="Method"),
 				labels = list(fontSize = 13)
 			), title_offset=100) %>% 	
-		set_options(duration = 1000, renderer="canvas") %>%
+		set_options(width=600, height=260, duration = 1000, renderer="canvas") %>%
 		#add_legend(scales = "stroke", properties = legend_props(title = list(fontSize = 0), labels = list(fontSize = 0), symbols = list(size = 0))) %>% 
 	  bind_shiny("ggvis_TypeI", "ggvis_ui_TypeI")
 		
 	# ---------------------------------------------------------------------
 	# Power plot
-	ggvis(ggDat.H1, y=~method, x=~Power, shape := ~shape, stroke:=H1.stroke, fill := H1.fill) %>% 
+	ggvis(ggDat.H1, y=~method, x=~Power, stroke:=H1.stroke, fill := H1.fill) %>% 
 		layer_points()  %>% 
 		add_axis("x", properties=axis_props(
 				title = list(fontSize = 16, text="Statistical Power"),
@@ -89,7 +90,7 @@ shinyServer(function(input, output, session) {
 				title = list(fontSize = 16, text="Method"),
 				labels = list(fontSize = 13)
 			), title_offset=100) %>% 	
-		set_options(duration = 1000, renderer="canvas") %>%
+		set_options(width=600, height=260, duration = 1000, renderer="canvas") %>%
 	  bind_shiny("ggvis_Power", "ggvis_ui_Power")
 		
 		
@@ -139,7 +140,7 @@ shinyServer(function(input, output, session) {
 				title = list(fontSize = 16, text="Method"),
 				labels = list(fontSize = 13)
 			), title_offset=100) %>%
-		set_options(duration = 1000, renderer="canvas") %>%
+		set_options(width=600, height=260, duration = 1000, renderer="canvas") %>%
 	  bind_shiny("ggvis_Estimation_H0", "ggvis_ui_Estimation_H0")
 		
 		
@@ -156,7 +157,7 @@ shinyServer(function(input, output, session) {
 				title = list(fontSize = 16, text="Method"),
 				labels = list(fontSize = 13)
 			), title_offset=100) %>%
-		set_options(duration = 1000, renderer="canvas") %>%
+		set_options(width=600, height=260, duration = 1000, renderer="canvas") %>%
 	  bind_shiny("ggvis_Estimation_H1", "ggvis_ui_Estimation_H1")
 	})
 
