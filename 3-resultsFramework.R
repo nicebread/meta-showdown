@@ -61,17 +61,19 @@ save(res.wide, file="res.wide.RData", compress="gzip")
 # ---------------------------------------------------------------------
 #  save a filtered version
 
-## remove p-curve and p-uniform with < 4 studies
-# remove pcurve and puniform estimates for all conditions which have less than 500/1000 successful meta-analyses
+res.wide.red <- res.wide
 
-res.wide.red <- res.wide %>% 
-  filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") | 
-         (method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & kSig_estimate >= 4)) %>%
-	filter(!(method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & nMA.with.kSig.larger.3 < 500))
+## set estimate of p-curve and p-uniform with < 4 studies to NA
+res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 
+# set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
+res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
+				 
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
 
+# show a critical condition:
+res.wide.red %>% filter(method=="puniform", tau==0, selProp==0, k==10) %>% head(.)
 
 # ---------------------------------------------------------------------
 #  Compute summary measures across replications
@@ -97,6 +99,9 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 
 print(summ, n=50)
 
+# show a critical condition:
+summ %>% filter(method=="puniform", tau==0, selProp==0, k==10) %>% head(.)
+
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
 export(summ, file="summ.csv")
@@ -121,6 +126,5 @@ res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
 # Reject H0 if test is significant AND estimate in correct direction.
 # In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
 res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
-
 
 save(res.hyp, file="res.hyp.RData", compress="gzip")

@@ -3,7 +3,7 @@ library(dplyr)
 library(grid)
 library(gridExtra)
 
-setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
+#setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 load(file="res.hyp.RData")
 
 # ---------------------------------------------------------------------
@@ -127,7 +127,7 @@ legOnlyPlot <- data.frame(qrp.label=factor(c("none", "med", "high"), ordered=TRU
     legend.position = c("bottom"),
     legend.key = element_rect(fil='white')
   ) + 
-  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
+  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24), guide = guide_legend(title = "QRP Env.")) +
   scale_color_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates")) +
   scale_fill_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates"))
 
@@ -144,6 +144,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF of plot
 
-pdf("hyptest.pdf", width=15, height=22)
+pdf("Plots/hyptest.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
 dev.off()

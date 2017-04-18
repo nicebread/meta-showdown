@@ -79,8 +79,8 @@ g_legend<-function(a.gplot){
   return(legend)} 
 
 legOnlyPlot = summ2 %>% filter(selProp==0.9, delta %in% DELTAS) %>%
-  ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5,
-             ymax=perc97.5, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+  ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos,
+             ymax=perc97.5.pos, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
   geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
   coord_flip(ylim=YLIM) +
   facet_grid(tau.label~method) +
@@ -101,6 +101,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF
 
-pdf("estimation.pdf", width=15, height=22)
+pdf("Plots/estimation.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
