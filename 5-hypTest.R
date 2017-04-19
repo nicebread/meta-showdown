@@ -41,6 +41,8 @@ RR$tau.label <- factor(RR$tau, levels=unique(RR$tau), labels=paste0("tau = ", un
 RR$selProp.label <- factor(RR$selProp, levels=unique(RR$selProp), labels=paste0("Publication Bias = ", unique(RR$selProp)))
 
 save(RR, file="RR.RData")
+save(RR, file="Shiny/MAexplorer/RR.RData")
+
 
 RR.H0 <- RR %>% filter(delta == 0) %>% select(condition, k, qrp.label, selProp, tau.label, method, TypeI, tau) #add tau
 RR.H1 <- RR %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, Power, tau) #add tau

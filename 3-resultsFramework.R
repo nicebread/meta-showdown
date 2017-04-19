@@ -92,8 +92,10 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
 		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE),
 		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
-		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
-		n.ci = sum(!is.na(b0_conf.high))
+		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),		
+		n.ci = sum(!is.na(b0_conf.high)),
+		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
+		consisZero.pos  = sum(0 > b0_conf.low & 0 < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0)
 	)
 
 print(summ, n=50)
@@ -105,12 +107,14 @@ t3 <- res.wide.red %>% filter(method=="3PSM") %>% group_by(selProp, delta, k, ta
 )
 summary(t3$n.CI)
 print(t3, n=432)
+t3[t3$n.CI < 500, ]
 
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
 export(summ, file="summ.csv")
 save(summ, file="summ.RData")
+save(summ, file="Shiny/MAexplorer/summ.RData")
 #load("summ.RData")
 
 
@@ -126,6 +130,10 @@ res.hyp$p.crit <- .05
 # merge two p-value columns into one
 res.hyp$p.value <- ifelse(!is.na(res.hyp$b0_p.value), res.hyp$b0_p.value, res.hyp$skewtest_p.value)
 res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
+
+# "posified" p.value: only keep those which have a non-negative estimate
+#res.hyp$p.value.pos <- res.hyp$p.value
+#res.hyp$p.value.pos[res.hyp$b0_estimate<0] <- NA
 
 # compute rejection:
 # Reject H0 if test is significant AND estimate in correct direction.
