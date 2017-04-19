@@ -270,6 +270,9 @@ hypTab <- reactive({
 		select(-delta, -selProp, -TypeI.excess)
 		
 	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau.label", "method"))	
+	
+	RR.wide[, 7:ncol(RR.wide)] <- round(RR.wide[, 7:ncol(RR.wide)], 3)
+	
 	RR.wide$rejectionRatio <- round(RR.wide$Power/RR.wide$TypeI, 1)
 	return(RR.wide)
 })

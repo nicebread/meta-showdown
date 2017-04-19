@@ -13,11 +13,8 @@ vignettes/*.html
 vignettes/*.pdf
 
 # shell script for automatically adding files > 50 MB:
-# find . -size +50M  | cut -c 3-1000 >> .gitignore
+# find . -size +80M  | cut -c 3-1000 >> .gitignore
 
 res.final.RData
-res.hyp.RData
 res.wide.RData
 res.wide.red.RData
-
-res.hyp.RData
