@@ -141,3 +141,34 @@ res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
 res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
 
 save(res.hyp, file="res.hyp.RData", compress="gzip")
+
+
+
+# ---------------------------------------------------------------------
+# Compute summary measures across replications
+
+hyp.summ <- res.hyp %>% 
+  group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
+  dplyr::summarise(
+    H0.reject = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
+    n.simulations = n()
+  )
+
+
+# ---------------------------------------------------------------------
+# Compute rejection ratios
+
+RR <- hyp.summ %>% ungroup() %>% select(condition, k, delta, qrpEnv, qrp.label, selProp, tau, method, H0.reject)
+
+RR$TypeI <- RR$H0.reject
+RR$TypeI[RR$delta!=0] <- NA
+
+RR$TypeII <- 1-RR$H0.reject
+RR$TypeII[RR$delta==0] <- NA
+RR$Power <- 1-RR$TypeII
+
+RR$tau.label <- factor(RR$tau, levels=unique(RR$tau), labels=paste0("tau = ", unique(RR$tau)))
+RR$selProp.label <- factor(RR$selProp, levels=unique(RR$selProp), labels=paste0("Publication Bias = ", unique(RR$selProp)))
+
+save(RR, file="RR.RData")
+save(RR, file="Shiny/MAexplorer/RR.RData")

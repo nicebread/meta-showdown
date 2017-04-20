@@ -41,6 +41,35 @@ getTable <- function(df, cbGetClass = NULL) {
   )
 }
 
+relabelMethod <- function(x) {
+	levels(x)[levels(x)=="reMA"] <- "RE"
+	levels(x)[levels(x)=="PET.lm"] <- "PET"
+	levels(x)[levels(x)=="PET.rma"] <- "PET"
+	levels(x)[levels(x)=="PEESE.lm"] <- "PEESE"
+	levels(x)[levels(x)=="PEESE.rma"] <- "PEESE"
+	levels(x)[levels(x)=="PETPEESE.lm"] <- "PET-PEESE"
+	levels(x)[levels(x)=="PETPEESE.rma"] <- "PET-PEESE"
+	levels(x)[levels(x)=="pcurve"] <- "p-curve"
+	levels(x)[levels(x)=="pcurve.evidence"] <- "p-curve"
+	levels(x)[levels(x)=="puniform"] <- "p-uniform"	
+	return(x)
+}
+
+selectPETPEESEmodel <- function(x, model) {
+	if (model == "lm") {
+		x <- x %>% 
+			filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma")) %>% 
+			mutate(method = relabelMethod(method)) %>% 
+			filter(method %in% methodOrder)
+			
+	} else if (model == "rma") {
+		x <- x %>% 
+			filter(!method %in% c("PET.lm", "PEESE.lm", "PETPEESE.lm")) %>% 
+			mutate(method = relabelMethod(method)) %>% 
+			filter(method %in% methodOrder)
+	}
+	return(x)
+}
 
 load("summ.RData")
 #load("res.hyp.RData")
@@ -51,19 +80,23 @@ H1.fill <- "grey20"
 H0.stroke <- "steelblue2"
 H0.fill <- "skyblue"
 
+# Prepare data for hypothesis test plot
+
 RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
-RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
+#RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 #RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
 RR.H1 <- RR %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power)
 RR.H0 <- RR.H1 %>% filter(delta == 0) %>% select(-Power)
 RR.H1 <- RR.H1 %>% select(-TypeI, -TypeI.excess)
 
+
+# Prepare data for estimation plot
+
 summ$stroke <- ifelse(summ$delta == 0, H0.stroke, H1.stroke)
 summ$fill <- ifelse(summ$delta == 0, H0.fill, H1.fill)
 
 summ2 <- summ %>% 
-		filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM")) %>% 		
-		mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "3PSM", "pcurve", "puniform"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "3PSM", "p-curve", "p-uniform"), ordered=TRUE)) %>% 
+		filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "PET.rma", "PEESE.rma", "PETPEESE.rma", "3PSM", "pcurve", "puniform")) %>% 
 		ungroup()
 
 # store estimation quantiles in long format		
@@ -71,24 +104,26 @@ summLong <- summ2  %>%
 		select(k, delta, qrp.label, selProp, selProp.label, tau.label, qrpEnv, method, stroke, fill, meanEst.pos, perc2.5.pos, perc97.5.pos, meanEst, perc2.5, perc97.5) %>% 
 		melt(id.vars=c("k", "delta", "qrp.label", "selProp", "selProp.label", "tau.label", "qrpEnv", "method", "stroke", "fill"), na.rm=FALSE)
 
+
 methodOrder <- c("RE", "TF", "PET", "PEESE", "PET-PEESE", "3PSM", "p-curve", "p-uniform")
 
 
-	# input <- list(tau.label="tau = 0.2", k=10, delta=0.5, selProp=0.6, qrpEnv = "none", dropNegatives=TRUE)
+	# input <- list(tau.label="tau = 0.2", k=10, delta=0.5, selProp=0.6, qrpEnv = "none", dropNegatives=TRUE, PETPEESEmodel = "lm")
 	# ggDat.H0 <- RR.H0 %>% filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp)
 shinyServer(function(input, output, session) {
 
 	ggDat.H0 <- reactive({
 		RR.H0 %>% 
 			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
-			select(qrp.label, method, TypeI)
+			select(qrp.label, method, TypeI) %>% 
+			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	
 	ggDat.H1 <- reactive({
 		RR.H1 %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, delta == input$delta, qrpEnv == input$qrpEnv) %>% 
-			select(qrp.label, method, Power)
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta==input$delta) %>% 
+			select(qrp.label, method, Power) %>% selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 
@@ -156,23 +191,30 @@ shinyServer(function(input, output, session) {
 	
 	ggSumm0 <- reactive({
 		summLong %>% 
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0, variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
-		arrange(method, stroke)
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
+			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
+			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggQ0 <- reactive({
 		summLong %>% 
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0, variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
-		arrange(method, stroke)
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
+			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
+			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggSumm1 <- reactive({
-		summLong %>% filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", "")))
+		summLong %>% 
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta) %>% 
+			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
+			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggQ1 <- reactive({
 		summLong %>% 
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", ""))))
+			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta)  %>% 
+			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
+			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	# ggH1 <- reactive({
@@ -263,17 +305,21 @@ hypTab <- reactive({
 	RR.H1.specific <- RR.H1 %>% 
 		filter(delta == input$delta)  %>% 
 		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
-		select(-delta, -selProp)
+		select(-delta, -selProp) %>% 
+		selectPETPEESEmodel(model=input$PETPEESEmodel)
 
 	RR.H0.specific <- RR.H0 %>% 
 		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
-		select(-delta, -selProp, -TypeI.excess)
-		
-	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau.label", "method"))	
+		select(-delta, -selProp, -TypeI.excess) %>% 
+		selectPETPEESEmodel(model=input$PETPEESEmodel)
+				
+	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau.label", "method")) %>% 
+		select(method, TypeI, Power)
 	
-	RR.wide[, 7:ncol(RR.wide)] <- round(RR.wide[, 7:ncol(RR.wide)], 3)
+	RR.wide[, 2:ncol(RR.wide)] <- round(RR.wide[, 2:ncol(RR.wide)], 3)
 	
 	RR.wide$rejectionRatio <- round(RR.wide$Power/RR.wide$TypeI, 1)
+	RR.wide$rejectionRatio[is.infinite(RR.wide$rejectionRatio)] <- NA
 	return(RR.wide)
 })
 
@@ -286,16 +332,18 @@ output$hypTable <- renderUI({
 
 estTab <- reactive({
 	summ0 <- summ2 %>% 	
-	filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
-	select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD, -consisZero, -consisZero.pos)
+		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
+		select(-k, -qrp.label, -selProp.label, -tau) %>% 
+		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD, -consisZero, -consisZero.pos) %>% 
+		selectPETPEESEmodel(model=input$PETPEESEmodel)
 	
 	if (input$dropNegatives == TRUE) {
 		summ0 <- summ0 %>% select(-meanEst, -perc2.5, -perc97.5, -ME, -RMSE, -coverage)
 	} else {
 		summ0 <- summ0 %>% select(-meanEst.pos, -perc2.5.pos, -perc97.5.pos, -ME.pos, -RMSE.pos, -coverage.pos)
 	}
-
-	summ0[, 7:ncol(summ0)] <- round(summ0[, 7:ncol(summ0)], 2)
+	
+	summ0[, 3:ncol(summ0)] <- round(summ0[, 3:ncol(summ0)], 2)
 
 	return(summ0)
 })
@@ -303,9 +351,9 @@ estTab <- reactive({
 output$estTable <- renderUI({
 	return(list(
 		h3("Under H0:"),
-		HTML(getTable(estTab() %>% filter(delta==0))),
+		HTML(getTable(estTab() %>% filter(delta==0) %>% select(-delta))),
 		h3("Under H1:"),
-		HTML(getTable(estTab() %>% filter(delta > 0)))
+		HTML(getTable(estTab() %>% filter(delta>0) %>% select(-delta)))
 	))
 })
 

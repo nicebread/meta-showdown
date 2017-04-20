@@ -4,7 +4,7 @@ library(grid)
 library(gridExtra)
 
 #setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
-load(file="res.hyp.RData")
+load(file="RR.RData")
 
 # ---------------------------------------------------------------------
 # SETTINGS
@@ -12,49 +12,18 @@ load(file="res.hyp.RData")
 # compare delta==0 (for false positive rate) against delta==0.5 (for power)
 H1 <- 0.5
 
-# ---------------------------------------------------------------------
-# Compute summary measures across replications
-
-hyp.summ <- res.hyp %>% 
-  group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
-  dplyr::summarise(
-    H0.reject = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
-    n.simulations = n()
-  ) %>% 
+# select only some methods for displaying
+RR.sel <-  RR %>% 
   filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
   mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
 
-
-# ---------------------------------------------------------------------
-# Compute rejection ratios
-
-RR <- hyp.summ %>% ungroup() %>% select(condition, k, delta, qrp.label, selProp, tau, method, H0.reject)
-
-RR$TypeI <- RR$H0.reject
-RR$TypeI[RR$delta!=0] <- NA
-
-RR$TypeII <- 1-RR$H0.reject
-RR$TypeII[RR$delta==0] <- NA
-RR$Power <- 1-RR$TypeII
-
-RR$tau.label <- factor(RR$tau, levels=unique(RR$tau), labels=paste0("tau = ", unique(RR$tau)))
-RR$selProp.label <- factor(RR$selProp, levels=unique(RR$selProp), labels=paste0("Publication Bias = ", unique(RR$selProp)))
-
-save(RR, file="RR.RData")
-save(RR, file="Shiny/MAexplorer/RR.RData")
-
-
-RR.H0 <- RR %>% filter(delta == 0) %>% select(condition, k, qrp.label, selProp, tau.label, method, TypeI, tau) #add tau
-RR.H1 <- RR %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, Power, tau) #add tau
+RR.H0 <- RR.sel %>% filter(delta == 0) %>% select(condition, k, qrp.label, selProp, tau.label, method, TypeI, tau) #add tau
+RR.H1 <- RR.sel %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, Power, tau) #add tau
 
 RR.wide <- inner_join(RR.H0, RR.H1)
 
 RR.wide$rejectionRatio <- RR.wide$Power/RR.wide$TypeI
 RR.wide$errorSum <- (1-RR.wide$Power) + RR.wide$TypeI
-
-# res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
-# res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
-# res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
 
 
 save(RR.wide, file="RR.wide.RData")
