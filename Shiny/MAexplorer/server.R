@@ -334,7 +334,8 @@ estTab <- reactive({
 	summ0 <- summ2 %>% 	
 		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
 		select(-k, -qrp.label, -selProp.label, -tau) %>% 
-		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD, -consisZero, -consisZero.pos) %>% 
+		#select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD, -consisZero, -consisZero.pos) %>% 
+		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 	
 	if (input$dropNegatives == TRUE) {

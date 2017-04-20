@@ -16,26 +16,26 @@ PETPEESE.est <- function(d, v, PP.test = c("two-sided", "one-sided"), long=TRUE)
 	  )
   
  
-  # conditional PET/PEESE estimator
+  # conditional PET/PEESE estimator	
+	lm.p.value  <- res %>% filter(method == "PET.lm", term == "b0") %>% .[["p.value"]]
+	lm.est  <- res %>% filter(method == "PET.lm", term == "b0") %>% .[["estimate"]]
+	
+	rma.p.value <- res %>% filter(method == "PET.rma", term == "b0") %>% .[["p.value"]]	
+	rma.est <- res %>% filter(method == "PET.rma", term == "b0") %>% .[["estimate"]]
 
-  #the one-tail version that Stanley privately advocated. Not mentioned in publications. 
-  #usePET = ifelse(summary(PET)$coefficients[7] < .10 & as.numeric(PET$coefficients[1]) > 0, 0, 1)
   if (PP.test == "one-sided") {
-	  coef.lm <- summary(PET.lm)$coefficients
-	  coef.rma <- summary(PET.rma)$coefficients
-	  usePET.lm <- !(coef.lm["(Intercept)", "Pr(>|t|)"] < .10 & coef.lm["(Intercept)", "Estimate"] > 0)
-	  usePET.rma <- !(coef.rma["(Intercept)", "Pr(>|t|)"] < .10 & coef.rma["(Intercept)", "Estimate"] > 0)
+	  p.crit <- .10
+  } else if (PP.test == "two-sided") {
+		p.crit <- .05
   }
-  
-  #the two-tail version.
-  if (PP.test == "two-sided") {
-	  usePET.lm <- ifelse(res %>% filter(method == "PET.lm", term == "b0") %>% .[["p.value"]] > .05, TRUE, FALSE)
-	  usePET.rma <- ifelse(res %>% filter(method == "PET.rma", term == "b0") %>% .[["p.value"]] > .05, TRUE, FALSE)
-  }
+	
+	# the condition always uses a directional hypothesis (a reversed slope should not happen), but different critical levels (.05 vs .10)
+  usePEESE.lm <- ifelse(lm.p.value < p.crit & lm.est > 0, TRUE, FALSE)
+  usePEESE.rma <- ifelse(rma.p.value < p.crit & rma.est > 0, TRUE, FALSE)
     
   res <- rbind(res, 
-		data.frame(method="PETPEESE.lm", if (usePET.lm == TRUE) {tidyLM(PET.lm)} else {tidyLM(PEESE.lm)}),
-		data.frame(method="PETPEESE.rma", if (usePET.rma == TRUE) {tidyRMA(PET.rma)} else {tidyRMA(PEESE.rma)})
+		data.frame(method="PETPEESE.lm", if (usePEESE.lm == FALSE) {tidyLM(PET.lm)} else {tidyLM(PEESE.lm)}),
+		data.frame(method="PETPEESE.rma", if (usePEESE.rma == FALSE) {tidyRMA(PET.rma)} else {tidyRMA(PEESE.rma)})
 	  )
 
   returnRes(res, long)
