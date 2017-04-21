@@ -77,3 +77,36 @@ summ.allSig <- res.wide.allSig %>% group_by(condition, k, k.label, delta, delta.
 		coord_flip(ylim=c(-0.6, 1.1)) +
 		facet_grid(qrp.label~method) + 
 		theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 0% and tau=0.2)")		
+		
+		
+# ---------------------------------------------------------------------
+# Split results based on whether 3PSM gives a CI or not
+
+res.wide.3CI <- res.wide.red %>% filter(method=="3PSM") %>% 
+	mutate(TCI = !is.na(b0_p.value))
+	
+summ.3CI <- res.wide.3CI %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method, TCI) %>% 
+	dplyr::summarise(
+		meanEst.pos	= mean(posify(b0_estimate), na.rm=TRUE),
+		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
+		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE)
+	)
+
+	DELTAS <- c(0, 0.2, 0.5, 0.8)
+	summ.3CI %>% filter(selProp==0.9, delta %in% DELTAS) %>% 
+	    ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(TCI), fill=factor(TCI))) + 
+	    geom_hline(yintercept=DELTAS[1], color="skyblue") + 
+	    geom_hline(yintercept=DELTAS[2], color="black") + 
+			geom_hline(yintercept=DELTAS[3], color="black") + 
+			geom_hline(yintercept=DELTAS[4], color="black") + 
+	    geom_pointrange(position=position_dodge(width=.7),size = 0.4) +	
+	    coord_flip(ylim=YLIM) +
+    
+	    #facet_grid(tau.label~method,labeller = label_bquote(cols = alpha ^ .(vs),rows =  tau = .(tau))) + 
+	    facet_grid(tau~method~delta, labeller = label_bquote(rows = tau == .(tau))) + 
+    
+	   # theme_metashowdown +
+	    scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
+	    scale_shape_manual(values=c(21,22,24)) + 
+	    ylab("Estimated effect size") +
+	    xlab(expression(italic("k")))
