@@ -3,7 +3,10 @@
 ## and computes summaries of them (such as mean error, MSE, coverage, etc.)
 ## ======================================================================
 
-source("start.R")
+# run this file:
+# source("3-resultsFramework.R", echo=TRUE)
+
+#source("start.R")
 
 # load the results files which were generated in 2-analysisFramework.R,
 # combine them into one large data frame
@@ -95,25 +98,18 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),		
 		n.ci = sum(!is.na(b0_conf.high)),
 		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
-		consisZero.pos  = sum(0 > b0_conf.low & 0 < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0)
+		consisZero.pos  = consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low))
 	)
 
 print(summ, n=50)
-
-# How many 3PSM estimates have no CI?
-t3 <- res.wide.red %>% filter(method=="3PSM") %>% group_by(selProp, delta, k, tau, qrpEnv) %>% summarise(
-	n.CI = sum(!is.na(b0_conf.high)),
-	n.p_value = sum(!is.na(b0_p.value))
-)
-summary(t3$n.CI)
-print(t3, n=432)
-t3[t3$n.CI < 500, ]
 
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
 export(summ, file="summ.csv")
 save(summ, file="summ.RData")
+
+# also export into Shiny app
 save(summ, file="Shiny/MAexplorer/summ.RData")
 #load("summ.RData")
 
@@ -122,7 +118,7 @@ save(summ, file="Shiny/MAexplorer/summ.RData")
 # Compute summary file for hypothesis test plot
 
 # load("res.wide.red.RData")
-res.hyp <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value, skewtest_p.value, 41:45) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
+res.hyp <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value, skewtest_p.value, delta.label, k.label, qrp.label, selProp.label, tau.label, nMA.with.kSig.larger.3) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
 
 # define critical p-value for each method
 res.hyp$p.crit <- .05

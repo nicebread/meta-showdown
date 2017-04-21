@@ -237,7 +237,7 @@ shinyServer(function(input, output, session) {
 	ggvis(ggSumm0, y=~method) %>% 
 		layer_points(x=~value, y= ~factor(method), stroke := ~stroke, fill := ~fill) %>% 
 		layer_paths(x= ~value, stroke := ~stroke, fill := ~fill, data=ggQ0 %>% group_by(method)) %>%
-		layer_paths(x= ~value, y= ~method, stroke := H0.fill, fill := H0.fill, data=verticalLineDataH0) %>%
+		layer_paths(x= ~value, y= ~method, stroke := H0.stroke, fill := H0.stroke, data=verticalLineDataH0) %>%
 		add_axis("x", properties=axis_props(
 				title = list(fontSize = 16, text="Bias-corrected estimate for delta = 0"),
 				labels = list(fontSize = 13)

@@ -3,7 +3,7 @@ library(dplyr)
 library(grid)
 library(gridExtra)
 
-setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
+#setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 load("summ.RData")
 
 # ---------------------------------------------------------------------

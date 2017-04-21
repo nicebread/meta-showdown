@@ -3,6 +3,18 @@
 # This is all rather cycle-intensive
 source("start.R")
 
+load(file="res.wide.red.RData")
+# How many 3PSM estimates have no CI?
+t3 <- res.wide.red %>% filter(method=="3PSM") %>% group_by(selProp, delta, k, tau, qrpEnv) %>% summarise(
+	n.CI = sum(!is.na(b0_conf.high)),
+	n.p_value = sum(!is.na(b0_p.value))
+)
+summary(t3$n.CI)
+print(t3, n=432)
+t3[t3$n.CI < 500, ]
+
+
+
 # What does 3PSM do when 100% are significant?
 set.seed(42069)
 trial1 <- dataMA(k = 10, delta = 0, tau = 0,
