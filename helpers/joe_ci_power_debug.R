@@ -15,37 +15,11 @@ table("p-value NA" = is.na(res.TF$b0_p.value), "CI NA" = is.na(res.TF$b0_conf.lo
 res.3PSM$H0.reject <- (res.3PSM$b0_p.value < .05) & (is.na(res.3PSM$b0_estimate) | res.3PSM$b0_estimate > 0)
 
 table("H0reject" = res.3PSM$H0.reject, "p < .05" = res.3PSM$b0_p.value < .05)
-
 table("H0reject" = res.3PSM$H0.reject, "p < .05" = res.3PSM$b0_p.value < .05, "est > 0" = res.3PSM$b0_estimate > 0)
 
-summ.3PSM <- res.3PSM %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label) %>% 
-	dplyr::summarise(
-		meanEst		= mean(b0_estimate, na.rm=TRUE),
-		meanEst.pos	= mean(posify(b0_estimate), na.rm=TRUE),
-		ME 			= mean(b0_estimate - delta, na.rm=TRUE),
-		RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
-		ME.pos = mean(posify(b0_estimate) - delta, na.rm=TRUE),
-		RMSE.pos = sqrt(mean((posify(b0_estimate) - delta)^2, na.rm=TRUE)),
-		MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
-		perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
-		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
-		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
-		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE),
-		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
-		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),		
-		n.ci = sum(!is.na(b0_conf.high)),
-		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
-		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
-		H0.reject = mean(H0.reject)
-	)
 
-print(summ.3PSM, n=50)
-
-
-
-
-
-# Joe debug for power vs CI coverage
+# ---------------------------------------------------------------------
+#  Joe debug for power vs CI coverage
 
 load("summ.Rdata")
 load("res.hyp.Rdata")

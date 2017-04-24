@@ -9,13 +9,13 @@ load("summ.RData")
 # ---------------------------------------------------------------------
 # Plot settings
 
-YLIM <- c(-0.1, 1.2)
+YLIM <- c(-0.09, 1.2)
 DELTAS <- c(0, 0.5)
 
 theme_metashowdown <- theme(
   title = element_text(size=18),
   axis.title = element_text(size=18),
-  axis.text = element_text(size=18),
+  axis.text = element_text(size=12),
   strip.text = element_text(size=16),
   panel.spacing =unit(.5, "lines"),
   panel.background = element_rect(fill="white"),
@@ -32,13 +32,30 @@ summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETP
   mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM")))
 
 
+# prepare extra data.frame for the number of successful computation out of 1000 simulations
+summ2$nPos <- ifelse(summ2$delta==0, -0.05, 1.3)
+summ2$just <- ifelse(summ2$delta==0, 1.8, -0.4)
+summ2$n.validEstimates.label <- as.character(summ2$n.validEstimates)
+summ2$n.validEstimates.label[summ2$n.validEstimates.label=="1000"] <- ""
+
+summ2$n.validEstimates.symbol <- ""
+summ2$n.validEstimates.symbol[summ2$n.validEstimates < 500] <- "*"
+summ2$n.validEstimates.symbol[summ2$n.validEstimates < 200] <- "#"
+
+summ2$nPos2 <- summ2$perc2.5.pos
+summ2$nPos2[summ2$delta > 0] <- summ2$perc97.5.pos[summ2$delta > 0]
+
+#dat = summ2 %>% filter(selProp==0, delta %in% DELTAS)
+
 buildFacet <- function(dat, title) {
   PLOT <- dat %>%
     ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
     geom_hline(yintercept=DELTAS[1], color="skyblue") + 
     geom_hline(yintercept=DELTAS[2], color="black") + 
-    geom_pointrange(position=position_dodge(width=.7),size = 0.4) +	
+    geom_pointrange(position=position_dodge(width=.7), size = 0.4) +	
     coord_flip(ylim=YLIM) +
+		#geom_text(aes(x=factor(k), y=nPos, label=n.validEstimates.label, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.5) +
+		geom_text(aes(x=factor(k), y=nPos2, label=n.validEstimates.symbol, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.9) +
     
     #facet_grid(tau.label~method,labeller = label_bquote(cols = alpha ^ .(vs),rows =  tau = .(tau))) + 
     facet_grid(tau~method,labeller = label_bquote(rows = tau == .(tau))) + 
@@ -55,9 +72,9 @@ buildFacet <- function(dat, title) {
 }
 
 #UPDATED TITLES
-plotA <- buildFacet(summ2 %>% filter(selProp==0, delta %in% DELTAS), bquote("(A) 0% publication bias"))
-plotB <- buildFacet(summ2 %>% filter(selProp==0.6, delta %in% DELTAS), bquote("(B) 60% publication bias"))
-plotC <- buildFacet(summ2 %>% filter(selProp==0.9, delta %in% DELTAS), bquote("(C) 90% publication bias"))
+plotA <- buildFacet(dat = summ2 %>% filter(selProp==0, delta %in% DELTAS), bquote("(A) 0% publication bias"))
+plotB <- buildFacet(dat = summ2 %>% filter(selProp==0.6, delta %in% DELTAS), bquote("(B) 60% publication bias"))
+plotC <- buildFacet(dat = summ2 %>% filter(selProp==0.9, delta %in% DELTAS), bquote("(C) 90% publication bias"))
 
 #OLDER VERSION
 #plotA <- buildFacet(summ2 %>% filter(selProp==0, delta %in% DELTAS), bquote("(A) Estimate and 95% percentiles at"~delta~" = "~.(DELTAS[2])~", 0% publication bias"))

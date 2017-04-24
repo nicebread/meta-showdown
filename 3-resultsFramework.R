@@ -74,7 +74,7 @@ res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("
 
 # TODO: Skip this??
 # RULE X: set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
-res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
+#res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 				 
 # ---------------------------------------------------------------------
 # For hypothesis test: Add H0.rejection rule
@@ -119,7 +119,8 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
 		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
 		H0.reject.rate = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
-		n.p.values = sum(!is.na(H0.reject))
+		n.p.values = sum(!is.na(H0.reject)),
+		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
 	)
 
 print(summ, n=50)
@@ -133,23 +134,3 @@ save(summ, file="summ.RData")
 # also export into Shiny app
 save(summ, file="Shiny/MAexplorer/summ.RData")
 #load("summ.RData")
-
-
-
-# ---------------------------------------------------------------------
-# Compute rejection ratios
-
-RR <- hyp.summ %>% ungroup() %>% select(condition, k, delta, qrpEnv, qrp.label, selProp, tau, method, H0.reject)
-
-RR$TypeI <- RR$H0.reject
-RR$TypeI[RR$delta!=0] <- NA
-
-RR$TypeII <- 1-RR$H0.reject
-RR$TypeII[RR$delta==0] <- NA
-RR$Power <- 1-RR$TypeII
-
-RR$tau.label <- factor(RR$tau, levels=unique(RR$tau), labels=paste0("tau = ", unique(RR$tau)))
-RR$selProp.label <- factor(RR$selProp, levels=unique(RR$selProp), labels=paste0("Publication Bias = ", unique(RR$selProp)))
-
-save(RR, file="RR.RData")
-save(RR, file="Shiny/MAexplorer/RR.RData")
