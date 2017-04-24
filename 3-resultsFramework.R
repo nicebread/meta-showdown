@@ -47,12 +47,12 @@ res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), la
 res.wide$selProp.label <- factor(res.wide$selProp, levels=unique(res.wide$selProp), labels=paste0("selProp = ", unique(res.wide$selProp)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
 
-# sanity check
+# sanity check: each condition should have 1000 sims
 tab <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
 
-# how many simulations do we have in each condition, after we removed all k<4 fpr p-curve etc.?
+# how many simulations do we have in each condition, after we removed all k<4 for p-curve etc.?
 tab2 <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id, method, kSig_estimate) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=sum(!is.na(kSig_estimate) & kSig_estimate >= 4))
 print(tab2, n=54)
 
@@ -62,16 +62,35 @@ save(res.wide, file="res.wide.RData", compress="gzip")
 #load(file="res.wide.RData")
 
 # ---------------------------------------------------------------------
-#  save a filtered version
+#  save a reduced version that applies some selections
 
 res.wide.red <- res.wide
 
-## set estimate of p-curve and p-uniform with < 4 studies to NA
+## RULE 1: set estimate of p-curve and p-uniform with < 4 significant studies to NA
 res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 
-# set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
+## RULE 2: Ignore 3PSM when it doesn't provide a p-value
+res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
+
+# TODO: Skip this??
+# RULE X: set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
 res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 				 
+# ---------------------------------------------------------------------
+# For hypothesis test: Add H0.rejection rule
+
+# merge two p-value columns into one (p-curve uses "skewtest_p.value", all other use "b0_p.value")
+res.wide.red$p.value <- res.wide.red$b0_p.value
+res.wide.red$p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- res.wide.red$skewtest_p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")]
+res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
+
+# compute rejection:
+# Reject H0 if test is significant AND estimate in correct direction.
+# In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
+res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
+res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
+
+
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
 
@@ -98,7 +117,9 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),		
 		n.ci = sum(!is.na(b0_conf.high)),
 		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
-		consisZero.pos  = consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low))
+		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
+		H0.reject.rate = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
+		n.p.values = sum(!is.na(H0.reject))
 	)
 
 print(summ, n=50)
@@ -113,42 +134,6 @@ save(summ, file="summ.RData")
 save(summ, file="Shiny/MAexplorer/summ.RData")
 #load("summ.RData")
 
-
-# ---------------------------------------------------------------------
-# Compute summary file for hypothesis test plot
-
-# load("res.wide.red.RData")
-res.hyp <- res.wide.red %>% select(1:8, b0_estimate, b0_p.value, skewtest_p.value, delta.label, k.label, qrp.label, selProp.label, tau.label, nMA.with.kSig.larger.3) %>% filter(!method %in% c("pcurve", "pcurve.lack"))
-
-# define critical p-value for each method
-res.hyp$p.crit <- .05
-
-# merge two p-value columns into one
-res.hyp$p.value <- ifelse(!is.na(res.hyp$b0_p.value), res.hyp$b0_p.value, res.hyp$skewtest_p.value)
-res.hyp <- res.hyp %>% select(-b0_p.value, -skewtest_p.value)
-
-# "posified" p.value: only keep those which have a non-negative estimate
-#res.hyp$p.value.pos <- res.hyp$p.value
-#res.hyp$p.value.pos[res.hyp$b0_estimate<0] <- NA
-
-# compute rejection:
-# Reject H0 if test is significant AND estimate in correct direction.
-# In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
-res.hyp$H0.reject <- (res.hyp$p.value < res.hyp$p.crit) & (is.na(res.hyp$b0_estimate) | res.hyp$b0_estimate > 0)
-
-save(res.hyp, file="res.hyp.RData", compress="gzip")
-
-
-
-# ---------------------------------------------------------------------
-# Compute summary measures across replications
-
-hyp.summ <- res.hyp %>% 
-  group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
-  dplyr::summarise(
-    H0.reject = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
-    n.simulations = n()
-  )
 
 
 # ---------------------------------------------------------------------
