@@ -54,7 +54,11 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		# The output panels, on the right side
 		
 		column(width=8, 
-			tabsetPanel(id ="tabs1",				
+			tabsetPanel(id ="tabs1",	
+				tabPanel("Funnel plots",
+					h2("Typical funnel plots for this condition"),
+					h3("Not implemented yet")
+				),
 				tabPanel("Hypothesis test",
 					h2("Is there an effect or not?"),
 					helpText(HTML("Note: H0 is rejected if the p-value is < .05 <i>and</i> the estimate is in the expected direction.")),

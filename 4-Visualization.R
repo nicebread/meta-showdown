@@ -94,19 +94,20 @@ g_legend<-function(a.gplot){
   return(legend)} 
 
 legOnlyPlot = summ2 %>% filter(selProp==0.9, delta %in% DELTAS) %>%
-  ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos,
-             ymax=perc97.5.pos, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
-  geom_pointrange(position=position_dodge(width=.7),size = 0.4) +
+  ggplot(aes(x=factor(k), y=meanEst.pos, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+  geom_point() +
   coord_flip(ylim=YLIM) +
   facet_grid(tau.label~method) +
   theme(
     panel.background = element_rect(fill="white"),
     legend.position = c("bottom"),
-    legend.key = element_rect(fil='white')
+    legend.key = element_rect(fill='white'),
+		legend.title = element_text(size=14, face="bold"),
+		legend.text = element_text(size=12)
   ) + 
   scale_shape_manual(values=c(21,22,24)) +
-  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.")) +
-  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta))) +
+  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
+  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta), override.aes = list(size=6))) +
   scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))
 
 

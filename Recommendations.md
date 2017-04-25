@@ -9,5 +9,5 @@ Rules:
 	- Set negative bias-corrected estimates to zero
 	- Ignore the CI
 - Do not run p-curve and p-uniform on less than 4 significant studies
-- Do not trust 3PSM when it does not provide a p-value. Do not set it to zero, treat it as "missing value".
-- If p-uniform does not provide one of the CI boundaries, ignore the result. Do not set it to zero, treat it as "missing value".
+- Do not trust 3PSM (in this implementation) when it does not provide a p-value. Do not set the estimate to zero, treat it as "missing value".
+- If p-uniform does not provide one of the CI boundaries, ignore the result. Do not set the estimate to zero, treat it as "missing value".

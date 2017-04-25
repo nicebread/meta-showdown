@@ -17,19 +17,21 @@ hyp.sel <-  summ %>%
   filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
   mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM"))) %>% 
 	ungroup()
+	
+	
+# prepare extra data.frame for the number of successful computation out of 1000 simulations
+hyp.sel$n.p.values.symbol <- cut(hyp.sel$n.p.values, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))	
 
-hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, selProp, tau.label, method, tau, TypeI = H0.reject.rate)
-hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, tau, Power = H0.reject.rate)
+hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.rate)
+hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.rate)
 
 hyp.wide <- inner_join(hyp.H0, hyp.H1)
 
 hyp.wide$rejectionRatio <- hyp.wide$Power/hyp.wide$TypeI
 hyp.wide$errorSum <- (1-hyp.wide$Power) + hyp.wide$TypeI
 
-
 save(hyp.wide, file="hyp.wide.RData")
-
-
+save(hyp.wide, file="Shiny/MAexplorer/hyp.wide.RData")
 
 
 theme_metashowdown <- theme(
@@ -57,20 +59,22 @@ buildFacet <- function(dat, title) {
     geom_hline(yintercept=c(0, 1), linetype="solid", color="skyblue") +
     geom_point(aes(y=TypeI), position=position_dodge(width=.7), size = 3, color="steelblue3", fill="skyblue") +	
     geom_point(aes(y=Power), position=position_dodge(width=.7), size = 1.5, color="black", fill="black") +	
+		geom_text(aes(x=factor(k), y=-0.05, label=n.p.values.symbol.H0, group=qrp.label), position=position_dodge(width=0.7), size=2.5, hjust=1, vjust=0.6, color="steelblue3") +
+		geom_text(aes(x=factor(k), y=1.05, label=n.p.values.symbol.H1, group=qrp.label), position=position_dodge(width=0.7), size=2.5, hjust=0, vjust=0.6, color="black") +
     coord_flip() +
     facet_grid(tau~method,labeller = label_bquote(rows = tau == .(tau))) + 
-    scale_y_continuous(labels=scales::percent, limits=c(0, 1), breaks = c(.05, .5, .8, 1)) + 
+    scale_y_continuous(labels=scales::percent, limits=c(-0.07, 1.07), breaks = c(.05, .5, .8, 1)) + 
     scale_shape_manual(values=c(21, 22, 24)) + 
     ylab("False positives / Statistical Power") +
-    xlab(expression(italic(k))) +
-    ggtitle(title) + 
-    theme_metashowdown
+    xlab(expression(italic(k))) + 
+    theme_metashowdown +
+    ggtitle(title)
   return(PLOT)	
 }
 
-plotA <- buildFacet(hyp.wide %>% filter(selProp==0), bquote("(A) 0% publication bias"))
-plotB <- buildFacet(hyp.wide %>% filter(selProp==0.6), bquote("(B) 60% publication bias"))
-plotC <- buildFacet(hyp.wide %>% filter(selProp==0.9), bquote("(C) 90% publication bias"))
+plotA <- buildFacet(dat = hyp.wide %>% filter(selProp==0), bquote("(A) 0% publication bias"))
+plotB <- buildFacet(dat = hyp.wide %>% filter(selProp==0.6), bquote("(B) 60% publication bias"))
+plotC <- buildFacet(dat = hyp.wide %>% filter(selProp==0.9), bquote("(C) 90% publication bias"))
 
 
 # ---------------------------------------------------------------------
@@ -82,21 +86,23 @@ legOnlyPlot <- data.frame(qrp.label=factor(c("none", "med", "high"), ordered=TRU
   theme(
     panel.background = element_rect(fill="white"),
     legend.position = c("bottom"),
-    legend.key = element_rect(fil='white')
+    legend.key = element_rect(fill = 'white'),
+		legend.title = element_text(size=14, face="bold"),
+		legend.text = element_text(size=12)
   ) + 
-  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24), guide = guide_legend(title = "QRP Env.")) +
-  scale_color_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates")) +
-  scale_fill_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates"))
-
+  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24), guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
+  scale_color_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates", override.aes = list(size=6))) +
+  scale_fill_manual(values=c("False positive rate"="skyblue","Power"="black"), guide = guide_legend(title = "Rates")) 
+	 
 #Extract Legend 
-g_legend<-function(a.gplot){ 
+g_legend<-function(a.gplot) { 
   tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
   legend <- tmp$grobs[[leg]] 
-  return(legend)} 
+  return(legend)
+} 
 
 legend <- g_legend(legOnlyPlot) 
-
 
 # ---------------------------------------------------------------------
 # Save PDF of plot

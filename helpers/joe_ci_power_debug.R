@@ -22,7 +22,10 @@ load("../simParts/YsimData_condition_149.RData")
 # --> id = 505149 --> batch==5, replication==5
 critical <- sim %>% filter(batch==5, replication==5)
 
+library(puniform)
+PU <- puniform(tobs=critical$t, n1i=critical$n1, n2i=critical$n2, alpha = 0.05, side="right", method="P", plot = FALSE)
 
+# check the H0.reject rule vs. consisZero
 res.3PSM$H0.reject <- (res.3PSM$b0_p.value < .05) & (is.na(res.3PSM$b0_estimate) | res.3PSM$b0_estimate > 0)
 
 table("H0reject" = res.3PSM$H0.reject, "p < .05" = res.3PSM$b0_p.value < .05)

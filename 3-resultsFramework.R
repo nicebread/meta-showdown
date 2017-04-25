@@ -72,6 +72,9 @@ res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurv
 ## RULE 2: Ignore 3PSM when it doesn't provide a p-value
 res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 
+## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
+
 # TODO: Skip this??
 # RULE X: set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
 #res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA

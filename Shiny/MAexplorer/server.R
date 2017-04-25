@@ -72,8 +72,7 @@ selectPETPEESEmodel <- function(x, model) {
 }
 
 load("summ.RData")
-#load("res.hyp.RData")
-load("RR.RData")
+load("hyp.wide.RData")
 
 H1.stroke <- "black"
 H1.fill <- "grey20"
@@ -82,10 +81,10 @@ H0.fill <- "skyblue"
 
 # Prepare data for hypothesis test plot
 
-RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
+#RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
 #RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 #RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
-RR.H1 <- RR %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power)
+RR.H1 <- summ %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power)
 RR.H0 <- RR.H1 %>% filter(delta == 0) %>% select(-Power)
 RR.H1 <- RR.H1 %>% select(-TypeI, -TypeI.excess)
 
