@@ -38,9 +38,7 @@ summ2$just <- ifelse(summ2$delta==0, 1.8, -0.4)
 summ2$n.validEstimates.label <- as.character(summ2$n.validEstimates)
 summ2$n.validEstimates.label[summ2$n.validEstimates.label=="1000"] <- ""
 
-summ2$n.validEstimates.symbol <- ""
-summ2$n.validEstimates.symbol[summ2$n.validEstimates < 500] <- "*"
-summ2$n.validEstimates.symbol[summ2$n.validEstimates < 200] <- "#"
+summ2$n.validEstimates.symbol <- cut(summ2$n.validEstimates, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))
 
 summ2$nPos2 <- summ2$perc2.5.pos
 summ2$nPos2[summ2$delta > 0] <- summ2$perc97.5.pos[summ2$delta > 0]
@@ -55,7 +53,7 @@ buildFacet <- function(dat, title) {
     geom_pointrange(position=position_dodge(width=.7), size = 0.4) +	
     coord_flip(ylim=YLIM) +
 		#geom_text(aes(x=factor(k), y=nPos, label=n.validEstimates.label, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.5) +
-		geom_text(aes(x=factor(k), y=nPos2, label=n.validEstimates.symbol, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.9) +
+		geom_text(aes(x=factor(k), y=nPos2, label=n.validEstimates.symbol, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.9, color="steelblue3") +
     
     #facet_grid(tau.label~method,labeller = label_bquote(cols = alpha ^ .(vs),rows =  tau = .(tau))) + 
     facet_grid(tau~method,labeller = label_bquote(rows = tau == .(tau))) + 
