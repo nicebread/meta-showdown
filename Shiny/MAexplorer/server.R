@@ -84,9 +84,8 @@ H0.fill <- "skyblue"
 #RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
 #RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 #RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
-RR.H1 <- summ %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI, TypeI.excess, Power)
-RR.H0 <- RR.H1 %>% filter(delta == 0) %>% select(-Power)
-RR.H1 <- RR.H1 %>% select(-TypeI, -TypeI.excess)
+RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, Power = H0.reject.rate)
+RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI = H0.reject.rate)
 
 
 # Prepare data for estimation plot
@@ -111,6 +110,11 @@ methodOrder <- c("RE", "TF", "PET", "PEESE", "PET-PEESE", "3PSM", "p-curve", "p-
 	# ggDat.H0 <- RR.H0 %>% filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp)
 shinyServer(function(input, output, session) {
 
+
+	## ======================================================================
+	## Error rate plots
+	## ======================================================================
+
 	ggDat.H0 <- reactive({
 		RR.H0 %>% 
 			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
@@ -125,7 +129,6 @@ shinyServer(function(input, output, session) {
 			select(qrp.label, method, Power) %>% selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
-
 	
 	# renderer must be "canvas", otherwise NAs are displayed
 	
@@ -182,9 +185,9 @@ shinyServer(function(input, output, session) {
 	
 	YLIM <- reactive({
 		if (input$dropNegatives == TRUE) {
-			return(c(-0.1, 1.8))
+			return(c(-0.1, 1.6))
 		} else {
-			return(c(-2, 1.8))
+			return(c(-2, 1.6))
 		}
 	})
 	
@@ -309,7 +312,7 @@ hypTab <- reactive({
 
 	RR.H0.specific <- RR.H0 %>% 
 		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
-		select(-delta, -selProp, -TypeI.excess) %>% 
+		select(-delta, -selProp) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 				
 	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau.label", "method")) %>% 
