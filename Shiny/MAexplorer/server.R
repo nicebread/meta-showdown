@@ -1,10 +1,9 @@
 library(shiny)
-#library(shinyBS) # Additional Bootstrap Controls
-#library(ggplot2)
 library(dplyr)
 library(ggvis)
 library(reshape2)
 library(htmltools)
+library(meta)
 
 
 getTable <- function(df, cbGetClass = NULL) {
@@ -74,6 +73,8 @@ selectPETPEESEmodel <- function(x, model) {
 load("summ.RData")
 load("hyp.wide.RData")
 
+conditions <- read.table("conditions.txt", header=TRUE)
+
 H1.stroke <- "black"
 H1.fill <- "grey20"
 H0.stroke <- "steelblue2"
@@ -84,8 +85,8 @@ H0.fill <- "skyblue"
 #RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
 #RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 #RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
-RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, Power = H0.reject.rate)
-RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau.label, method, TypeI = H0.reject.rate)
+RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, Power = H0.reject.rate)
+RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, TypeI = H0.reject.rate)
 
 
 # Prepare data for estimation plot
@@ -99,15 +100,15 @@ summ2 <- summ %>%
 
 # store estimation quantiles in long format		
 summLong <- summ2  %>% 
-		select(k, delta, qrp.label, selProp, selProp.label, tau.label, qrpEnv, method, stroke, fill, meanEst.pos, perc2.5.pos, perc97.5.pos, meanEst, perc2.5, perc97.5) %>% 
-		melt(id.vars=c("k", "delta", "qrp.label", "selProp", "selProp.label", "tau.label", "qrpEnv", "method", "stroke", "fill"), na.rm=FALSE)
+		select(k, delta, qrp.label, selProp, selProp.label, tau, qrpEnv, method, stroke, fill, meanEst.pos, perc2.5.pos, perc97.5.pos, meanEst, perc2.5, perc97.5) %>% 
+		melt(id.vars=c("k", "delta", "qrp.label", "selProp", "selProp.label", "tau", "qrpEnv", "method", "stroke", "fill"), na.rm=FALSE)
 
 
 methodOrder <- c("RE", "TF", "PET", "PEESE", "PET-PEESE", "3PSM", "p-curve", "p-uniform")
 
+# for testing: some input values:
+# input <- list(tau=0.2, k=10, delta=0.5, selProp=0.6, qrpEnv = "none", dropNegatives=TRUE, PETPEESEmodel = "lm")
 
-	# input <- list(tau.label="tau = 0.2", k=10, delta=0.5, selProp=0.6, qrpEnv = "none", dropNegatives=TRUE, PETPEESEmodel = "lm")
-	# ggDat.H0 <- RR.H0 %>% filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp)
 shinyServer(function(input, output, session) {
 
 
@@ -117,7 +118,7 @@ shinyServer(function(input, output, session) {
 
 	ggDat.H0 <- reactive({
 		RR.H0 %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
 			select(qrp.label, method, TypeI) %>% 
 			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
@@ -125,7 +126,7 @@ shinyServer(function(input, output, session) {
 	
 	ggDat.H1 <- reactive({
 		RR.H1 %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta==input$delta) %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta==input$delta) %>% 
 			select(qrp.label, method, Power) %>% selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
@@ -193,28 +194,28 @@ shinyServer(function(input, output, session) {
 	
 	ggSumm0 <- reactive({
 		summLong %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
 			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggQ0 <- reactive({
 		summLong %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
 			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggSumm1 <- reactive({
 		summLong %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta) %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
 			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
 	
 	ggQ1 <- reactive({
 		summLong %>% 
-			filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta)  %>% 
+			filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta)  %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
 			selectPETPEESEmodel(model=input$PETPEESEmodel)
 	})
@@ -222,10 +223,10 @@ shinyServer(function(input, output, session) {
 	# ggH1 <- reactive({
 	# 	ggH1Label <- paste0("Bias-corrected estimate for delta = ", input$delta)
 	#
-	# 	summLongH1 <- summLong %>% filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", "")))
+	# 	summLongH1 <- summLong %>% filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", "")))
 	#
 	# 	Q1 <- summLong %>%
-	# 	filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", ""))))
+	# 	filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta == input$delta, variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", ""))))
 	#
 	# 	verticalLineDataH1 <- data.frame(value=c(input$delta, input$delta), method=c("RE", "3PSM"))
 	#
@@ -306,16 +307,16 @@ observe({
 hypTab <- reactive({
 	RR.H1.specific <- RR.H1 %>% 
 		filter(delta == input$delta)  %>% 
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
+		filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
 		select(-delta, -selProp) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 
 	RR.H0.specific <- RR.H0 %>% 
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
+		filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv) %>% 
 		select(-delta, -selProp) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 				
-	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau.label", "method")) %>% 
+	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "selProp.label", "tau", "method")) %>% 
 		select(method, TypeI, Power)
 	
 	RR.wide[, 2:ncol(RR.wide)] <- round(RR.wide[, 2:ncol(RR.wide)], 3)
@@ -329,15 +330,13 @@ output$hypTable <- renderUI({
 	return(list(HTML(getTable(hypTab()))))
 })
 
-	
 
 
 estTab <- reactive({
 	summ0 <- summ2 %>% 	
-		filter(k == input$k, tau.label == input$tau.label, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
-		select(-k, -qrp.label, -selProp.label, -tau) %>% 
-		#select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD, -consisZero, -consisZero.pos) %>% 
-		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau.label, -MAD) %>% 
+		filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
+		select(-k, -qrp.label, -selProp.label, -tau.label, -consisZero, -n.ci, -consisZero.pos, -H0.reject.rate, -n.p.values) %>% 
+		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau, -MAD) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 	
 	if (input$dropNegatives == TRUE) {
@@ -359,5 +358,72 @@ output$estTable <- renderUI({
 		HTML(getTable(estTab() %>% filter(delta>0) %>% select(-delta)))
 	))
 })
+
+
+## ======================================================================
+## Funnel plots
+## ======================================================================
+
+# find the condition # that matches the selected tasu, selProp, etc.
+# load the raw data set with that condition
+simDat <- reactive({
+
+	cond <- which(conditions$k == input$k & conditions$tau == input$tau & conditions$selProp == input$selProp & conditions$qrpEnv == input$qrpEnv & conditions$delta == input$deltaFull)
+	
+	filename <- paste0("demoDat/simData_condition_", cond, ".RData")
+	load(filename)	
+	
+	return(sim %>% filter(unique==input$demoDatID))
+})
+
+
+output$funnelplot <- renderPlot({
+	sim0 <- simDat()
+	sim0$se <- sqrt(sim0$v)
+	
+	meta1 <- metagen(sim0$d, sim0$se)
+	meta::funnel(meta1, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1.3, 1.7))
+
+	# compute PET-PEESE
+	PET <- lm(d~se, weights=1/sim0$v, sim0)
+	PEESE <- lm(d~v, weights=1/sim0$v, sim0)
+	
+  PET.est <- coef(PET)[1]
+  PET.slope <- coef(PET)[2]
+  PEESE.est <- coef(PEESE)[1]
+
+	u <- par("usr")	# get range of plot coordinates
+
+	# plot red dot at RE-MA
+	points(meta1$TE.random, u[3], cex=1.3, col="red", pch=20)
+
+	# plot PET-line
+	range <- seq(0, u[3], length.out=100)
+
+	#if (input$show_PET == TRUE) {
+		# predict values from model
+		PET.p <- PET.est + PET.slope*range
+		lines(PET.p, range, col="red")
+
+		segments(coef(PET)[1], 0, coef(PET)[1], u[3], col="red", lty="dotted")
+		points(coef(PET)[1], u[3], cex=1.3, col="red", pch=20)
+		#}
+
+	# plot PEESE-line
+	#if (input$show_PEESE == TRUE) {
+		PEESE.p <- PEESE.est + coef(PEESE)[2]*range^2
+		lines(PEESE.p, range, col="red")
+
+		segments(coef(PEESE)[1], 0, coef(PEESE)[1], u[3], col="red", lty="dotted")
+		points(coef(PEESE)[1], u[3], cex=1.3, col="red", pch=20)
+		#}
+})
+
+output$funnelplotAnnotation <- htmlOutput({
+	return(list(
+		
+	))
+})
+
 
 })
