@@ -459,7 +459,7 @@ dataMA <- function(k, delta, tau,
                    empN, maxN, meanN, minN,
                    selProp, qrpEnv, empN.boost = 0) {  
   
-  #get the number of studies exposed to publication selection bias (and those now exposed)
+  #get the number of studies exposed to publication selection bias (and those not exposed)
   kB = round(k*selProp)
   kU = k-kB
   
