@@ -93,6 +93,9 @@ res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
 res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
 res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
 
+# how many estimates are significantly in the WRONG direction?
+res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
+res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
 
 save(res.wide.red, file="res.wide.red.RData", compress="gzip")
 #load(file="res.wide.red.RData")
@@ -122,6 +125,7 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
 		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
 		H0.reject.rate = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
+		H0.reject.wrongSign.rate = sum(H0.reject.wrongSign, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign)),
 		n.p.values = sum(!is.na(H0.reject)),
 		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
 	)
