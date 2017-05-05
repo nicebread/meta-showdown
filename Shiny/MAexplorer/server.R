@@ -369,8 +369,9 @@ output$estTable <- renderUI({
 simDat <- reactive({
 
 	cond <- which(conditions$k == input$k & conditions$tau == input$tau & conditions$selProp == input$selProp & conditions$qrpEnv == input$qrpEnv & conditions$delta == input$deltaFull)
-	
+		
 	filename <- paste0("demoDat/simData_condition_", cond, ".RData")
+	#filename <- paste0("demoDat/simData_condition_4.RData")
 	load(filename)	
 	
 	return(sim %>% filter(unique==input$demoDatID))
@@ -382,7 +383,21 @@ output$funnelplot <- renderPlot({
 	sim0$se <- sqrt(sim0$v)
 	
 	meta1 <- metagen(sim0$d, sim0$se)
-	meta::funnel(meta1, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1.3, 1.7))
+	#meta::funnel(meta1, ref=0, comb.random=TRUE, contour.levels=.95, col.contour=c("skyblue"), xlab="Effect size", cex=.7, pch=19, xlim=c(-1.3, 1.7), col="grey30")
+	
+	plot(NA, xlim=c(-1.3, 1.7), ylim=c(max(sim0$se), 0), xlab="Effect size", ylab="Standard Error")
+	
+	# the contour triangle
+	polygon(x=c(-1.96*max(sim0$se), 0, 1.96*max(sim0$se), -1.96*max(sim0$se)), y=c(max(sim0$se), 0, max(sim0$se), max(sim0$se)), col="skyblue", border=NA)
+	
+	# the RE triangle
+	REest <- meta1$TE.random
+	polygon(x=c(-1.96*max(sim0$se)+REest, REest, 1.96*max(sim0$se)+REest, -1.96*max(sim0$se)+REest), y=c(max(sim0$se), 0, max(sim0$se), max(sim0$se)), col=NA, border="grey20", lty="dotted")
+	
+	lines(x=c(REest, REest), y=c(max(sim0$se), 0), col="grey20", lty="dotted")
+	
+	# the study points
+	points(sim0$d, sim0$se, cex=1.1, pch=21, col="black", bg="white")
 
 	# compute PET-PEESE
 	PET <- lm(d~se, weights=1/sim0$v, sim0)
@@ -394,34 +409,37 @@ output$funnelplot <- renderPlot({
 
 	u <- par("usr")	# get range of plot coordinates
 
-	# plot red dot at RE-MA
-	points(meta1$TE.random, u[3], cex=1.3, col="red", pch=20)
+	# plot blue dot at RE-MA
+	points(REest, u[3], cex=1.5, col="blue3", pch=20)
+	
+	# plot red dot at true ES
+	points(input$deltaFull, u[3], cex=1.5, col="red3", pch=20)
 
 	# plot PET-line
 	range <- seq(0, u[3], length.out=100)
 
-	#if (input$show_PET == TRUE) {
+	if (input$show_PET == TRUE) {
 		# predict values from model
 		PET.p <- PET.est + PET.slope*range
-		lines(PET.p, range, col="red")
+		lines(PET.p, range, col="blue3", lwd=2)
 
-		segments(coef(PET)[1], 0, coef(PET)[1], u[3], col="red", lty="dotted")
-		points(coef(PET)[1], u[3], cex=1.3, col="red", pch=20)
-		#}
+		segments(coef(PET)[1], 0, coef(PET)[1], u[3], col="blue3", lty="dotted", lwd=2)
+		points(coef(PET)[1], u[3], cex=1.5, col="blue3", pch=20)
+		}
 
 	# plot PEESE-line
-	#if (input$show_PEESE == TRUE) {
+	if (input$show_PEESE == TRUE) {
 		PEESE.p <- PEESE.est + coef(PEESE)[2]*range^2
-		lines(PEESE.p, range, col="red")
+		lines(PEESE.p, range, col="blue3", lwd=2)
 
-		segments(coef(PEESE)[1], 0, coef(PEESE)[1], u[3], col="red", lty="dotted")
-		points(coef(PEESE)[1], u[3], cex=1.3, col="red", pch=20)
-		#}
+		segments(coef(PEESE)[1], 0, coef(PEESE)[1], u[3], col="blue3", lty="dotted", lwd=2)
+		points(coef(PEESE)[1], u[3], cex=1.5, col="blue3", pch=20)
+		}
 })
 
 output$funnelplotAnnotation <- htmlOutput({
 	return(list(
-		
+		h2("TEST")
 	))
 })
 

@@ -23,6 +23,11 @@ PETPEESE.est <- function(d, v, PP.test = c("two-sided", "one-sided"), long=TRUE)
 	rma.p.value <- res %>% filter(method == "PET.rma", term == "b0") %>% .[["p.value"]]	
 	rma.est <- res %>% filter(method == "PET.rma", term == "b0") %>% .[["estimate"]]
 
+
+  # "For the purpose of deciding which meta-regression accommodation for selective reporting bias to employ, we recommend testing H0:b0 < 0 at the 10% significance level."
+	# From: Stanley, T. D. (2016). Limitations of PET-PEESE and other meta-analysis methods. Abgerufen von https://www.hendrix.edu/uploadedFiles/Departments_and_Programs/Business_and_Economics/AMAES/Limitations%20of%20PET-PEESE.pdf
+
+
   if (PP.test == "one-sided") {
 	  p.crit <- .10
   } else if (PP.test == "two-sided") {

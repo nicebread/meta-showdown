@@ -52,7 +52,9 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 									 
  			conditionalPanel("input.tabs1 == 'Funnel plots'",
  				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
-				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time).")
+				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),
+				checkboxInput("show_PET", "Show PET meta-regression in plot", TRUE),
+				checkboxInput("show_PEESE", "Show PEESE meta-regression in plot", TRUE)
  			),
 															 
 			conditionalPanel("input.tabs1 != 'Funnel plots'",						 
@@ -83,10 +85,10 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			
 				tabPanel("Funnel plots",
 					h2("Typical funnel plots for this condition"),
-					column(width=5,
+					column(width=8,
 						plotOutput("funnelplot")
 					),
-					column(width=3,
+					column(width=4,
 						uiOutput("funnelplotAnnotation")
 					)
 				),
@@ -99,15 +101,20 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					helpText(HTML("Note: H0 is rejected if the p-value is < .05 <i>and</i> the estimate is in the expected direction.")),
 					conditionalPanel(condition="input.plotOrTable == 'Plot'",
 						h3("Under H0"),
+						p("If in reality there is no effect: What is the chance that a method falsely concludes 'There is an effect'?"),
 						uiOutput("ggvis_ui_TypeI"),
 						ggvisOutput("ggvis_TypeI"),
+						
 						h3("Under H1"),
+						p("If in reality there is an effect: What is the chance that a method detects it?"),
 						uiOutput("ggvis_ui_Power"),
 						ggvisOutput("ggvis_Power")
 					),
 					conditionalPanel(condition="input.plotOrTable == 'Table'",
 						uiOutput("hypTable")
-					)
+					),
+					
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model")
 				),
 				
 				# ---------------------------------------------------------------------
@@ -128,7 +135,9 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					),
 					conditionalPanel(condition="input.plotOrTable == 'Table'",
 						uiOutput("estTable")
-					)
+					),
+					
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model")
 				),
 				# ---------------------------------------------------------------------
 				# About

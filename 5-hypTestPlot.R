@@ -1,3 +1,7 @@
+## ======================================================================
+## This is the code for Figure 3 (Hypothesis Test Plot)
+## ======================================================================
+
 library(ggplot2)
 library(dplyr)
 library(grid)

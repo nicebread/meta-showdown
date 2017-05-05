@@ -31,11 +31,6 @@ res.3PSM$H0.reject <- (res.3PSM$b0_p.value < .05) & (is.na(res.3PSM$b0_estimate)
 table("H0reject" = res.3PSM$H0.reject, "p < .05" = res.3PSM$b0_p.value < .05)
 table("H0reject" = res.3PSM$H0.reject, "p < .05" = res.3PSM$b0_p.value < .05, "est > 0" = res.3PSM$b0_estimate > 0)
 
-# how many PET slopes are (significantly negative)
-
-res.PET <- res.wide.red %>% filter(method == "PET.lm")
-plot(res.PET$b1_estimate, res.PET$p.value)
-prop.table(table("Slope = negative" = res.PET$b1_estimate > 0, "p < .10" = res.PET$p.value < .10))
 
 
 

@@ -1,9 +1,13 @@
+## ======================================================================
+## This is the code for Figure 2 (Estimation Plot)
+## ======================================================================
+
+
 library(ggplot2)
 library(dplyr)
 library(grid)
 library(gridExtra)
 
-#setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 load("summ.RData")
 
 # ---------------------------------------------------------------------
@@ -105,7 +109,6 @@ legOnlyPlot = summ2 %>% filter(selProp==0.9, delta %in% DELTAS) %>%
 		legend.title = element_text(size=14, face="bold"),
 		legend.text = element_text(size=12)
   ) + 
-  scale_shape_manual(values=c(21,22,24)) +
   scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
   scale_color_manual(values=values, guide = guide_legend(title = bquote(delta), override.aes = list(size=6))) +
   scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))

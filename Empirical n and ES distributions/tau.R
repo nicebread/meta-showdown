@@ -5,10 +5,19 @@
 library(rio)
 dat <- import("Data 1990-2013 with tau values.xlsx")
 
-taus <- dat$tau[dat[,"Type of ES"] %in% c("Cohen's d", "Hedges' g")]
-hist(taus, xlab="tau", main="")
+sel <- dat[dat[,"Type of ES"] %in% c("Cohen's d", "Hedges' g"), ]
+hist(sel$tau, xlab="tau", main="")
 
-length(taus)
+length(sel$tau)
 
-prop.table(table(taus < .2))
-prop.table(table(taus < .4))
+prop.table(table(sel$tau > .1))
+prop.table(table(sel$tau >= .2))
+prop.table(table(sel$tau < .2))
+prop.table(table(sel$tau < .4))
+
+
+# Investigate I^2 across all meta-analyses
+dat$I2 <- (dat$Q - (dat[, "# of effect sizes"] - 1))/dat$Q
+dat$I2[dat$Q <= (dat[, "# of effect sizes"] - 1)] <- 0
+
+prop.table(table(dat$I2 > .25))
