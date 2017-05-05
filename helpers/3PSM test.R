@@ -1,6 +1,6 @@
 source("../start.R", chdir=TRUE)
 
-load("../simParts/YsimData_condition_100.RData")
+load("../simParts/simData_condition_100.RData")
 
 MAdat <- sim[sim$id==103100, ]
 MAdat

@@ -15,9 +15,9 @@ RMA.est <- function(d, v, long=TRUE) {
   res <- data.frame(method="reMA", tidyRMA(reMA))
   res <- plyr::rbind.fill(res, data.frame(
 	  method="reMA",
-	  term="tau2",
-	  estimate=reMA$tau2,
-	  std.error=reMA$se.tau2
+	  term=c("tau2", "I2", "Q"),
+	  estimate=c(reMA$tau2, reMA$I2, reMA$QE),
+	  std.error=c(reMA$se.tau2, NA, NA)
 	))		
 	  
     
