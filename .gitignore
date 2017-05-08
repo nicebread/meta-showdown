@@ -14,7 +14,7 @@ vignettes/*.pdf
 
 analysisParts/*.RData
 
-# for the moment: do not upload simParts (1.2GB)
+# for the moment: do not upload simParts (1.2GB overall)
 simParts
 
 # shell script for automatically adding files > 50 MB:
@@ -23,3 +23,8 @@ simParts
 res.final.RData
 res.wide.RData
 res.wide.red.RData
+.git/objects/pack/pack-04e34f809f18eeb4d75e1cc330cb24b24fd26ce0.pack
+dataFiles/res.final.RData
+dataFiles/res.wide.RData
+dataFiles/res.wide.red.RData
+

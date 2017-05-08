@@ -7,7 +7,7 @@ library(dplyr)
 library(grid)
 library(gridExtra)
 
-load(file="summ.RData")
+load(file="dataFiles/summ.RData")
 
 # ---------------------------------------------------------------------
 # SETTINGS

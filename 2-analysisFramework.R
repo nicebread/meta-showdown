@@ -21,7 +21,6 @@ simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
 
 library(gtools)
 simDatFiles <- mixedsort(simDatFiles)
-# f <- simDatFiles[[33]]
 
 
 # loop through all simParts files
@@ -66,11 +65,11 @@ for (f in simDatFiles) {
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
+				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE)#,
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="fixed", fixed.effect=0.3),
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="rma"),
-				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE"),
-				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE),
-				betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
+				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE"),				
+				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
 			)
 			
 	
@@ -92,10 +91,4 @@ for (f in simDatFiles) {
 	} # of dopar
 	
 	save(res, file=paste0("analysisParts/analysis_", basename(f)), compress="gzip")
-	
-	# send a push notification after each 50 finished conditions:
-	if (which(simDatFiles == f) %% 50 == 0) {
-	  userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
-	  send_push(userkey, paste0("Condition ", which(simDatFiles == f), " finished"))
-	}
 } # of "f in simDatFiles"

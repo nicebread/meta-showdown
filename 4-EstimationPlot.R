@@ -8,7 +8,7 @@ library(dplyr)
 library(grid)
 library(gridExtra)
 
-load("summ.RData")
+load("dataFiles/summ.RData")
 
 # ---------------------------------------------------------------------
 # Plot settings

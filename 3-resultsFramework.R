@@ -26,8 +26,8 @@ res.final <- bind_rows(res_list)
 str(res.final)
 
 # final data set in long format:
-save(res.final, file="res.final.RData")
-#load(file="res.final.RData")
+save(res.final, file="dataFiles/res.final.RData")
+#load(file="dataFiles/res.final.RData")
 
 
 # Show conditions
@@ -58,8 +58,8 @@ print(tab2, n=54)
 
 res.wide <- inner_join(res.wide, tab2)
 
-save(res.wide, file="res.wide.RData", compress="gzip")
-#load(file="res.wide.RData")
+save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
+#load(file="dataFiles/res.wide.RData")
 
 # ---------------------------------------------------------------------
 #  save a reduced version that applies some selections
@@ -75,9 +75,6 @@ res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("
 ## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 
-# TODO: Skip this??
-# RULE X: set pcurve and puniform estimates to NA for all conditions which have less than 500/1000 successful meta-analyses
-#res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & res.wide.red$nMA.with.kSig.larger.3 < 500, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 				 
 # ---------------------------------------------------------------------
 # For hypothesis test: Add H0.rejection rule
@@ -97,8 +94,8 @@ res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
 res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
 res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
 
-save(res.wide.red, file="res.wide.red.RData", compress="gzip")
-#load(file="res.wide.red.RData")
+save(res.wide.red, file="dataFiles/res.wide.red.RData", compress="gzip")
+#load(file="dataFiles/res.wide.red.RData")
 
 
 # ---------------------------------------------------------------------
@@ -135,8 +132,8 @@ print(summ, n=50)
 
 # summ contains the full summary of the simulations. This object can then be used to build tables, plots, etc.
 library(rio)
-export(summ, file="summ.csv")
-save(summ, file="summ.RData")
+export(summ, file="dataFiles/summ.csv")
+save(summ, file="dataFiles/summ.RData")
 
 # also export into Shiny app
 save(summ, file="Shiny/MAexplorer/summ.RData")

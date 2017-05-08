@@ -1,6 +1,6 @@
 load("../res.wide.red.RData")
 
-# how many PET slopes are (significantly negative)
+# how many PET slopes are (significantly) negative?
 
 res.PET <- res.wide.red %>% filter(method == "PET.lm", delta %in% c(0, 0.5))
 prop.table(table("Slope = positive" = res.PET$b1_estimate > 0, "p < .10" = res.PET$p.value < .10))

@@ -8,7 +8,7 @@ library(grid)
 library(gridExtra)
 
 #setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
-load(file="summ.RData")
+load(file="dataFiles/summ.RData")
 
 # ---------------------------------------------------------------------
 # SETTINGS
@@ -34,7 +34,7 @@ hyp.wide <- inner_join(hyp.H0, hyp.H1)
 hyp.wide$rejectionRatio <- hyp.wide$Power/hyp.wide$TypeI
 hyp.wide$errorSum <- (1-hyp.wide$Power) + hyp.wide$TypeI
 
-save(hyp.wide, file="hyp.wide.RData")
+save(hyp.wide, file="dataFiles/hyp.wide.RData")
 save(hyp.wide, file="Shiny/MAexplorer/hyp.wide.RData")
 
 

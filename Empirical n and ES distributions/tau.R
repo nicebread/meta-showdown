@@ -16,8 +16,12 @@ prop.table(table(sel$tau < .2))
 prop.table(table(sel$tau < .4))
 
 
-# Investigate I^2 across all meta-analyses
+# ---------------------------------------------------------------------
+#  Investigate I^2 across all meta-analyses
+
+# Compute I^2 from Q
 dat$I2 <- (dat$Q - (dat[, "# of effect sizes"] - 1))/dat$Q
 dat$I2[dat$Q <= (dat[, "# of effect sizes"] - 1)] <- 0
 
 prop.table(table(dat$I2 > .25))
+prop.table(table(dat$I2 > .75))

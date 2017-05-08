@@ -1,3 +1,8 @@
+## ======================================================================
+## This file generates the simulated data sets, which are stored in separate
+## files in folder /simParts
+## ======================================================================
+
 # run this file:
 # source("1-simFramework.R", echo=TRUE)
 
@@ -19,7 +24,7 @@ k_set <- c(10, 30, 60, 100)							# number of studies in each MA
 delta_set <- c(0, .2, .5, .8)						# true mean of effect sizes
 qrpEnv_Set <- c("none", "med", "high")	# QRP environment
 selProp_set <- c(0, .6, .9)							# publication bias
-tau_set <- c(0, .2, .4)									# heterogeneity
+tau_set <- c(0, .2, .4)									# heterogeneity; assumed to follow a normal distribution
 
 # params stores all possible combinations of experimental factors
 params <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, selProp=selProp_set, tau=tau_set)
@@ -81,7 +86,7 @@ for (j in 1:nrow(param)) {
 			res0 <- cbind(
 	  			  batch		= batch, 
 	  			  replication	= i, 
-				  condition	= j,
+				  	condition	= j,
 		  
 	  			  # settings of the condition
 	  			  p,
@@ -89,9 +94,6 @@ for (j in 1:nrow(param)) {
 	  			  # results of the computation
 	  			  as.matrix(MA1))
 
-			  # collect results in the matrix
-			  #res[counter:(counter+nrow(MA1)-1), ] <- res0
-			  #counter <- counter+nrow(MA1)
 			  res <- rbind(res, res0)
 		} # of b-loop
 
@@ -102,9 +104,6 @@ for (j in 1:nrow(param)) {
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
 	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"), compression="gzip")
 	
-	# send a push notification after each finished condition:
-	# userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
-	# send_push(userkey, paste0("Condition ", j, "/", nrow(params), " finished"))
 } # of j (loop through parameter combinations)
 
 
