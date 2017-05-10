@@ -1,27 +1,53 @@
 
 
-
 setwd("/barleyhome/ecarter/Documents/meta-showdown")
-load("res.hyp.RData")
 
+load("summ.RData") 
+source("start.R")
 library(ggplot2)
 library(grid)
 library(RColorBrewer)
 
+#define breaks by quantiles
+breakIt = function(X){
+  
+  brks = matrix(NA,length(X),1)
+  Q = quantile(X,probs=c(.001,.1,.2,.3,.4,.5,.6,.7,.8,.9,1))
+  
+  for(i in 1:length(X)){
+    if(X[i] <= Q['0.1%']){brks[i]=0}
+    if(X[i] > Q['0.1%'] & X[i] <= Q['10%']){brks[i]=1}
+    if(X[i] > Q['10%'] & X[i] <= Q['20%']){brks[i]=2}
+    if(X[i] > Q['20%'] & X[i] <= Q['30%']){brks[i]=3}
+    if(X[i] > Q['30%'] & X[i] <= Q['40%']){brks[i]=4}
+    if(X[i] > Q['40%'] & X[i] <= Q['50%']){brks[i]=5}
+    if(X[i] > Q['50%'] & X[i] <= Q['60%']){brks[i]=6}
+    if(X[i] > Q['60%'] & X[i] <= Q['70%']){brks[i]=7}
+    if(X[i] > Q['70%'] & X[i] <= Q['80%']){brks[i]=8}
+    if(X[i] > Q['80%'] & X[i] <= Q['90%']){brks[i]=9}
+    if(X[i] > Q['90%'] & X[i] <= Q['100%']){brks[i]=10}
+  }
+  
+  return(brks)
+}
 
-
-scoreIt = function(power,Delta){
-  
-  #get the absolute difference between score and target
-  power[Delta>1] = abs(power[Delta>1] - .80)
-  power[Delta==1] = abs(power[Delta==1] - .05)
-  
-  X = power
-  
-  boundary = c(.02,.04)
+scoreIt = function(X,metric){
   
   pts = matrix(NA,length(X),1)
-    
+  
+  if(metric=='ME'){
+    boundary = c(.1,.15)
+  }
+  if(metric=='RMSE'){
+    boundary = c(.1,.15)
+  }
+  if(metric=='cov'){
+    boundary = c(.01,.02)
+  }
+  if(metric=='pow'){
+    boundary = c(.8,.5)
+  }
+
   for(i in 1:length(X)){
     if(!is.na(X[i])){
       if(X[i] < boundary[1]){pts[i]=2}
@@ -34,24 +60,22 @@ scoreIt = function(power,Delta){
 }
 
 
-colorTablePower= function(SelProp){
+
+
+colorTable = function(metric,sel){
   
-  #colorTable, but for rejection ratios
   Delta = c(0,.2,.5,.8)
   Tau = c(0,.2,.4)
   
   finalOut = data.frame()
   
-  #The following loads up condition by Delta and Tau,
-  #I want rates of rejecting the null by condition.
-  #From there I can use delta==0 as the denominator.
   for(i in 1:length(Delta)){
     for(j in 1:length(Tau)){
       
-      k_set = c(10, 30, 60, 100)
-      delta_set = Delta[i]
+      k_set=c(10, 30, 60, 100)
+      delta_set=Delta[i]
       qrpEnv_set=c("none", "med", "high")
-      selProp_set=SelProp
+      selProp_set=sel
       tau_set=Tau[j]
       
       params <- expand.grid(k=k_set, 
@@ -68,72 +92,83 @@ colorTablePower= function(SelProp){
                      params[,"tau"],
                      params[,"selProp"])
       
-      powerTab = data.frame(matrix(NA,nrow(params),8))
-      
-      methodNames = c("RE","TF","PT","PE","PP","PC","PU","MC")
-      colnames(powerTab)= methodNames
-      
+      performScore = data.frame(matrix(NA,nrow(params),8))
+      colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","MC")
       pb = txtProgressBar(min = 1, max = nrow(params), style = 3)
       
       for(iCon in 1:nrow(params)){
-        #load a given condition                          
-        
-        check = res.hyp %>% filter(delta==params[iCon, "delta"],
-                                   tau==params[iCon, "tau"],
-                                   k==params[iCon, "k"],
-                                   selProp==params[iCon, "selProp"], 
-                                   qrpEnv==params[iCon, "qrpEnv"],
-                                   method != 'Tau',
-                                   method != 'fill',
-                                   #method != 'pcurve.evidence',
-                                   method != 'pcurve.hack',
-                                   method != 'pcurve.lack',
-                                   method != 'PET.rma',
-                                   method != 'PEESE.rma',
-                                   method != 'PETPEESE.rma',
-                                   method != 'topN.fixed')
+        #load a given condition
+        check = summ %>% filter(delta==params[iCon, "delta"],
+                                tau==params[iCon, "tau"],
+                                k==params[iCon, "k"],
+                                selProp==params[iCon, "selProp"], 
+                                qrpEnv==params[iCon, "qrpEnv"],
+                                method != 'Tau',
+                                method != 'fill',
+                                method != 'pcurve.evidence',
+                                method != 'pcurve.hack',
+                                method != 'pcurve.lack',
+                                method != 'PET.rma',
+                                method != 'PEESE.rma',
+                                method != 'PETPEESE.rma',
+                                method != 'topN.fixed')
         condition = data.frame(check$delta,
                                check$tau,
                                check$k,
                                check$method,
-                               check$H0.reject)
-        colnames(condition)=c("delta","tau","k","method","reject")
+                               check$ME,
+                               check$RMSE,
+                               check$coverage,
+                               check$consisZero)
+        colnames(condition)=c("delta","tau","k","method","ME","RMSE","cov","cons0")
+        
+        #recode as power
+        condition$pow = 1 - condition$cons0
         
         #Make sure each method is represented. If not, leave as NA.
-        methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve.evidence","puniform","3PSM")        
+        methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM")        
         for(iMethod in 1:length(methodNames2)){
           
           if(sum(methodNames2[iMethod]==condition[,"method"])>0){
-            
             methodInd = which(condition$method==methodNames2[iMethod])
-            #number of times H0 was rejected / the total number of tests. It's the rejection rate. 
-            powerTab[iCon,iMethod] = mean(condition[methodInd,'reject'])            
-            
+            performScore[iCon,iMethod] = condition[methodInd,metric]
           }        
-          
-        }                  
-        setTxtProgressBar(pb, iCon)
+
+        }                        
+        setTxtProgressBar(pb, iCon)              
       }
       close(pb)
       
-      out = cbind(powerTab,id = factor(1:length(conLab)))
+      out = cbind(round(performScore,digit=2),id = factor(1:length(conLab)))
       outMelt = melt(out) 
       outMelt$Delta = i
       outMelt$Tau = j
       finalOut = rbind(finalOut,outMelt)
-      
     }
-  }  
+  }
   
-  finalOut$brks = factor(scoreIt(finalOut$value,finalOut$Delta))
-    
+  #recode based on metric
+  if(metric=='ME'){
+    X = abs(finalOut$value)
+  }
+  if(metric=='RMSE'){
+    X = abs(finalOut$value)
+  }
+  if(metric=='cov'){
+    X = abs(finalOut$value-.95)
+  }
+  if(metric=='pow'){
+    X = finalOut$value
+  }
+  
+  finalOut$brks = factor(scoreIt(X,metric))
+  
   #get the colors for the table
   colorCnt = 3 
   getPalette = colorRampPalette(brewer.pal(3, 'Blues'))
   brkColors = getPalette(colorCnt)
   
-  
-  finalOut$value = round(finalOut$value,digits=2)
+  #Break it up by each to-be-ploted data set
   
   plotList = list()
   plotCount = matrix(1:(length(Delta)*length(Tau)),length(Tau),length(Delta))
@@ -206,7 +241,7 @@ colorTablePower= function(SelProp){
   adjX = -.05
   adjY = -.0125
   W = .28
-  plotFileName=paste0('new_Pow_sel',SelProp,'.pdf')
+  plotFileName=paste0("new_",metric,'_sel',sel,'.pdf')
   pdf(file=plotFileName,12,10)
   
   print(plotList[[1]],vp = viewport(width = W, height = 0.25, x = .38, y = .0, just = c("right","bottom")))
@@ -223,6 +258,7 @@ colorTablePower= function(SelProp){
   print(plotList[[6]],vp = viewport(width = W, height = 0.25, x = .98 + adjX, y = .25 + adjY/2, just = c("right","bottom")))
   print(plotList[[9]],vp = viewport(width = W, height = 0.25, x = .98 + adjX, y = .50 + adjY, just = c("right","bottom")))
   print(plotList[[12]],vp = viewport(width = W, height = 0.25, x = .98 + adjX, y = .75 + adjY*1.5, just = c("right","bottom")))
+  
   
   print(legendPlot,vp = viewport(width = .1, height = 0.25, x = .1, y = 0, just = c("right","bottom")))
   print(legendPlot,vp = viewport(width = .1, height = 0.25, x = .1, y = .25 + adjY/2, just = c("right","bottom")))
@@ -242,11 +278,19 @@ colorTablePower= function(SelProp){
   
 }
 
+setwd("/barleyhome/ecarter/Documents/meta-showdown/ColorPlots2")
 
-setwd("/barleyhome/ecarter/Documents/meta-showdown/ColorPlots/ColorPlots2")
+colorTable('ME',0)
+colorTable('RMSE',0)
+colorTable('cov',0)
+colorTable('pow',0)
 
-colorTablePower(0.0)  
-colorTablePower(0.6)
-colorTablePower(0.9)
+colorTable('ME',.6)
+colorTable('RMSE',.6)
+colorTable('cov',.6)
+colorTable('pow',.6)
 
-
+colorTable('ME',.9)
+colorTable('RMSE',.9)
+colorTable('cov',.9)
+colorTable('pow',.9)
