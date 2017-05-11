@@ -1,12 +1,14 @@
 
 
-setwd("/barleyhome/ecarter/Documents/meta-showdown")
+setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 
 load("summ.RData") 
 source("start.R")
 library(ggplot2)
 library(grid)
 library(RColorBrewer)
+
+
 
 #define breaks by quantiles
 breakIt = function(X){
@@ -30,6 +32,9 @@ breakIt = function(X){
   
   return(brks)
 }
+
+
+
 
 scoreIt = function(X,metric){
   
@@ -62,7 +67,7 @@ scoreIt = function(X,metric){
 
 
 
-colorTable = function(metric,sel){
+colorTable = function(metric,sel,positive=F){
   
   Delta = c(0,.2,.5,.8)
   Tau = c(0,.2,.4)
@@ -112,14 +117,26 @@ colorTable = function(metric,sel){
                                 method != 'PEESE.rma',
                                 method != 'PETPEESE.rma',
                                 method != 'topN.fixed')
-        condition = data.frame(check$delta,
-                               check$tau,
-                               check$k,
-                               check$method,
-                               check$ME,
-                               check$RMSE,
-                               check$coverage,
-                               check$consisZero)
+        if(positive==T){
+          condition = data.frame(check$delta,
+                                 check$tau,
+                                 check$k,
+                                 check$method,
+                                 check$ME.pos,
+                                 check$RMSE.pos,
+                                 check$coverage.pos,
+                                 check$consisZero.pos)
+        }else{
+          condition = data.frame(check$delta,
+                                 check$tau,
+                                 check$k,
+                                 check$method,
+                                 check$ME,
+                                 check$RMSE,
+                                 check$coverage,
+                                 check$consisZero)
+        }
+        
         colnames(condition)=c("delta","tau","k","method","ME","RMSE","cov","cons0")
         
         #recode as power
@@ -241,7 +258,15 @@ colorTable = function(metric,sel){
   adjX = -.05
   adjY = -.0125
   W = .28
-  plotFileName=paste0("new_",metric,'_sel',sel,'.pdf')
+  
+  #mark if posified
+  if(positive==T){
+    posif = "_Posified"
+  }else{
+    posif = "_NotPosified"
+  }
+  
+  plotFileName=paste0(metric,'_sel',sel,posif,'.pdf')
   pdf(file=plotFileName,12,10)
   
   print(plotList[[1]],vp = viewport(width = W, height = 0.25, x = .38, y = .0, just = c("right","bottom")))
@@ -278,19 +303,31 @@ colorTable = function(metric,sel){
   
 }
 
-setwd("/barleyhome/ecarter/Documents/meta-showdown/ColorPlots2")
+setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown/ColorTablePlots")
 
+#not posified
 colorTable('ME',0)
 colorTable('RMSE',0)
 colorTable('cov',0)
-colorTable('pow',0)
 
 colorTable('ME',.6)
 colorTable('RMSE',.6)
 colorTable('cov',.6)
-colorTable('pow',.6)
 
 colorTable('ME',.9)
 colorTable('RMSE',.9)
 colorTable('cov',.9)
-colorTable('pow',.9)
+
+#posified
+colorTable('ME',0,positive=T)
+colorTable('RMSE',0,positive=T)
+colorTable('cov',0,positive=T)
+
+colorTable('ME',.6,positive=T)
+colorTable('RMSE',.6,positive=T)
+colorTable('cov',.6,positive=T)
+
+colorTable('ME',.9,positive=T)
+colorTable('RMSE',.9,positive=T)
+colorTable('cov',.9,positive=T)
+
