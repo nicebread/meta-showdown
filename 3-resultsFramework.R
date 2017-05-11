@@ -87,9 +87,25 @@ res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
 # compute rejection:
 # Reject H0 if test is significant AND estimate in correct direction.
 # In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
+
+# WITH POSIFICATION
+#res.wide.red$H0.reject.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
+#res.wide.red$H0.reject.pos[is.na(res.wide.red$p.value)] <- NA
+# WITHOUT POSIFICATION
+#res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate))
+#res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
+
+# how many estimates are significantly in the WRONG direction?
+# WITH POSIFICATION
+#res.wide.red$H0.reject.wrongSign.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
+#res.wide.red$H0.reject.wrongSign.pos[is.na(res.wide.red$p.value)] <- NA
+# WITHOUT POSIFICATION
+#res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate))
+#res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
+
+#original
 res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
 res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
-
 # how many estimates are significantly in the WRONG direction?
 res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
 res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
@@ -123,6 +139,8 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
 		H0.reject.rate = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
 		H0.reject.wrongSign.rate = sum(H0.reject.wrongSign, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign)),
+		#H0.reject.rate.pos = sum(H0.reject.pos, na.rm=TRUE)/sum(!is.na(H0.reject.pos)),
+		#H0.reject.wrongSign.rate.pos = sum(H0.reject.wrongSign.pos, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign.pos)),
 		n.p.values = sum(!is.na(H0.reject)),
 		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
 	)
