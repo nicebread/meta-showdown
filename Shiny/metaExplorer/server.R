@@ -85,8 +85,8 @@ H0.fill <- "skyblue"
 #RR$TypeI.excess <- cut(RR$TypeI, breaks=c(0, .05, .10, 1), labels=c("skyblue", "orange", "red"))
 #RR$qrpEnv <- factor(RR$qrp.label, levels=c("QRP = none", "QRP = med", "QRP = high"), labels=c("none", "med", "high"))
 #RR$shape <- as.character(factor(RR$qrp.label, labels=c("circle", "square", "triangle-up")))
-RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, Power = H0.reject.rate)
-RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, TypeI = H0.reject.rate)
+RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, Power = H0.reject.pos.rate)
+RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, selProp, selProp.label, tau, method, TypeI = H0.reject.pos.rate)
 
 
 # Prepare data for estimation plot
@@ -335,7 +335,7 @@ output$hypTable <- renderUI({
 estTab <- reactive({
 	summ0 <- summ2 %>% 	
 		filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
-		select(-k, -qrp.label, -selProp.label, -tau.label, -consisZero, -n.ci, -consisZero.pos, -H0.reject.rate, -n.p.values) %>% 
+		select(-k, -qrp.label, -selProp.label, -tau.label, -consisZero, -consisZero.pos, -n.ci, -consisZero.pos, -H0.reject.rate,  -H0.reject.rate.pos, -n.p.values) %>% 
 		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau, -MAD) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 	

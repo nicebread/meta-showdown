@@ -26,8 +26,8 @@ hyp.sel <-  summ %>%
 # prepare extra data.frame for the number of successful computation out of 1000 simulations
 hyp.sel$n.p.values.symbol <- cut(hyp.sel$n.p.values, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))	
 
-hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.rate)
-hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.rate)
+hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.pos.rate)
+hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, selProp, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.pos.rate)
 
 hyp.wide <- inner_join(hyp.H0, hyp.H1)
 

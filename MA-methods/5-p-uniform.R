@@ -25,7 +25,8 @@ puniformEst <- function(t.value, n1, n2, long=TRUE) {
 		estimate = PU$est,
 		std.error = NA,
 		statistic = PU$L.0,
-		p.value = PU$pval.0,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect
+		p.value = PU$pval.0*2,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect.
+		# We double the p-value here to get two-sided p-values (all other methods return two-sided values, and)
 		conf.low = PU$ci.lb,
 		conf.high = PU$ci.ub
 	)

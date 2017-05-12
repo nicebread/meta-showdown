@@ -12,3 +12,10 @@
 
 ### Aggregated data files (in /dataFiles)
 - summ.RData / summ.csv: This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition.
+
+
+
+# Version history:
+
+0.1 (2017/05/16): tagged as "submitted & preprint"
+

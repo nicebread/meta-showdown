@@ -24,4 +24,4 @@ par(mfcol=c(1, 2))
 hist(perGrp$x, breaks=seq(0, 500, by=20))
 hist(ns, breaks=seq(0, 500, by=20))
 
-#
+#  

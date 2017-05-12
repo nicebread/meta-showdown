@@ -62,7 +62,7 @@ save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
 #load(file="dataFiles/res.wide.RData")
 
 # ---------------------------------------------------------------------
-#  save a reduced version that applies some selections
+#  save a reduced version that applies some filters
 
 res.wide.red <- res.wide
 
@@ -77,38 +77,47 @@ res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low)
 
 				 
 # ---------------------------------------------------------------------
-# For hypothesis test: Add H0.rejection rule
+# For hypothesis test: Add H0.rejection rule & whether the CI is consistent with zero (i.e., includes zero)
 
 # merge two p-value columns into one (p-curve uses "skewtest_p.value", all other use "b0_p.value")
 res.wide.red$p.value <- res.wide.red$b0_p.value
 res.wide.red$p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- res.wide.red$skewtest_p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")]
 res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
 
-# compute rejection:
-# Reject H0 if test is significant AND estimate in correct direction.
-# In case of p-curve skewness tests, there is no estimate; estimate is set to NA there.
+# TODO: REMOVE!!! This correction has been done in 5-p-uniform.R
+res.wide.red$p.value[res.wide.red$method=="puniform"] <- res.wide.red$p.value[res.wide.red$method=="puniform"]*2
 
-# WITH POSIFICATION
-#res.wide.red$H0.reject.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
-#res.wide.red$H0.reject.pos[is.na(res.wide.red$p.value)] <- NA
-# WITHOUT POSIFICATION
-#res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate))
-#res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
+# compute H0 rejection: we have three cases:
+# 1. Any H0 rejection (i.e., p < .05): variable 'H0.reject'
+# 2. Posified H0 rejection (i.e., p < .05 AND estimate in correct direction). Significant p-values in the wrong direction are treated as "no H0 rejection": variable 'H0.reject.pos'  --> this is the main variable for our analyses, and how we think the hypothesis test should be treated in practice
+# 3. H0 rejection in wrong direction (i.e., p < .05 AND estimate in wrong direction): variable 'H0.reject.wrongSign'
 
-# how many estimates are significantly in the WRONG direction?
-# WITH POSIFICATION
-#res.wide.red$H0.reject.wrongSign.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
-#res.wide.red$H0.reject.wrongSign.pos[is.na(res.wide.red$p.value)] <- NA
-# WITHOUT POSIFICATION
-#res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate))
-#res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
+# The p-curve skewness tests only uses directionally consistent studies for computation, there is no estimate; estimate is set to NA there. Therefore, we treat this only as 'H0.reject.pos'
+# p-uniform does a one-sided test by default. The CI is based on profile likelihood and is *two-sided*. The p-value of p-uniform has been doubled in MA-methods/5-p-uniform.R. Therefore, only 'H0.reject.pos' exists for p-uniform.
 
-#original
-res.wide.red$H0.reject <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
-res.wide.red$H0.reject[is.na(res.wide.red$p.value)] <- NA
-# how many estimates are significantly in the WRONG direction?
-res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate < 0)
+res.wide.red$H0.reject <- (res.wide.red$p.value < .05)
+res.wide.red$H0.reject[res.wide.red$method %in% c("puniform", "pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- NA
+
+res.wide.red$H0.reject.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
+res.wide.red$H0.reject.pos[is.na(res.wide.red$p.value)] <- NA # if no p-value is provided, set to NA
+
+res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (res.wide.red$b0_estimate < 0)
 res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
+res.wide.red$H0.reject.wrongSign[res.wide.red$method %in% c("puniform", "pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- NA
+
+# consisZero computation
+
+res.wide.red$consisZero <- (0 > res.wide.red$b0_conf.low) & (0 < res.wide.red$b0_conf.high)
+res.wide.red$consisZero.pos <- (0 > res.wide.red$b0_conf.low)
+
+# sanity check: H0.reject and !consisZero should be identical except for p-curve
+table(!res.wide.red$consisZero, res.wide.red$method, useNA="a")
+table(res.wide.red$H0.reject, res.wide.red$method, useNA="a")
+
+table(!res.wide.red$consisZero.pos, res.wide.red$method, useNA="a")
+table(res.wide.red$H0.reject.pos, res.wide.red$method, useNA="a")
+
+# --> 284 cases are still inconsistent in puniform. This happens when the CI borderline excludes 0 but p is slightly above .05 (such as .05002)
 
 save(res.wide.red, file="dataFiles/res.wide.red.RData", compress="gzip")
 #load(file="dataFiles/res.wide.red.RData")
@@ -128,20 +137,23 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		ME.pos = mean(posify(b0_estimate) - delta, na.rm=TRUE),
 		RMSE.pos = sqrt(mean((posify(b0_estimate) - delta)^2, na.rm=TRUE)),
 		MAD			= mean(abs(b0_estimate - delta), na.rm=TRUE), # mean absolute deviation
+		
 		perc2.5		= quantile(b0_estimate, probs=.025, na.rm=TRUE),
 		perc97.5	= quantile(b0_estimate, probs=.975, na.rm=TRUE),
 		perc2.5.pos		= quantile(posify(b0_estimate), probs=.025, na.rm=TRUE),
 		perc97.5.pos	= quantile(posify(b0_estimate), probs=.975, na.rm=TRUE),
+		
 		coverage 	= sum(delta > b0_conf.low & delta < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),
-		consisZero  = sum(0 > b0_conf.low & 0 < b0_conf.high, na.rm=TRUE) / sum(!is.na(b0_conf.high)),		
-		n.ci = sum(!is.na(b0_conf.high)),
 		coverage.pos 	= sum(delta > b0_conf.low & delta < b0_conf.high & b0_estimate > 0, na.rm=TRUE) / sum(!is.na(b0_conf.high) & b0_estimate > 0),
-		consisZero.pos = sum(b0_conf.low < 0, na.rm=TRUE) / sum(!is.na(b0_conf.low)),
+		n.ci = sum(!is.na(b0_conf.high)),
+		
+		consisZero.rate  = sum(consisZero, na.rm=TRUE) / sum(!is.na(consisZero)),				
+		consisZero.rate.pos = sum(consisZero.pos, na.rm=TRUE) / sum(!is.na(consisZero.pos)),
 		H0.reject.rate = sum(H0.reject, na.rm=TRUE)/sum(!is.na(H0.reject)),
+		H0.reject.pos.rate = sum(H0.reject.pos, na.rm=TRUE)/sum(!is.na(H0.reject.pos)),
 		H0.reject.wrongSign.rate = sum(H0.reject.wrongSign, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign)),
-		#H0.reject.rate.pos = sum(H0.reject.pos, na.rm=TRUE)/sum(!is.na(H0.reject.pos)),
-		#H0.reject.wrongSign.rate.pos = sum(H0.reject.wrongSign.pos, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign.pos)),
-		n.p.values = sum(!is.na(H0.reject)),
+
+		n.p.values = sum(!is.na(H0.reject.pos)),
 		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
 	)
 
@@ -154,5 +166,5 @@ export(summ, file="dataFiles/summ.csv")
 save(summ, file="dataFiles/summ.RData")
 
 # also export into Shiny app
-save(summ, file="Shiny/MAexplorer/summ.RData")
-#load("summ.RData")
+save(summ, file="Shiny/metaExplorer/summ.RData")
+#load("dataFiles/summ.RData")
