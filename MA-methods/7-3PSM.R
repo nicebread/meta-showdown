@@ -17,7 +17,7 @@ TPSM.est <- function(t, n1, n2, long=TRUE) {
 	try(mm <- estimate.onestep.selection.heterogeneous(t, n1, n2, alpha/2, theta.init), silent=FALSE)
 
 	res.wide <- NULL
-	if(!is.null(mm)){
+	if(!is.null(mm) & all(complete.cases(mm[[2]]))){
 		SE <- sqrt(diag(mm[[2]]))
 		res.wide <- data.frame(
 			method = "3PSM",
