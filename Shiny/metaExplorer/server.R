@@ -335,7 +335,7 @@ output$hypTable <- renderUI({
 estTab <- reactive({
 	summ0 <- summ2 %>% 	
 		filter(k == input$k, tau == input$tau, selProp == input$selProp, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
-		select(-k, -qrp.label, -selProp.label, -tau.label, -consisZero, -consisZero.pos, -n.ci, -consisZero.pos, -H0.reject.rate,  -H0.reject.rate.pos, -n.p.values) %>% 
+		select(-k, -qrp.label, -selProp.label, -tau.label, -consisZero, -consisZero.pos, -n.ci, -consisZero.pos, -H0.reject.rate,  -H0.reject.rate.pos, -H0.reject.wrongSign.rate, -n.p.values) %>% 
 		select(-selProp, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau, -MAD) %>% 
 		selectPETPEESEmodel(model=input$PETPEESEmodel)
 	

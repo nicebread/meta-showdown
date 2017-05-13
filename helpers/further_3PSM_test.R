@@ -14,6 +14,30 @@ print(t3, n=432)
 t3[t3$n.CI < 500, ]
 
 
+# How many non-sig. studies does 3PSM need to return reasonable results?
+
+# propagate kSig from p-curve rows to all rows (we need it in the 3PSM row)
+res.wide.red <- res.wide.red %>% group_by(id) %>% mutate(kSig = min(kSig_estimate, na.rm=TRUE))
+res.wide.red$kNonSig <- res.wide.red$k - res.wide.red$kSig
+
+t3 <- res.wide.red %>% filter(method=="3PSM", k == 10, kNonSig <= 5, !is.na(p.value)) %>% group_by(kNonSig, selProp, delta, tau, qrpEnv) %>% summarise(
+	ME 			= mean(b0_estimate - delta, na.rm=TRUE),
+	RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
+	nStudies = n()
+)
+
+table(t3$kNonSig)
+
+ggplot(t3, aes(x=kNonSig, y=ME, shape=qrpEnv, color=factor(delta), fill=factor(delta))) + 
+  geom_point(size = 0.7) +	
+  coord_flip(ylim=c(-.6, 0.6)) +
+  facet_grid(tau~selProp~delta, labeller = label_bquote(rows = tau == .(tau)))+
+  scale_y_continuous(breaks = c(-.25,.0,.25)) + 
+  scale_shape_manual(values=c(21,22,24)) + 
+  ylab("Mean error (ME)") +
+  xlab(expression(italic("# nonSig studies")))
+
+
 
 # What does 3PSM do when 100% are significant?
 set.seed(42069)
