@@ -2,7 +2,7 @@
 #install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR", "broom", "weightr", "doParallel", "gtools")) 
 
 # devtools::install_github("RobbievanAert/puniform")
-# installed version 0.0.2 on 2016/11/14
+# installed version 0.0.2 on 2017/05/12
 
 library(MASS)
 library(pwr)
