@@ -84,9 +84,6 @@ res.wide.red$p.value <- res.wide.red$b0_p.value
 res.wide.red$p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- res.wide.red$skewtest_p.value[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack")]
 res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
 
-# TODO: REMOVE!!! This correction has been done in 5-p-uniform.R
-res.wide.red$p.value[res.wide.red$method=="puniform"] <- res.wide.red$p.value[res.wide.red$method=="puniform"]*2
-
 # compute H0 rejection: we have three cases:
 # 1. Any H0 rejection (i.e., p < .05): variable 'H0.reject'
 # 2. Posified H0 rejection (i.e., p < .05 AND estimate in correct direction). Significant p-values in the wrong direction are treated as "no H0 rejection": variable 'H0.reject.pos'  --> this is the main variable for our analyses, and how we think the hypothesis test should be treated in practice
