@@ -38,7 +38,8 @@ summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETP
 
 # prepare extra data.frame for the number of successful computation out of 1000 simulations
 summ2$nPos <- ifelse(summ2$delta==0, -0.05, 1.3)
-summ2$just <- ifelse(summ2$delta==0, 1.8, -0.4)
+summ2$just <- ifelse(summ2$delta==0, 1.8, -0.8)
+summ2$symbolCol <- ifelse(summ2$delta==0, "0", "1")
 summ2$n.validEstimates.label <- as.character(summ2$n.validEstimates)
 summ2$n.validEstimates.label[summ2$n.validEstimates.label=="1000"] <- ""
 
@@ -57,7 +58,7 @@ buildFacet <- function(dat, title) {
     geom_pointrange(position=position_dodge(width=.7), size = 0.4) +	
     coord_flip(ylim=YLIM) +
 		#geom_text(aes(x=factor(k), y=nPos, label=n.validEstimates.label, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.5) +
-		geom_text(aes(x=factor(k), y=nPos2, label=n.validEstimates.symbol, hjust=just, group=qrp.label), position=position_dodge(width=0.7), size=3, vjust=0.9, color="steelblue3") +
+		geom_text(aes(x=factor(k), y=nPos2, label=n.validEstimates.symbol, hjust=just, group=qrp.label, color=factor(delta)), position=position_dodge(width=0.7), size=3, vjust=0.9) +
     
     #facet_grid(tau.label~method,labeller = label_bquote(cols = alpha ^ .(vs),rows =  tau = .(tau))) + 
     facet_grid(tau~method,labeller = label_bquote(rows = tau == .(tau))) + 
@@ -65,7 +66,7 @@ buildFacet <- function(dat, title) {
     theme_metashowdown +
     scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
     scale_shape_manual(values=c(21,22,24)) + 
-    scale_color_manual(values=c("steelblue3", "black")) +
+    scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
     scale_fill_manual(values=c("skyblue", "black")) +
     ylab("Estimated effect size") +
     xlab(expression(italic("k"))) +
