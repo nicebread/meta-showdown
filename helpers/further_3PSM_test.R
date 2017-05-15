@@ -2,82 +2,32 @@
 # When 3PSM fails to return 95% CI, does it return a point estimate?
 # This is all rather cycle-intensive
 source("start.R")
+library(tidyr)
 
-load(file="res.wide.red.RData")
-# How many 3PSM estimates have no CI?
-t3 <- res.wide.red %>% filter(method=="3PSM") %>% group_by(selProp, delta, k, tau, qrpEnv) %>% summarise(
-	n.CI = sum(!is.na(b0_conf.high)),
-	n.p_value = sum(!is.na(b0_p.value))
-)
-summary(t3$n.CI)
-print(t3, n=432)
-t3[t3$n.CI < 500, ]
+# Typical 3PSM behavior
+set.seed(5)
+dat <- dataMA(k = 12, delta = 0.41, tau = 0.01, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0, qrpEnv = "none")
+dat <- data.frame(dat)
+mm <- estimate.onestep.selection.heterogeneous(z.obs=dat$t, n1=dat$n1, n2=dat$n2, 
+                                         alpha=0.05/2, 
+                                         theta.init=c(expected.d = 0.3, max.tau= 0.5, p.report = 0.99))
+mm
+TPSM.est(t=dat$t, n1=dat$n1, n2=dat$n2)
 
-
-# How many non-sig. studies does 3PSM need to return reasonable results?
-
-# propagate kSig from p-curve rows to all rows (we need it in the 3PSM row)
-res.wide.red <- res.wide.red %>% group_by(id) %>% mutate(kSig = min(kSig_estimate, na.rm=TRUE))
-res.wide.red$kNonSig <- res.wide.red$k - res.wide.red$kSig
-
-t3 <- res.wide.red %>% filter(method=="3PSM", k == 10, kNonSig <= 5, !is.na(p.value)) %>% group_by(kNonSig, selProp, delta, tau, qrpEnv) %>% summarise(
-	ME 			= mean(b0_estimate - delta, na.rm=TRUE),
-	RMSE		= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
-	nStudies = n()
-)
-
-table(t3$kNonSig)
-
-ggplot(t3, aes(x=kNonSig, y=ME, shape=qrpEnv, color=factor(delta), fill=factor(delta))) + 
-  geom_point(size = 0.7) +	
-  coord_flip(ylim=c(-.6, 0.6)) +
-  facet_grid(tau~selProp~delta, labeller = label_bquote(rows = tau == .(tau)))+
-  scale_y_continuous(breaks = c(-.25,.0,.25)) + 
-  scale_shape_manual(values=c(21,22,24)) + 
-  ylab("Mean error (ME)") +
-  xlab(expression(italic("# nonSig studies")))
-
-
-
-# What does 3PSM do when 100% are significant?
+# Bias in tau and delta under heavy pub bias and small k ----
 set.seed(42069)
-trial1 <- dataMA(k = 10, delta = 0, tau = 0,
-                 empN = T, selProp = 1, qrpEnv = "none") %>% 
-  as.data.frame()
-
-with(trial1, RMA.est(d = d, v = v, long = T))
-with(trial1, TPSM.est(t = t, n1 = n1, n2 = n2, long = T))
-estimate.onestep.selection.heterogeneous(z.obs=trial1$t, n1=trial1$n1, n2=trial1$n2, 
-                                         alpha=0.05/2, 
-                                         theta.init=c(expected.d = 0.3, max.tau= 0.5, p.report = 0.99))
-# returns point estimates but no variance/covariance matrix, not sure what output $ll is
-
-set.seed(777)
-trial2 <- dataMA(k = 10, delta = 0, tau = 0,
-                 empN = T, selProp = 1, qrpEnv = "none") %>% 
-  as.data.frame()
-
-with(trial2, RMA.est(d = d, v = v, long = T))
-with(trial2, TPSM.est(t = t, n1 = n1, n2 = n2, long = T))
-estimate.onestep.selection.heterogeneous(z.obs=trial2$t, n1=trial2$n1, n2=trial2$n2, 
-                                         alpha=0.05/2, 
-                                         theta.init=c(expected.d = 0.3, max.tau= 0.5, p.report = 0.99))
-
-# is this a case in which it might be biased upwards?
-simLength <-  250
+simLength <-  250 
 
 output <- NULL
 for (i in 1:simLength) {
   # Make data
-  trial <- dataMA(k = 10, delta = 0, tau = 0,
-                  empN = T, selProp = 1, qrpEnv = "none") %>% 
+  trial <- dataMA(k = 10, delta = 0, tau = 0.2,
+                  empN = T, selProp = .9, qrpEnv = "none") %>% 
     as.data.frame()
   
   # extract estimates
-  rma_out <- with(trial, RMA.est(d = d, v = v, long = T)) %>% 
-    filter(method == "reMA", term == "b0", variable == "estimate")
-  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T)) %>% 
-    filter(method == "3PSM", term == "b0", variable == "estimate")
+  rma_out <- with(trial, RMA.est(d = d, v = v, long = T))
+  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T))
   # Tag with run number
   rma_out$trial <- i
   tpsm_out$trial <- i
@@ -86,36 +36,54 @@ for (i in 1:simLength) {
   output <- bind_rows(output, rma_out, tpsm_out)
 }
 
-out.wide <- spread(output, key = method, value = value)
+# Summarize effect size information
+out.wide.delta <- filter(output, term == "b0", variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  spread(key = method, value = value)
+summary(out.wide.delta)
 
-ggplot(out.wide, aes(x = reMA, y = `3PSM`)) +
+# Summarize tau information
+out.wide.tau <- filter(output, term %in% c("max.tau", "tau2"), variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  mutate(value = ifelse(term == "tau2", sqrt(value), value),
+         term = "max.tau") %>% 
+  select(-term) %>% 
+  spread(key = method, value = value)
+summary(out.wide.tau)
+
+output %>% 
+  filter(term == "max.tau", variable == "estimate", method == "3PSM") %>% 
+  with(., hist(value, main = "3PSM underestimates tau = 0.2, k = 10"))
+abline(v = .2, col = 'red')
+abline(v = .12, col = 'blue')
+
+# Perhaps delta is overestimated when tau is underestimated
+output %>% 
+  filter(method == "3PSM", 
+         term %in% c("b0", "max.tau"),
+         variable == "estimate") %>% 
+  spread(term, value) %>% 
+  ggplot(aes(x = max.tau, y = b0)) +
   geom_point() +
-  scale_y_continuous(limits = c(0, 1)) +
-  geom_hline(yintercept = 0)
-
-ggplot(output, aes(x = method, y = value)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1)) +
+  geom_smooth(method = 'lm') +
   geom_hline(yintercept = 0) +
-  coord_flip() +
-  ggtitle("delta = 0, selProp = 100%, tau = 0, k = 10, no QRPs")
+  geom_vline(xintercept = .2) +
+  ggtitle("Inverse relationship between\ntau-hat and delta-hat")
 
-# What about with QRPs? Still biased upwards? ----
-simLength <-  100 # very time-consuming
+# Is it easier with larger tau?
+set.seed(42069)
+simLength <-  250 
 
 output <- NULL
 for (i in 1:simLength) {
   # Make data
-  trial <- dataMA(k = 10, delta = 0, tau = 0,
-                  maxN = 500, 
-                  empN = T, selProp = 1, qrpEnv = "high") %>% 
+  trial <- dataMA(k = 10, delta = 0, tau = .4,
+                  empN = T, selProp = .9, qrpEnv = "none") %>% 
     as.data.frame()
   
   # extract estimates
-  rma_out <- with(trial, RMA.est(d = d, v = v, long = T)) %>% 
-    filter(method == "reMA", term == "b0", variable == "estimate")
-  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T)) %>% 
-    filter(method == "3PSM", term == "b0", variable == "estimate")
+  rma_out <- with(trial, RMA.est(d = d, v = v, long = T))
+  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T))
   # Tag with run number
   rma_out$trial <- i
   tpsm_out$trial <- i
@@ -124,36 +92,55 @@ for (i in 1:simLength) {
   output <- bind_rows(output, rma_out, tpsm_out)
 }
 
-out.wide <- spread(output, key = method, value = value)
+# summary of delta-hat
+out.wide.delta <- filter(output, term == "b0", variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  spread(key = method, value = value)
+summary(out.wide.delta)
 
-ggplot(out.wide, aes(x = reMA, y = `3PSM`)) +
+# summary of tau-hat
+out.wide.tau <- filter(output, term %in% c("max.tau", "tau2"), variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  mutate(value = ifelse(term == "tau2", sqrt(value), value),
+         term = "max.tau") %>% 
+  select(-term) %>% 
+  spread(key = method, value = value)
+summary(out.wide.tau)
+
+# histogram on tau
+output %>% 
+  filter(term == "max.tau", variable == "estimate") %>% 
+  with(., hist(value, main = "3PSM underestimates tau = 0.4, k = 10"))
+abline(v = .4, col = 'red')
+abline(v = .35, col = 'blue')
+
+# Delta is overestimated when tau is underestimated
+output %>% 
+  filter(method == "3PSM", 
+         term %in% c("b0", "max.tau"),
+         variable == "estimate") %>% 
+  spread(term, value) %>% 
+  ggplot(aes(x = max.tau, y = b0)) +
   geom_point() +
-  scale_y_continuous(limits = c(0, 1)) +
-  geom_hline(yintercept = 0)
-
-ggplot(output, aes(x = method, y = value)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1)) +
+  geom_smooth(method = 'lm') +
   geom_hline(yintercept = 0) +
-  coord_flip() +
-  ggtitle("delta = 0, selProp = 100%, tau = 0, k = 10, high QRPs")
+  geom_vline(xintercept = .4) +
+  ggtitle("Inverse relationship between\ntau-hat and delta-hat")
 
-
-# Does increased k fix this when selProp = 1? No. ----
-simLength <-  250
+# Is it easier with larger k?
+set.seed(42069)
+simLength <-  250 
 
 output <- NULL
 for (i in 1:simLength) {
   # Make data
-  trial <- dataMA(k = 60, delta = 0, tau = 0,
-                  empN = T, selProp = 1, qrpEnv = "none") %>% 
+  trial <- dataMA(k = 100, delta = 0, tau = .2,
+                  empN = T, selProp = .9, qrpEnv = "none") %>% 
     as.data.frame()
   
   # extract estimates
-  rma_out <- with(trial, RMA.est(d = d, v = v, long = T)) %>% 
-    filter(method == "reMA", term == "b0", variable == "estimate")
-  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T)) %>% 
-    filter(method == "3PSM", term == "b0", variable == "estimate")
+  rma_out <- with(trial, RMA.est(d = d, v = v, long = T))
+  tpsm_out <- with(trial, TPSM.est(t = t, n1 = n1, n2 = n2, long = T))
   # Tag with run number
   rma_out$trial <- i
   tpsm_out$trial <- i
@@ -162,16 +149,36 @@ for (i in 1:simLength) {
   output <- bind_rows(output, rma_out, tpsm_out)
 }
 
-out.wide <- spread(output, key = method, value = value)
+# summary of delta
+out.wide.delta <- filter(output, term == "b0", variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  spread(key = method, value = value)
+summary(out.wide.delta)
 
-ggplot(out.wide, aes(x = reMA, y = `3PSM`)) +
+# summary of tau
+out.wide.tau <- filter(output, term %in% c("max.tau", "tau2"), variable == "estimate", method != "TF") %>% 
+  select(-variable) %>% 
+  mutate(value = ifelse(term == "tau2", sqrt(value), value)) %>% 
+  select(-term) %>% 
+  spread(key = method, value = value)
+summary(out.wide.tau)
+
+# histogram on tau
+output %>% 
+  filter(term == "max.tau", variable == "estimate") %>% 
+  with(., hist(value, main = "3PSM underestimates tau = 0.2, k = 100"))
+abline(v = .2, col = 'red')
+abline(v = .16, col = 'blue')
+
+# Delta is overestimated when tau is underestimated
+output %>% 
+  filter(method == "3PSM", 
+         term %in% c("b0", "max.tau"),
+         variable == "estimate") %>% 
+  spread(term, value) %>% 
+  ggplot(aes(x = max.tau, y = b0)) +
   geom_point() +
-  scale_y_continuous(limits = c(0, 1)) +
-  geom_hline(yintercept = 0)
-
-ggplot(output, aes(x = method, y = value)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1)) +
+  geom_smooth(method = 'lm') +
   geom_hline(yintercept = 0) +
-  coord_flip() +
-  ggtitle("delta = 0, selProp = 100%, tau = 0, k = 10, no QRPs")
+  geom_vline(xintercept = .2) +
+  ggtitle("Inverse relationship between\ntau-hat and delta-hat")
