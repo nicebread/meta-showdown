@@ -1,3 +1,213 @@
+# power check
+
+load(file="./dataFiles/summ.RData")
+library(tidyr)
+
+summ <- summ %>% 
+  ungroup() %>% 
+  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "pcurve", "puniform", "3PSM"))
+
+summ.pcurve.evi <- summ %>% 
+  filter(method == "pcurve.evidence") %>% 
+  mutate(method = "pcurve") %>% 
+  select(condition:method, 
+         consisZero.rate, consisZero.rate.pos, 
+         H0.reject.rate, H0.reject.pos.rate,
+         H0.reject.wrongSign.rate, n.p.values)
+
+summ.pcurve.est <- summ %>% 
+  filter(method == "pcurve") %>% 
+  select(condition:method, ME, RMSE, ME.pos, RMSE.pos)
+
+summ.pcurve <- full_join(summ.pcurve.est, summ.pcurve.evi)
+
+summ2 <- filter(summ, !(method %in% c("pcurve", "pcurve.evidence", "pcurve.lack", "pcurve.hack"))) %>% 
+  bind_rows(summ.pcurve)  
+
+# No pub bias ----
+# ME.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  mutate(ME.pos = round(ME.pos, 3)) %>% 
+  spread(key = method, value = ME.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# RMSE.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
+  spread(key = method, value = RMSE.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Power estimates
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Coverage
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  spread(key = method, value = coverage) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Some pub bias ----
+# ME.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  mutate(ME.pos = round(ME.pos, 3)) %>% 
+  spread(key = method, value = ME.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# effects of tau
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  mutate(ME.pos = round(ME.pos, 3)) %>% 
+  spread(key = method, value = ME.pos) %>% 
+  arrange(delta, k, tau) %>% 
+  View()
+
+# RMSE.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
+  spread(key = method, value = RMSE.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Power estimates
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Coverage
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  spread(key = method, value = coverage) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Strong pub bias ----
+# ME.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  mutate(ME.pos = round(ME.pos, 3)) %>% 
+  spread(key = method, value = ME.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+superiority <- summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k:method, ME.pos) %>% 
+  spread(key = method, value = ME.pos) %>%
+  gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
+  mutate(superior3PSM = `3PSM` > ME.pos & `3PSM` < .97) # some overcoverage of up to 96%
+with(superiority, table(superior3PSM, method))
+ggplot(superiority, aes(x = ME.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.6)) +
+  scale_y_continuous(limits = c(0, 0.6)) +
+  ggtitle("ME.pos for selProp = 90%")
+
+# RMSE.pos
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
+  spread(key = method, value = RMSE.pos) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
+  spread(key = method, value = RMSE.pos) %>% 
+  arrange(reMA - `3PSM`) %>% 
+  View()
+
+superiority <- summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k:method, RMSE.pos) %>% 
+  spread(key = method, value = RMSE.pos) %>%
+  gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
+  mutate(superior3PSM = `3PSM` > RMSE.pos & `3PSM` < .97) # some overcoverage of up to 96%
+ggplot(superiority, aes(x = RMSE.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.6)) +
+  scale_y_continuous(limits = c(0, 0.6)) +
+  ggtitle("RMSE.pos for selProp = 90%")
+
+# Power estimates
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# Coverage
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  spread(key = method, value = coverage) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+# OK, 3PSM coverage isn't great. but aren't the alternatives even worse?
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  spread(key = method, value = coverage) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
+
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k:method, coverage) %>% 
+  spread(key = method, value = coverage) %>%
+  gather(key = method, value = coverage, PEESE.lm:TF) %>% 
+  ggplot(aes(x = coverage, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_hline(yintercept = .95) +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0,1))+
+  scale_y_continuous(limits = c(0,1))
+
+# How often does 3PSM coverage outperform other coverage?
+superiority <- summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k:method, coverage) %>% 
+  spread(key = method, value = coverage) %>%
+  gather(key = method, value = coverage, PEESE.lm:TF) %>% 
+  mutate(superior3PSM = `3PSM` > coverage & `3PSM` < .97) # some overcoverage of up to 96%
+with(superiority, table(superior3PSM, method))
+
+
+# even older stuff -----
+{
 # Thinking about tables...
 source("start.R")
 # install.packages('tidyr')
@@ -62,7 +272,7 @@ summ.rmse %>%
   View()
 # everything is strictly less efficient than RE, of course
 # PET and PEESE are less efficient even under best-case scenario
-  # no difference between lm and rma
+# no difference between lm and rma
 # p-curve and p-uniform quite inefficient, particularly when delta is small
 # TopN loses efficiency, of course
 # 3PSM's loss of efficiency is not bad -- more efficient than TF
@@ -310,8 +520,8 @@ summ.me %>%
   View()
 # Casual inspection, may not apply to all cases
 # PEESE is less biased than reMA and TF when 
-  # 1) The effect size is small (d =< .5) and there is pub bias (selProp >= .6)
-  #     a) PEESE's advantage increases with selProp, decreases with delta and QRP
+# 1) The effect size is small (d =< .5) and there is pub bias (selProp >= .6)
+#     a) PEESE's advantage increases with selProp, decreases with delta and QRP
 summ.rmse %>% 
   filter(abs(PEESE.lm) < abs(TF), abs(PEESE.lm) < abs(reMA)) %>% 
   arrange(selProp, delta) %>% 
@@ -563,3 +773,4 @@ summ.ci %>%
   geom_hline(yintercept = .95) +
   facet_grid(qrpEnv~selProp) +
   ggtitle("Coverage probability, PETPEESE")
+}
