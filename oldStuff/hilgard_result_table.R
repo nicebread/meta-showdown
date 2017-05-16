@@ -1,7 +1,8 @@
 # power check
-
+source("start.R")
 load(file="./dataFiles/summ.RData")
 library(tidyr)
+library(ggplot2)
 
 summ <- summ %>% 
   ungroup() %>% 
@@ -34,6 +35,19 @@ summ2 %>%
   arrange(tau, delta, k) %>% 
   View()
 
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k:method, ME.pos) %>% 
+  spread(key = method, value = ME.pos) %>%
+  gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
+  ggplot(aes(x = ME.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.6)) +
+  scale_y_continuous(limits = c(0, 0.6)) +
+  ggtitle("ME.pos for selProp = 0%")
+
 # RMSE.pos
 summ2 %>%   
   filter(qrpEnv == "none", selProp == 0) %>% 
@@ -43,6 +57,19 @@ summ2 %>%
   arrange(tau, delta, k) %>% 
   View()
 
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k:method, RMSE.pos) %>% 
+  spread(key = method, value = RMSE.pos) %>%
+  gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
+  ggplot(aes(x = RMSE.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.6)) +
+  scale_y_continuous(limits = c(0, 0.6)) +
+  ggtitle("RMSE.pos for selProp = 0%")
+
 # Power estimates
 summ2 %>%   
   filter(qrpEnv == "none", selProp == 0) %>% 
@@ -50,6 +77,19 @@ summ2 %>%
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
+
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0) %>% 
+  select(k:method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>%
+  gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
+  ggplot(aes(x = H0.reject.pos.rate, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  ggtitle("H0.reject.pos.rate for selProp = 0%")
 
 # Coverage
 summ2 %>%   
@@ -78,6 +118,19 @@ summ2 %>%
   arrange(delta, k, tau) %>% 
   View()
 
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k:method, ME.pos) %>% 
+  spread(key = method, value = ME.pos) %>%
+  gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
+  ggplot(aes(x = ME.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.55)) +
+  scale_y_continuous(limits = c(0, 0.55)) +
+  ggtitle("ME.pos for selProp = 60%")
+
 # RMSE.pos
 summ2 %>%   
   filter(qrpEnv == "none", selProp == 0.6) %>% 
@@ -87,6 +140,19 @@ summ2 %>%
   arrange(tau, delta, k) %>% 
   View()
 
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k:method, RMSE.pos) %>% 
+  spread(key = method, value = RMSE.pos) %>%
+  gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
+  ggplot(aes(x = RMSE.pos, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 0.55)) +
+  scale_y_continuous(limits = c(0, 0.55)) +
+  ggtitle("RMSE.pos for selProp = 60%")
+
 # Power estimates
 summ2 %>%   
   filter(qrpEnv == "none", selProp == 0.6) %>% 
@@ -94,6 +160,19 @@ summ2 %>%
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
+
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  select(k:method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>%
+  gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
+  ggplot(aes(x = H0.reject.pos.rate, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  ggtitle("H0.reject.pos.rate for selProp = 60%")
 
 # Coverage
 summ2 %>%   
@@ -113,14 +192,12 @@ summ2 %>%
   arrange(tau, delta, k) %>% 
   View()
 
-superiority <- summ2 %>%   
+summ2 %>%   
   filter(qrpEnv == "none", selProp == 0.9) %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
-  mutate(superior3PSM = `3PSM` > ME.pos & `3PSM` < .97) # some overcoverage of up to 96%
-with(superiority, table(superior3PSM, method))
-ggplot(superiority, aes(x = ME.pos, y = `3PSM`, col = delta.label)) +
+  ggplot(aes(x = ME.pos, y = `3PSM`, col = delta.label)) +
   geom_point() +
   geom_abline(slope = 1) +
   facet_wrap(~method) +
@@ -145,13 +222,12 @@ summ2 %>%
   arrange(reMA - `3PSM`) %>% 
   View()
 
-superiority <- summ2 %>%   
+summ2 %>%   
   filter(qrpEnv == "none", selProp == 0.9) %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
-  mutate(superior3PSM = `3PSM` > RMSE.pos & `3PSM` < .97) # some overcoverage of up to 96%
-ggplot(superiority, aes(x = RMSE.pos, y = `3PSM`, col = delta.label)) +
+  ggplot(aes(x = RMSE.pos, y = `3PSM`, col = delta.label)) +
   geom_point() +
   geom_abline(slope = 1) +
   facet_wrap(~method) +
@@ -166,6 +242,19 @@ summ2 %>%
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
+
+summ2 %>%   
+  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  select(k:method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>%
+  gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
+  ggplot(aes(x = H0.reject.pos.rate, y = `3PSM`, col = delta.label)) +
+  geom_point() +
+  geom_abline(slope = 1) +
+  facet_wrap(~method) +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  ggtitle("H0.reject.pos.rate for selProp = 90%")
 
 # Coverage
 summ2 %>%   
