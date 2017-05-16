@@ -10,8 +10,8 @@ library(ggplot2)
 library(grid)
 library(RColorBrewer)
 
-#subset(summ,summ$method=="pcurve.evidence")$H0.reject.rate
-#subset(summ,summ$method=="pcurve.evidence")$H0.reject.rate
+
+
 #--------------------------------------------------------------
 
 #--------------------------------------------------------------
@@ -316,18 +316,18 @@ setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown/ColorTablePlots")
 colorTable('ME',0)
 colorTable('RMSE',0)
 colorTable('cov',0)
-colorTable('pow',0)  
+colorTable('pow',0) #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
 colorTable('ME',.6)
 colorTable('RMSE',.6)
 colorTable('cov',.6) 
-colorTable('pow',.6)  
+colorTable('pow',.6) #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
 
 
 colorTable('ME',.9)
 colorTable('RMSE',.9)
 colorTable('cov',.9)
-colorTable('pow',.9)  
+colorTable('pow',.9)  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
 
 
 #posified
