@@ -1,40 +1,20 @@
 
 
+
 setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 
 load("summ.RData") 
-source("start.R")
+library(reshape2)
+library(dplyr)
 library(ggplot2)
 library(grid)
 library(RColorBrewer)
 
 
 
-#define breaks by quantiles
-breakIt = function(X){
-  
-  brks = matrix(NA,length(X),1)
-  Q = quantile(X,probs=c(.001,.1,.2,.3,.4,.5,.6,.7,.8,.9,1))
-  
-  for(i in 1:length(X)){
-    if(X[i] <= Q['0.1%']){brks[i]=0}
-    if(X[i] > Q['0.1%'] & X[i] <= Q['10%']){brks[i]=1}
-    if(X[i] > Q['10%'] & X[i] <= Q['20%']){brks[i]=2}
-    if(X[i] > Q['20%'] & X[i] <= Q['30%']){brks[i]=3}
-    if(X[i] > Q['30%'] & X[i] <= Q['40%']){brks[i]=4}
-    if(X[i] > Q['40%'] & X[i] <= Q['50%']){brks[i]=5}
-    if(X[i] > Q['50%'] & X[i] <= Q['60%']){brks[i]=6}
-    if(X[i] > Q['60%'] & X[i] <= Q['70%']){brks[i]=7}
-    if(X[i] > Q['70%'] & X[i] <= Q['80%']){brks[i]=8}
-    if(X[i] > Q['80%'] & X[i] <= Q['90%']){brks[i]=9}
-    if(X[i] > Q['90%'] & X[i] <= Q['100%']){brks[i]=10}
-  }
-  
-  return(brks)
-}
+#--------------------------------------------------------------
 
-
-
+#--------------------------------------------------------------
 
 scoreIt = function(X,metric){
   
@@ -50,7 +30,7 @@ scoreIt = function(X,metric){
     boundary = c(.01,.02)
   }
   if(metric=='pow'){
-    boundary = c(.8,.5)
+    boundary = c(.5,.8)
   }
 
   for(i in 1:length(X)){
@@ -63,6 +43,8 @@ scoreIt = function(X,metric){
   
   return(pts)
 }
+
+
 
 
 
@@ -98,25 +80,45 @@ colorTable = function(metric,sel,positive=F){
                      params[,"selProp"])
       
       performScore = data.frame(matrix(NA,nrow(params),8))
-      colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","MC")
+      colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","3P")
       pb = txtProgressBar(min = 1, max = nrow(params), style = 3)
       
       for(iCon in 1:nrow(params)){
         #load a given condition
-        check = summ %>% filter(delta==params[iCon, "delta"],
-                                tau==params[iCon, "tau"],
-                                k==params[iCon, "k"],
-                                selProp==params[iCon, "selProp"], 
-                                qrpEnv==params[iCon, "qrpEnv"],
-                                method != 'Tau',
-                                method != 'fill',
-                                method != 'pcurve.evidence',
-                                method != 'pcurve.hack',
-                                method != 'pcurve.lack',
-                                method != 'PET.rma',
-                                method != 'PEESE.rma',
-                                method != 'PETPEESE.rma',
-                                method != 'topN.fixed')
+        
+        if(metric=='pow'){
+          check = summ %>% filter(delta==params[iCon, "delta"],
+                                  tau==params[iCon, "tau"],
+                                  k==params[iCon, "k"],
+                                  selProp==params[iCon, "selProp"], 
+                                  qrpEnv==params[iCon, "qrpEnv"],
+                                  method != 'Tau',
+                                  method != 'fill',
+                                  method != 'pcurve', #remove pcurve, use pcurve.evidence
+                                  method != 'pcurve.hack',
+                                  method != 'pcurve.lack',
+                                  method != 'PET.rma',
+                                  method != 'PEESE.rma',
+                                  method != 'PETPEESE.rma',
+                                  method != 'topN.fixed')
+        }else{
+          check = summ %>% filter(delta==params[iCon, "delta"],
+                                  tau==params[iCon, "tau"],
+                                  k==params[iCon, "k"],
+                                  selProp==params[iCon, "selProp"], 
+                                  qrpEnv==params[iCon, "qrpEnv"],
+                                  method != 'Tau',
+                                  method != 'fill',
+                                  method != 'pcurve.evidence', #remove pcurve.evidence, use pcurve
+                                  method != 'pcurve.hack',
+                                  method != 'pcurve.lack',
+                                  method != 'PET.rma',
+                                  method != 'PEESE.rma',
+                                  method != 'PETPEESE.rma',
+                                  method != 'topN.fixed')
+        }
+        
+        
         if(positive==T){
           condition = data.frame(check$delta,
                                  check$tau,
@@ -125,7 +127,7 @@ colorTable = function(metric,sel,positive=F){
                                  check$ME.pos,
                                  check$RMSE.pos,
                                  check$coverage.pos,
-                                 check$consisZero.pos)
+                                 check$H0.reject.pos.rate) 
         }else{
           condition = data.frame(check$delta,
                                  check$tau,
@@ -134,16 +136,21 @@ colorTable = function(metric,sel,positive=F){
                                  check$ME,
                                  check$RMSE,
                                  check$coverage,
-                                 check$consisZero)
+                                 check$H0.reject.rate) 
         }
         
-        colnames(condition)=c("delta","tau","k","method","ME","RMSE","cov","cons0")
+        colnames(condition)=c("delta","tau","k","method","ME","RMSE","cov","pow")
         
         #recode as power
-        condition$pow = 1 - condition$cons0
+        #condition$pow = 1 - condition$cons0
         
         #Make sure each method is represented. If not, leave as NA.
-        methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM")        
+        if(metric=='pow'){
+          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve.evidence","puniform","3PSM")        
+        }else{
+          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM")        
+        }
+        
         for(iMethod in 1:length(methodNames2)){
           
           if(sum(methodNames2[iMethod]==condition[,"method"])>0){
@@ -309,25 +316,34 @@ setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown/ColorTablePlots")
 colorTable('ME',0)
 colorTable('RMSE',0)
 colorTable('cov',0)
+colorTable('pow',0) #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
 colorTable('ME',.6)
 colorTable('RMSE',.6)
-colorTable('cov',.6)
+colorTable('cov',.6) 
+colorTable('pow',.6) #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
+
 
 colorTable('ME',.9)
 colorTable('RMSE',.9)
 colorTable('cov',.9)
+colorTable('pow',.9)  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
+
 
 #posified
 colorTable('ME',0,positive=T)
 colorTable('RMSE',0,positive=T)
 colorTable('cov',0,positive=T)
+colorTable('pow',0,positive=T)
+
 
 colorTable('ME',.6,positive=T)
 colorTable('RMSE',.6,positive=T)
 colorTable('cov',.6,positive=T)
+colorTable('pow',.6,positive=T)
 
 colorTable('ME',.9,positive=T)
 colorTable('RMSE',.9,positive=T)
 colorTable('cov',.9,positive=T)
+colorTable('pow',.9,positive=T)
 
