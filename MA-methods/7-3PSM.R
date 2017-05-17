@@ -6,7 +6,7 @@
 TPSM.est <- function(t, n1, n2, long=TRUE) {	
   
   # Three-parameter selection model
-  # MBH Implmentation: init.value gives an initial guess for the effect size, heterogeneity, and relative
+  # McShane et al. implmentation: init.value gives an initial guess for the effect size, heterogeneity, and relative
   # likelihood of reporting a study that is not statistically significant and directionally consistent.
   
   # use very general starting values for the parameters (not tuned to our specific simulations)

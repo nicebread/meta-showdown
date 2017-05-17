@@ -111,6 +111,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF of plot
 
-pdf("Plots/hyptest.pdf", width=15, height=22)
+pdf("Plots/Fig2-HypothesisTest.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
 dev.off()

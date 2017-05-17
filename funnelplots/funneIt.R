@@ -4,7 +4,7 @@ library(pwr)
 library(metafor)
 
 #Needs dataMA() and perGrp
-perGrp = read.csv('/home/ec/Documents/meta-showdown/Empirical n and ES distributions/perGrp.csv')
+perGrp = read.csv('../Empirical n and ES distributions/perGrp.csv')
 
 set.seed(999)
 
@@ -125,7 +125,7 @@ round(as.numeric(rma(dat1[,'d'],dat1[,'se']^2,method='DL')$b) - 0,3)
 titleA = 'A: Funnel plots of data sets unaffected by publication bias'
 titleB = 'B: Funnel plots of data sets where the rate of publication bias is 100%'
 
-pdf(file='maFig1.pdf',11,6)
+pdf(file='Fig1-FunnelPlots.pdf',11,6)
 
 print(fun1,vp=viewport(width=.25,height=.46,x=.25,y=.49, just = c("right","bottom")))
 print(fun2,vp=viewport(width=.25,height=.46,x=.5,y=.49, just = c("right","bottom")))
