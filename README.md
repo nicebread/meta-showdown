@@ -6,6 +6,9 @@ Carter, E. C., Schönbrodt, F. D., Hilgard, J., & Gervais, W. (2017). Correcting
 
 More material can be found in the associated [OSF project](https://osf.io/rf3ys/).
 
+An [interactive Shiny app](http://shinyapps.org/apps/metaExplorer/) visualizes all results:
+![metaExplorer Shiny App](Shiny/metaExplorer/teaserpic.png)
+
 ## General workflow of the analysis
 
 - [0-start.R](0-start.R) loads all necessary packages and sources several files. This file should always be loaded first.
