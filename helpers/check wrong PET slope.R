@@ -1,4 +1,4 @@
-load("../res.wide.red.RData")
+load("../dataFiles/res.wide.red.RData")
 
 # how many PET slopes are (significantly) negative?
 

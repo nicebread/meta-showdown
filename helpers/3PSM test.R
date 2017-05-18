@@ -1,4 +1,4 @@
-source("../start.R", chdir=TRUE)
+source("../0-start.R", chdir=TRUE)
 
 load("../simParts/simData_condition_100.RData")
 

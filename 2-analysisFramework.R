@@ -8,7 +8,7 @@
 # source("2-analysisFramework.R", echo=TRUE)
 
 # load all functions and packages
-source("start.R")
+source("0-start.R")
 
 library(doParallel)
 # detectCores()

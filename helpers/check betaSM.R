@@ -1,4 +1,4 @@
-source("../start.R", chdir=TRUE)
+source("../0-start.R", chdir=TRUE)
 
 # ---------------------------------------------------------------------
 #  check Citkowicz own data set

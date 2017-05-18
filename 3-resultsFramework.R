@@ -6,7 +6,7 @@
 # run this file:
 # source("3-resultsFramework.R", echo=TRUE)
 
-#source("start.R")
+#source("0-start.R")
 
 # load the results files which were generated in 2-analysisFramework.R,
 # combine them into one large data frame

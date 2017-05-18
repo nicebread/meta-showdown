@@ -1,4 +1,4 @@
-#source("start.R")
+#source("0-start.R")
 #install.packages(c("MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR", "broom", "weightr", "doParallel", "gtools")) 
 
 # devtools::install_github("RobbievanAert/puniform")
