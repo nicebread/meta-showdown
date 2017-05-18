@@ -19,6 +19,12 @@ An [interactive Shiny app](http://shinyapps.org/apps/metaExplorer/) visualizes a
 	- RULE 2: Ignore 3PSM when it doesn't provide a p-value
 	- RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 
+Additional folders:
+
+- [helpers](helpers) contains some helper functions as well as some mostly unstructured supplementary analyses. These are not well documented.
+- [Appendices](Appendices) contains the two appendices
+- [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they hae been implemented for two-group t-tests, and might or might not work for other types of tests.
+- [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, etc.
 
 ## Documentation about the most relevant result files
 
