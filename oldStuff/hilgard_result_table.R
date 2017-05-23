@@ -294,6 +294,13 @@ superiority <- summ2 %>%
   mutate(superior3PSM = `3PSM` > coverage & `3PSM` < .97) # some overcoverage of up to 96%
 with(superiority, table(superior3PSM, method))
 
+# effect of QRPs on false positives
+summ2 %>%   
+  filter(delta == 0, selProp == 0.9) %>% 
+  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  spread(key = method, value = H0.reject.pos.rate) %>% 
+  arrange(tau, delta, k) %>% 
+  View()
 
 # even older stuff -----
 {
