@@ -1,0 +1,97 @@
+---
+title: "Supplementary Appendix B: 10,000 vs. 1,000 replications"
+date: "`r Sys.Date()`"
+output: pdf_document
+classoption: landscape
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+
+```
+
+
+```{r echo=FALSE, cache=TRUE, results="hide"}
+## ======================================================================
+## This file loads the results of the meta-analyses (which were generated in 2-analysisFramework.R)
+## and computes summaries of them (such as mean error, MSE, coverage, etc.)
+## ======================================================================
+
+# load the results files which were generated in 2-analysisFramework.R,
+# combine them into one large data frame
+analysisFiles <- list.files("analysisParts", pattern=".*\\.RData", full.names=TRUE)
+
+
+# loop through all files
+res_list <- list()
+for (f in analysisFiles) {
+  print(f)
+  load(f)	# the simulation data frame always is called "res"
+  
+  # make pcurve.evidence and pcurve.lack two separate methods
+  res$method <- as.character(res$method)
+  res$method[res$method=="pcurve"] <- paste0("pcurve.", res$term[res$method=="pcurve"])
+  
+  # Slice into 10 batches of 1000 simulations
+  res$simBatch <- factor(as.numeric(cut(res$id, 10)))
+  
+  res_list[[f]] <- res
+}
+res.final <- bind_rows(res_list)
+rm(res_list)
+str(res.final)
+
+
+# Show conditions
+tab <- res.final %>% group_by(k, delta, selProp, tau) %>% summarise(n.MA=length(unique(id)))
+print(tab, n=50)
+
+
+# Reshape to wide format
+res.wide <- res.final %>% filter(term %in% c("b0", "kSig")) %>% dcast(id + condition + simBatch + k + delta + qrpEnv + selProp + tau + method + term ~ variable, value.var="value")
+
+# get id's with kSig >= 4
+incl <- res.wide %>% filter(term=="kSig") %>% group_by(id) %>% summarise(kSig_include = estimate >= 4)
+incl.ids <- incl$id[incl$kSig_include == TRUE]
+
+# Set p-curve and p-uniform to NA where kSig < 4
+res.wide$estimate[!res.wide$id %in% incl.ids & res.wide$method %in% c("puniform", "pcurve.b0") & res.wide$term == "b0"] <- NA
+
+
+# define some meaningful labels for the plots
+res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
+res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
+res.wide$selProp.label <- factor(res.wide$selProp, levels=unique(res.wide$selProp), labels=paste0("selProp = ", unique(res.wide$selProp)))
+res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
+
+
+summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, selProp.label, tau.label, method) %>% summarise(
+  meanEst		= mean(estimate, na.rm=TRUE),
+  ME 			= mean(estimate - delta, na.rm=TRUE),
+  RMSE			= sqrt(mean((estimate - delta)^2, na.rm=TRUE)),
+  n.simulations = n()
+)
+```
+
+This is Online Appendix B for:
+
+Carter, E. C., Schönbrodt, F. D., Hilgard, J., &amp; Gervais, W. (2017). *Correcting for bias in psychology: A comparison of meta-analytic methods.* Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
+
+## Method ##
+
+Simulations were run with 10,000 replications for a selection of conditions. Then, these 10,000 runs were divided in 10 batches of 1000 simulations each. The following plots show points for each of the 10 batches. One can see that they are virtually identical, as the points of the different batches overlap.
+
+## Variance in ES estimates between simulation batches
+
+```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
+ggplot(summ, aes(x=method, y=meanEst, color=simBatch, shape=factor(delta.label))) + geom_point() + geom_hline(aes(yintercept=delta), linetype="dotted") + facet_grid(selProp.label~k.label~tau.label) + coord_flip(ylim=c(-0.5, 1))
+```
+
+
+## Variance in RMSE between simulation batches
+
+```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
+ggplot(summ, aes(x=method, y=RMSE, color=simBatch, shape=delta.label)) + geom_point() + facet_grid(selProp.label~k.label~tau.label) + coord_flip(ylim=c(-.8, .8))
+```

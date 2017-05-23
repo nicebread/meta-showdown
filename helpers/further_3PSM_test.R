@@ -1,7 +1,7 @@
 # Under what conditions does 3PSM fail to return 95% CI?
 # When 3PSM fails to return 95% CI, does it return a point estimate?
 # This is all rather cycle-intensive
-source("start.R")
+source("0-start.R")
 library(tidyr)
 
 # Typical 3PSM behavior

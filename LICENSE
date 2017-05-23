@@ -1,3 +1,6 @@
+# ---------------------------------------------------------------------
+#  LICENSE FOR ALL CODE
+
 The MIT License (MIT)
 
 Copyright (c) 2017 Felix Schönbrodt, Evan Carter, Joe Hilgard
@@ -20,3 +23,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+# ---------------------------------------------------------------------
+#  LICENSE FOR PLOTS
+
+All plots are licensed under a CC-BY4.0 license. That means you can copy and reuse them as long as you provide a reference to the original authors.
+
+Whenever you use one of the plots, please refer to:
+
+Carter, E. C., Schönbrodt, F. D., Hilgard, J., & Gervais, W. (2017). Correcting for bias in psychology: A comparison of meta-analytic methods. Retrieved from https://osf.io/rf3ys/

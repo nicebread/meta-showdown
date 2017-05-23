@@ -21,7 +21,8 @@ vignettes/*.pdf
 # shell script for automatically adding files > 50 MB:
 # find . -size +80M  | cut -c 3-1000 >> .gitignore
 
+Appendices/A-min k for p-curve/min_k_for_p-curve_cache/latex/unnamed-chunk-1_19c553a1fb68742e649d9ea84f9fa08f.rdb
+Appendices/B-10,000 vs 1,000 sims/10,000vs_1,000_sims_cache/latex/unnamed-chunk-1_b8e7109da719555d5286d8f452a80b69.rdb
 dataFiles/res.final.RData
 dataFiles/res.wide.RData
 dataFiles/res.wide.red.RData
-

@@ -1,5 +1,5 @@
 # power check
-source("start.R")
+source("0-start.R")
 load(file="./dataFiles/summ.RData")
 library(tidyr)
 library(ggplot2)
@@ -305,7 +305,7 @@ summ2 %>%
 # even older stuff -----
 {
 # Thinking about tables...
-source("start.R")
+source("0-start.R")
 # install.packages('tidyr')
 library(tidyr)
 library(ggplot2)

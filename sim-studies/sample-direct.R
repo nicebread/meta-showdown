@@ -2,7 +2,7 @@
 # https://alexanderetz.com/2016/07/
 
 # load all functions and packages
-source("../start.R")
+source("../0-start.R")
 source("sim-studies.R")
 
 

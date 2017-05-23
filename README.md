@@ -1,5 +1,31 @@
 # meta-showdown
 
+This Github repository has the fully reproducible simulation code for:
+
+Carter, E. C., Schönbrodt, F. D., Hilgard, J., & Gervais, W. (2017). Correcting for bias in psychology: A comparison of meta-analytic methods. Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
+
+More material can be found in the associated [OSF project](https://osf.io/rf3ys/).
+
+An [interactive Shiny app](http://shinyapps.org/apps/metaExplorer/) visualizes all results:
+![metaExplorer Shiny App](Shiny/metaExplorer/teaserpic.png)
+
+## General workflow of the analyses
+
+- [0-start.R](0-start.R) loads all necessary packages and sources several files. This file should always be loaded first.
+- [1-simFramework.R](1-simFramework.R) simulates all raw data files and stores them in /simParts. Each of the 432 conditions gets its own file with 1000 simulated meta-analyses.
+- [2-analysisFramework.R](2-analysisFramework.R) grabs all simulated files from /simParts, runs all meta-analytical techniques on them, and stores the results as separate files under /analysisParts
+- [3-resultsFramework.R](3-resultsFramework.R) loads the results of the meta-analyses from /analysisParts, aggregates them in a single file (see below: Documentation about the most relevant result files), adds some variables, and applies some filters, and computes summaries of the results (such as mean error, MSE, coverage, etc.). The following filters are applied:
+	- RULE 1: set estimate of p-curve and p-uniform with < 4 significant studies to NA
+	- RULE 2: Ignore 3PSM when it doesn't provide a p-value
+	- RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+
+Additional folders:
+
+- [helpers](helpers) contains some helper functions as well as some mostly unstructured supplementary analyses. These are not well documented.
+- [Appendices](Appendices) contains the two appendices
+- [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they hae been implemented for two-group t-tests, and might or might not work for other types of tests.
+- [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, etc.
+
 ## Documentation about the most relevant result files
 
 ### Unaggregated data files (in /dataFiles)
@@ -9,15 +35,23 @@
 	- MAs with less than 4 significant studies in p-curve and p-uniform have been removed for these two methods
 	- Ignore 3PSM when it doesn't provide a p-value
 	- Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+	
+These files are too large for Github. You can generate them yourself by running [3-resultsFramework.R](3-resultsFramework.R).
 
 ### Aggregated data files (in /dataFiles)
-- summ.RData / summ.csv: This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition.
+- [summ.RData](dataFiles/summ.RData) / [summ.csv](dataFiles/summ.csv): This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition.
 
 
+## Extending the analyses
 
-# Version history:
+We took a lot of care to simulate the meta-analyses in a way that they are realistic concerning QRPs, publication bias, samples sizes, etc.
+When new meta-analytical methods are developed, we encourage researchers to use these simulated files and conditions as sort of benchmark data to test their methods. This allows to compare the results.
 
-0.1 (2017/05/16): tagged as "submitted to journal & preprint"
+[conditions.txt](simParts/conditions.txt) lists all 432 conditions with their parameter settings. That means, you can pick single conditions of interest.
+
+## Version history:
+
+0.1 (2017/05/20): tagged as "submitted to journal & preprint"
 
     > sessionInfo()
     R version 3.1.3 (2015-03-09)

@@ -86,11 +86,13 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				tabPanel("Funnel plots",
 					h2("Typical funnel plots for this condition"),
 					column(width=8,
-						plotOutput("funnelplot")
+						plotOutput("funnelplot"),
+						helpText("<-- Slide through demo data set 1 to 10 to see some other exemplary funnel plots for this condition.")
 					),
 					column(width=4,
-						uiOutput("funnelplotAnnotation")
-					)
+						#uiOutput("funnelplotAnnotation")
+						helpText("Blue triangle is the region of non-significance; dotted black triangle is the funnel of the naive random-effects meta-analysis.")
+					)					
 				),
 				
 				# ---------------------------------------------------------------------
@@ -101,12 +103,12 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					helpText(HTML("Note: H0 is rejected if the p-value is < .05 <i>and</i> the estimate is in the expected direction.")),
 					conditionalPanel(condition="input.plotOrTable == 'Plot'",
 						h3("Under H0"),
-						p("If in reality there is no effect: What is the chance that a method falsely concludes 'There is an effect'?"),
+						p("If in reality there is no effect: What is the probability that a method falsely concludes 'There is an effect'?"),
 						uiOutput("ggvis_ui_TypeI"),
 						ggvisOutput("ggvis_TypeI"),
 						
 						h3("Under H1"),
-						p("If in reality there is an effect: What is the chance that a method detects it?"),
+						p("If in reality there is an effect: What is the probability that a method detects it?"),
 						uiOutput("ggvis_ui_Power"),
 						ggvisOutput("ggvis_Power")
 					),
@@ -137,7 +139,11 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						uiOutput("estTable")
 					),
 					
-					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model")
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model"),
+					
+					conditionalPanel(condition="input.plotOrTable != 'Table'",
+						helpText("Horizontal error bars are 95% quantiles (i.e., 95% of simulated replications were in that range).")
+					)
 				),
 				# ---------------------------------------------------------------------
 				# About
