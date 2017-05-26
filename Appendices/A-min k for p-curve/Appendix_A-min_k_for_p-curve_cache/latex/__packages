@@ -1,10 +1,4 @@
 base
-methods
-datasets
-utils
-grDevices
-graphics
-stats
 rmarkdown
 knitr
 ggplot2
@@ -20,12 +14,10 @@ MASS
 pwr
 truncnorm
 evd
-stats4
 truncdist
 data.table
 foreach
 iterators
-parallel
 doMC
 meta
 metafor
@@ -48,3 +40,12 @@ gridExtra
 weightr
 tidyr
 gtools
+ProjectTemplate
+stringr
+lme4
+lmerTest
+foreign
+AICcmodavg
+MuMIn
+texreg
+lavaan

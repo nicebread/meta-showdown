@@ -28,7 +28,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		
 		column(width=4,
 			br(),
-			br(),
+			helpText("What setting describes best the analyzed research environment?"),
 			
 			h2("Basic settings"),
 			radioButtons("selProp", "How many % of original studies are submitted to publication bias?:",
@@ -50,19 +50,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			radioButtons("qrpEnv", "QRP environment:",
 			             c("none", "med", "high"), inline=TRUE),
 									 
- 			conditionalPanel("input.tabs1 == 'Funnel plots'",
- 				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
-				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),
-				checkboxInput("show_PET", "Show PET meta-regression in plot", TRUE),
-				checkboxInput("show_PEESE", "Show PEESE meta-regression in plot", TRUE)
- 			),
-															 
-			conditionalPanel("input.tabs1 != 'Funnel plots'",						 
-				radioButtons("plotOrTable", "Output as:", c(Plot="Plot", Table="Table"), inline=TRUE)
-			),
-			
-			
-			conditionalPanel("input.tabs1 != 'Funnel plots'",
+		 conditionalPanel("input.tabs1 != 'Funnel plots'",
 				h2("Advanced options"),			
 				radioButtons("PETPEESEmodel", "Model PET/PEESE as:",
 			             c("lm (default)" = "lm", "rma" = "rma"), inline=TRUE),
@@ -71,6 +59,17 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					selectInput("dropNegatives", "Set negative estimates to zero:",
 			             c("Set to zero (default)" = TRUE, "Keep all estimates (regardless of sign)" = FALSE))									 
 				)
+			),
+			h2("Output opions"),
+			conditionalPanel("input.tabs1 == 'Funnel plots'",
+ 				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
+				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),
+				checkboxInput("show_PET", "Show PET meta-regression in plot", TRUE),
+				checkboxInput("show_PEESE", "Show PEESE meta-regression in plot", TRUE)
+ 			),
+															 
+			conditionalPanel("input.tabs1 != 'Funnel plots'",						 
+				radioButtons("plotOrTable", "Output as:", c(Plot="Plot", Table="Table"), inline=TRUE)
 			)
 		),
 		
@@ -91,7 +90,11 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					),
 					column(width=4,
 						#uiOutput("funnelplotAnnotation")
-						helpText("Blue triangle is the region of non-significance; dotted black triangle is the funnel of the naive random-effects meta-analysis.")
+						HTML("<ul>
+							<li>Blue triangle is the region of non-significance; dotted black triangle is the funnel of the naive random-effects meta-analysis.</li>
+							<li>Red dot at the bottom shows the true effect size. Blue dots show the naive random-effects estimate, and PET and PEESE estimates, if selected.</li>
+							</ul>
+							")
 					)					
 				),
 				
@@ -141,7 +144,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 					
 					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model"),
 					
-					conditionalPanel(condition="input.plotOrTable != 'Table'",
+					conditionalPanel(condition="input.plotOrTable != 'Table'",					
 						helpText("Horizontal error bars are 95% quantiles (i.e., 95% of simulated replications were in that range).")
 					)
 				),

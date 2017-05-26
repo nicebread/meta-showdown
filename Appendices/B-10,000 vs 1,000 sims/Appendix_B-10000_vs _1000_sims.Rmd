@@ -10,6 +10,8 @@ classoption: landscape
 library(knitr)
 library(ggplot2)
 
+# library(rmarkdown);render('Appendix_B-10000_vs _1000_sims.Rmd', output_format='pdf_document', clean=FALSE, run_pandoc = FALSE)
+
 ```
 
 
