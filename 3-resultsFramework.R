@@ -6,7 +6,7 @@
 # run this file:
 # source("3-resultsFramework.R", echo=TRUE)
 
-#source("0-start.R")
+source("0-start.R")
 
 # load the results files which were generated in 2-analysisFramework.R,
 # combine them into one large data frame
@@ -73,6 +73,9 @@ res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurv
 res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 
 ## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+
+PUNI <- res.wide[res.wide$method == "puniform", ]
+table(is.na(PUNI$b0_conf.low))
 res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 
 				 

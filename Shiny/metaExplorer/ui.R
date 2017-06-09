@@ -60,7 +60,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			             c("Set to zero (default)" = TRUE, "Keep all estimates (regardless of sign)" = FALSE))									 
 				)
 			),
-			h2("Output opions"),
+			h2("Output options"),
 			conditionalPanel("input.tabs1 == 'Funnel plots'",
  				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
 				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),

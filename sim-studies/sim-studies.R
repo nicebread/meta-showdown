@@ -1,7 +1,8 @@
-#VERSION NOTES
-#new framework for implementing QRPs and selection
+# MAIN FUNCTION to use: dataMA
+# (see from line 440)
 
-######################################################################
+# load empirical sample sizes into workspace
+perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")
 
 #==============
 #   Outlier   #

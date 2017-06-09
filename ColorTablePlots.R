@@ -3,7 +3,7 @@
 
 setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
 
-load("summ.RData") 
+load("dataFiles/summ.RData") 
 library(reshape2)
 library(dplyr)
 library(ggplot2)

@@ -60,16 +60,26 @@ for (f in simDatFiles) {
 	
 			# analyze with all MA techniques
 			res0 <- rbind(
-				RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
-				PETPEESE.est(MAdat$d, MAdat$v, long=TRUE),
-				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
-				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
-				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
-				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE)#,
+				#RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
+				#PETPEESE.est(MAdat$d, MAdat$v, long=TRUE),
+				#pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
+				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE)#,
+				#puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
+				#TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE)#,
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="fixed", fixed.effect=0.3),
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="rma"),
 				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE"),				
 				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
+			)
+			
+			## add some extra informations:			
+			
+			# the average true delta of all positive significant studies (=estimand of pcurve)
+			delta.included.M <- mean(MAdat$D[MAdat$p < .05 & MAdat$D >= 0])
+			if (is.nan(delta.included.M)) delta.included.M <- NA
+			
+			res0 <- rbind(res0,
+				data.frame(method="pcurve", term="delta.included", variable="mean", value = delta.included.M)	
 			)
 			
 	

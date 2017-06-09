@@ -73,6 +73,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   } else {
     outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate", "conf.low", "conf.high"), value=out[1, ])
 	
+	# add number of significant studies that entered p-curve
 	outlong <- plyr::rbind.fill(outlong, data.frame(
 		method="pcurve",
 		term="kSig",

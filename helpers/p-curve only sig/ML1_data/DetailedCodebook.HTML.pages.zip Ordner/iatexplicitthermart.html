@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" xml:lang="en" lang="en">
+  <head>
+    <title>Slider</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+      body {font-family:palatino linotype;}
+      .text {font-size:18px}
+      .ddtext {font-size:18px}
+      .heading {font-size: 18px;font-weight:bold;text-decoration: underline;font-family:palatino linotype;}
+      .headingleft {font-size:22px; text-decoration:underline;text-align:left}
+      .blockcenter{margin-left: auto; margin-right: auto}
+      .textcenter{text-align:center}
+      .textleft{text-align:left}
+      .textright{text-align:right}
+       #submit_system {font-size:22px} 
+    </style>
+    <script type="text/javascript" src="/implicit/common/en-us/js/task.js"></script>
+
+	<!--BEGIN Slider -->
+	<link type="text/css" href="/implicit/common/all/js/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+	<script type="text/javascript" src="/implicit/common/all/js/jquery-1.5.1.min.js"></script> 
+	<script type="text/javascript" src="/implicit/common/all/js/jquery-ui-1.8.13.custom.min.js"></script>
+	<style type="text/css">
+	  .alignleft{float:left;}
+	  .alignright{float:right;}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function() {
+	        $( "#slider" ).slider({
+				value:50,
+				min:0,
+				max:100,
+				step:1,
+	            slide: function(event, ui) { 
+	                $('#sliderInput').val(ui.value);
+	        	}
+	        });
+	    });
+	</script>
+	<!--END Slider -->
+	
+    <script type="text/javascript">
+
+     function isNumber(n) {
+       return !isNaN(parseFloat(n)) && isFinite(n);
+     }
+     function dovalidate() {
+        var allanswered=true;
+        if (!isNumber(document.iatexplicitthermart.artwarm.value)) allanswered=false;
+        if (!allanswered) alert("Please choose a position above before continuing!");
+          else document.iatexplicitthermart.submit();
+       }
+    </script>
+  </head>
+  <body>
+    <form method="post" action="/implicit/Study" name="iatexplicitthermart">
+      <input type="hidden" name="mode" value="insQuesData" />
+     
+<table cellpadding=3 border="0" width="80%" align=center>
+<tr>
+<td class=heading align=center>Task</td>
+</tr>
+</table> 
+<br />  
+
+	 <table width="80%" class="blockcenter">
+        <tr>
+          <td class="text" align="center">
+           <p>Please move the slider bar from the left (0 = cold/unfavorable) to the right (100 = warm/favorable) to indicate your overall feeling toward
+		  <b>art</b>. When the slider bar is in the location that indicates your overall feelings, please click "Continue".</p>
+            <table>
+         </table> <br />  
+            <table width="80%" class="blockcenter">
+              <tr>
+                <td>
+						<!-- BEGIN Slider -->
+						<input type="hidden" name="artwarm" id="sliderInput" value="." />
+						<div id="slider"></div>
+					    <div id="textbox">
+							<span class="alignleft">0 = cold/unfavorable</span>
+							<span class="alignright">100 = warm/favorable</span>
+						</div>
+						<div style="clear: both;"></div>
+						<!-- END Slider -->
+                </td>
+              </tr>
+            </table> <br />
+           <p class="textcenter"><button type="button" class="fakebutton" onclick="dovalidate();">Continue</button></p>
+          </td>
+        </tr>
+      </table>
+      <div id='mybutton' style='display:none'><script language="JavaScript" type="text/javascript">writeButton("real hidden button");</script></div>
+    </form>
+  </body>
+</html>

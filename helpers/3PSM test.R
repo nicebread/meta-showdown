@@ -70,7 +70,7 @@ summ.allSig <- res.wide.allSig %>% group_by(condition, k, k.label, delta, delta.
 		theme_bw() + ggtitle("Estimate and 95% bootstrap percentiles (for selProp = 0% and tau=0.2)")
 		
 		
-	summ.allSig %>% filter(selProp==0.95, tau==0.4) %>% 
+	summ.allSig %>% filter(selProp==0.9, tau==0.4) %>% 
 		ggplot(aes(x=k.label, y=meanEst, ymin=perc2.5, ymax=perc97.5, color=factor(delta))) + 
 		geom_pointrange(position=position_dodge(width=0.7)) + 
 		geom_hline(aes(yintercept=delta, color=factor(delta))) + 
