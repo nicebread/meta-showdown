@@ -27,8 +27,9 @@ publicationProb = function(censorFunction, pObs, dObs){
   #continuous function that prefers anything with p <.05 100%
   #and anything else as a steeply decreasing hyperbolic function
   if(censorFunction=="hyp_1"){
-    pubProb = 1/(1+30*(pObs-.05))
+    pubProb = if(pObs>=0.05){1/(1+30*(pObs-.05))}else{1}
   }
+  
   
   return(pubProb)
 }
