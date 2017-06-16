@@ -612,6 +612,7 @@ dataMA <- function(k, delta, tau,
         rB_None[i,11] = rB_None[i,11] + 1} #count file-drawered studies
         rB_None[i,12] = 1 #sel
         rB_None[i,13] = 0 #no QRP
+        pPr = publicationProb(censorFunction, rB_None[i,2], rB_None[i,1]) #check result against censor function 
       }
     }    
   }
@@ -630,6 +631,7 @@ dataMA <- function(k, delta, tau,
         rB_Mod[i,11] = rB_Mod[i,11] + 1} #count file-drawered studies
         rB_Mod[i,12] = 1 #sel
         rB_Mod[i,13] = 1 #mod QRP
+        pPr = publicationProb(censorFunction, rB_Mod[i,2], rB_Mod[i,1]) #check result against censor function 
       }
     }    
   }
@@ -648,6 +650,7 @@ dataMA <- function(k, delta, tau,
         rB_Agg[i,11] = rB_Agg[i,11] + 1} #count file-drawered studies
         rB_Agg[i,12] = 1 #sel
         rB_Agg[i,13] = 2 #Agg QRP
+        pPr = publicationProb(censorFunction, rB_Agg[i,2], rB_Agg[i,1]) #check result against censor function 
       }
     }    
   }
