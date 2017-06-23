@@ -28,11 +28,10 @@ source("MA-methods/2-p-curve.R")
 source("MA-methods/3-PET-PEESE.R")
 source("MA-methods/4-p-curve skewness.R")
 source("MA-methods/5-p-uniform.R")
-source("MA-methods/6-topN.R")
-source("MA-methods/6-topN.R")
+source("MA-methods/6-WAAP.R")
 source("MA-methods/7b-selection.meta.functions.R")
 source("MA-methods/7-3PSM.R")
-source("MA-methods/8-betaSM.R", chdir=TRUE)	# must chdir=TRUE to load the helper functions in /betaSM_functions
+#source("MA-methods/8-betaSM.R", chdir=TRUE)	# must chdir=TRUE to load the helper functions in /betaSM_functions
 
 # load empirical sample sizes into workspace
 perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")

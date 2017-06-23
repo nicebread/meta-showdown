@@ -32,7 +32,7 @@ funnelIt = function(d,se,
                     yLab=F,xLab=F){
   
   dat = data.frame(d,se)
-  RE = rma(d,se^2,method='DL')
+  RE = rma(d,se^2, method='REML')
   reEst = as.numeric(RE$b)
   adj = 1.1
   maxSE = max(se)
@@ -120,7 +120,7 @@ fun8=funnelIt(dat8[,'d'],dat8[,'se'],trueD=.5,title=title4,titleFnt=10,xLab=T)
 
 #------------------------------------------------------------
 
-round(as.numeric(rma(dat1[,'d'],dat1[,'se']^2,method='DL')$b) - 0,3)
+round(as.numeric(rma(dat1[,'d'],dat1[,'se']^2, method='REML')$b) - 0,3)
 
 titleA = 'A: Funnel plots of data sets unaffected by publication bias'
 titleB = 'B: Funnel plots of data sets where the rate of publication bias is 100%'

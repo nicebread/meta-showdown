@@ -5,7 +5,7 @@ RMA.est <- function(d, v, long=TRUE) {
   #produces estimate of true effect, CI around estimate,
   #and estimate of tau (could get CIs if wanted)
 
-  reMA <- rma(d, v, method="DL")
+  reMA <- rma(d, v, method="REML")
   
   # assign NULL to tfMA if an error is raised
   tfMA <- tryCatch({

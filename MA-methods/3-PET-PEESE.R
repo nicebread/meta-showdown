@@ -5,8 +5,8 @@ PETPEESE.est <- function(d, v, PP.test = c("two-sided", "one-sided"), long=TRUE)
   
   PET.lm <- lm(d~sqrt(v), weights=1/v)
   PEESE.lm <- lm(d~v, weights=1/v)
-  PET.rma <- rma(yi = d, vi = v, mods=sqrt(v), method="DL")
-  PEESE.rma <- rma(yi = d, vi = v, mods=v, method="DL")  
+  PET.rma <- rma(yi = d, vi = v, mods=sqrt(v), method="REML")
+  PEESE.rma <- rma(yi = d, vi = v, mods=v, method="REML")  
   
   res <- rbind(
 		data.frame(method="PET.lm", tidyLM(PET.lm)),
