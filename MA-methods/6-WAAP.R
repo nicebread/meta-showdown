@@ -1,6 +1,5 @@
 # Weighted least squares estimator: Stanley, T. D., & Doucouliagos, H. (2015). Neither fixed nor random: weighted least squares meta-analysis. Statistics in Medicine, 34(13), 2116–2127. http://doi.org/10.1002/sim.6481
 
-
 WLS.est <- function(d, v, long=TRUE) {
   se <- sqrt(v)
   d.precision <- 1/se
@@ -21,7 +20,7 @@ WLS.est <- function(d, v, long=TRUE) {
 }
 
 # Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. A. (2017). Finding the power to reduce publication bias. Statistics in Medicine, 54(3), 30–19. http://doi.org/10.1002/sim.7228
-WAAP.est <- function(d, v, n1, n2, est=c("WAAP-WLS"), long=TRUE) {
+WAAP.est <- function(d, v, est=c("WAAP-WLS"), long=TRUE) {
   
   # 1. determine which studies are in the top-N set
   
@@ -43,18 +42,6 @@ WAAP.est <- function(d, v, n1, n2, est=c("WAAP-WLS"), long=TRUE) {
     res <- WLS.est(d[powered], v[powered], long=FALSE)
     res$method <- "WAAP-WLS"
     res <- plyr::rbind.fill(res, data.frame(method="WAAP-WLS", term="estimator", type="WAAP", kAdequate=kAdequate))
-  }else if (kAdequate==1) {
-    res <- data.frame(
-      method = "WAAP-WLS",
-      term = "b0",
-      estimate = 	d[powered],
-      std.error = sqrt(v)[powered],
-      statistic = sqrt(v)[powered],
-      p.value = 2 * pt(abs((d[powered]/sqrt(v)[powered])), (n1[powered] + n2[powered] - 2), lower.tail = FALSE),
-      conf.low = d[powered] - sqrt(v)[powered]*1.96,
-      conf.high = d[powered] + sqrt(v)[powered]*1.96,
-      kAdequate=kAdequate
-    )
   } else {
     res <- WLS.all
     res$method <- "WAAP-WLS"

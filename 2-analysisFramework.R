@@ -63,10 +63,10 @@ for (f in simDatFiles) {
 				RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
 				PETPEESE.est(MAdat$d, MAdat$v, long=TRUE),
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
-				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE)#,
+				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
 				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE),
-				WAAP.est(d=MAdat$d, v=MAdat$v, n1=MAdat$n1, n2=MAdat$n2, adequate.power=0.80, long=TRUE)#,
+				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
 				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
 			)
 			
