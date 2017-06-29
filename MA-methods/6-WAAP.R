@@ -20,6 +20,8 @@ WLS.est <- function(d, v, long=TRUE) {
 }
 
 # Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. A. (2017). Finding the power to reduce publication bias. Statistics in Medicine, 54(3), 30–19. http://doi.org/10.1002/sim.7228
+
+# return object: type = 1: WAAP, type = 2: WLS (must be numeric, otherwise it distorts the structure of the results object)
 WAAP.est <- function(d, v, est=c("WAAP-WLS"), long=TRUE) {
   
   # 1. determine which studies are in the top-N set
@@ -41,11 +43,11 @@ WAAP.est <- function(d, v, est=c("WAAP-WLS"), long=TRUE) {
   if (kAdequate >= 2) {
     res <- WLS.est(d[powered], v[powered], long=FALSE)
     res$method <- "WAAP-WLS"
-    res <- plyr::rbind.fill(res, data.frame(method="WAAP-WLS", term="estimator", type="WAAP", kAdequate=kAdequate))
+    res <- plyr::rbind.fill(res, data.frame(method="WAAP-WLS", term="estimator", type=1, kAdequate=kAdequate))
   } else {
     res <- WLS.all
     res$method <- "WAAP-WLS"
-    res <- plyr::rbind.fill(res, data.frame(method="WAAP-WLS", term="estimator", type="WLS", kAdequate=kAdequate))
+    res <- plyr::rbind.fill(res, data.frame(method="WAAP-WLS", term="estimator", type=2, kAdequate=kAdequate))
   }
   returnRes(res, long)
 }
@@ -53,4 +55,4 @@ WAAP.est <- function(d, v, est=c("WAAP-WLS"), long=TRUE) {
 # dat1 <- data.frame(dataMA(k=50, delta=0.4, tau=0.1, empN=T, maxN=500, minN=0,meanN=0,selProp=0.7, qrpEnv='none'))
 # WLS(dat1$d, dat1$v)
 # RMA.est(d=dat1$d, v=dat1$v)
-# WAAP.est(d=dat1$d, v=dat1$v, n1=dat1$n1, n2=dat1$n2)
+# WAAP.est(d=dat1$d, v=dat1$v)

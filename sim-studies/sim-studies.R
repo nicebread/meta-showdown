@@ -68,7 +68,7 @@ expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
   S = sqrt( ((n1 - 1)*v1 + (n2 - 1)*v2) / df )
   
   #compare the two distributions
-  test = t.test(Ye,Yc)
+  test = t.test(Ye, Yc)
   
   #calculate d, the variance of d, the p-value, the t-stat, and n.
   d = (m1 - m2)/S
