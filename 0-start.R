@@ -6,7 +6,6 @@
 
 # We need R >= 3.3.3 and weightr version >= 1.1.2!
 if(packageVersion("weightr") < "1.1.2") stop("you need to update 'weightr'!")
-if(getRversion() < "3.3.3") stop("you need to update R!")
 
 library(MASS)
 library(pwr)

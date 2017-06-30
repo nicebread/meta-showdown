@@ -7,8 +7,12 @@ RMA.est <- function(d, v, long=TRUE) {
 
 	# adjust stepadj (make it smaller by x0.5) and increase maxiter from 100 to 500 to prevent convergence problems
 	#reMA <- rma(d, v, method="REML")
-  reMA <- rma(d, v, method="REML", control = list(stepadj = .5, maxiter=500))
-  
+	
+	reMA <- tryCatch(
+		rma(d, v, method="REML", control = list(stepadj = .5, maxiter=500)),
+		error = function(e) rma(d, v, method="DL")
+	)
+	  
   # assign NULL to tfMA if an error is raised
 	tfMA <- NULL
   try({
