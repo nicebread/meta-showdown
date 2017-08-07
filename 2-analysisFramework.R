@@ -12,7 +12,7 @@ source("0-start.R")
 
 library(doParallel)
 # detectCores()
-registerDoParallel(cores=2)
+registerDoParallel(cores=1)
 
 (ncores <- getDoParWorkers())	# number of parallel processes
 
@@ -44,7 +44,7 @@ for (f in simDatFiles) {
 	sim$core <- translation[as.character(sim$id)]
 
 	# Now, loop through all meta-analyses, each core gets its share of studies
-	res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {    
+	res <- foreach(batch=1:ncores, .combine=rbind) %do% {    
 
 		counter <- 1
 		reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
@@ -65,8 +65,8 @@ for (f in simDatFiles) {
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
-				threePSM.est(d=MAdat$d, v=MAdat$v, long=TRUE),
-				fourPSM.est(d=MAdat$d, v=MAdat$v, long=TRUE, fallback=FALSE),
+				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE),
+				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE, fallback=FALSE),
 				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
 				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
 			)

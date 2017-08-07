@@ -3,7 +3,9 @@
 # the single cut point is at .025 (one-sided testing)
 # The authors suggest to have >= 4 p-values in each interval. If that is not provided, return NA.
 
-threePSM.est <- function(d, v, long=TRUE) {	
+#' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
+
+threePSM.est <- function(d, v, min.pvalues=1, long=TRUE) {	
 	
 	w1 <- tryCatch(
 		weightfunct(d, v, steps = c(0.025, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE),
@@ -25,7 +27,7 @@ threePSM.est <- function(d, v, long=TRUE) {
 	
 	# if <= 3 p-values in an interval: return NA
 	p.table <- table(cut(w1$p, breaks=c(0, .025, 1)))
-	if (any(p.table <= 3)) {
+	if (any(p.table < min.pvalues)) {
 	  return(returnRes(res.NA))
 	} else {
 		est <- w1[[2]]$par
@@ -56,7 +58,10 @@ threePSM.est <- function(d, v, long=TRUE) {
 # The authors suggest to have >= 4 p-values in each interval. If that is not provided, return NA.
 # optionally fallback to 3PSM if not enough p.values in each interval
 
-fourPSM.est <- function(d, v, long=TRUE, fallback = FALSE) {	
+#' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
+#' @param fallback If 4PSM has not enough p-values: Should the function try to estimate a 3PSM instead?
+
+fourPSM.est <- function(d, v, min.pvalues=1, long=TRUE, fallback = FALSE) {	
 	w1 <- tryCatch(
 		weightfunct(d, v, steps = c(0.025, 0.5, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE),
 		error = function(e) NULL
@@ -77,9 +82,9 @@ fourPSM.est <- function(d, v, long=TRUE, fallback = FALSE) {
 	
 	# if <= 3 p-values in an interval: return NA
 	p.table <- table(cut(w1$p, breaks=c(0, .025, 0.5, 1)))
-	if (any(p.table <= 3)) {
+	if (any(p.table < min.pvalues)) {
 		if (fallback==TRUE) {
-			return(threePSM.est(d, v, long=TRUE))
+			return(threePSM.est(d, v, min.pvalues=min.pvalues, long=long))
 		} else {
 		   return(returnRes(res.NA))
 		}	  

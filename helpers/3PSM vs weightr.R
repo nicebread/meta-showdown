@@ -121,3 +121,13 @@ mean(res$t.p)
 mean(res$w.p)
 mean(res$w2.p1)
 mean(res$w2.p2)
+
+
+## ======================================================================
+## Test some boundary cases for weightr
+## ======================================================================
+
+library(weightr)
+weightfunct(c(0.8, 0.4, 0.4, 0.5, 0.3), c(0.04, 0.04, 0.02, 0.02, 0.01), steps = c(0.025, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE)
+
+weightfunct(c(0.8, 0.4, 0.4, 0.5, 0.3), c(0.04, 0.04, 0.02, 0.02, 0.01), steps = c(0.025, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE)

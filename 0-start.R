@@ -26,7 +26,7 @@ library(puniform)
 library(weightr)
 
 source("helpers/helpers.R")
-source("sim-studies/sim-studies.R")
+source("sim-studies/sim-studies.R", chdir=TRUE)
 source("MA-methods/1-RMA.R")
 source("MA-methods/2-p-curve.R")
 source("MA-methods/3-PET-PEESE.R")
