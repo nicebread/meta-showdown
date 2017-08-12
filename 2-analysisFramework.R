@@ -12,7 +12,7 @@ source("0-start.R")
 
 library(doParallel)
 # detectCores()
-registerDoParallel(cores=1)
+registerDoParallel(cores=20)
 
 (ncores <- getDoParWorkers())	# number of parallel processes
 
@@ -44,7 +44,7 @@ for (f in simDatFiles) {
 	sim$core <- translation[as.character(sim$id)]
 
 	# Now, loop through all meta-analyses, each core gets its share of studies
-	res <- foreach(batch=1:ncores, .combine=rbind) %do% {    
+	res <- foreach(batch=1:ncores, .combine=rbind) %dopar% {    
 
 		counter <- 1
 		reslist <- list()	# each MA is stored as 1 list element, which is later combined to a single data frame
@@ -65,6 +65,7 @@ for (f in simDatFiles) {
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
+				onePSM.McShane.est(t.obs=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
 				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE),
 				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE, fallback=FALSE),
 				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
@@ -86,7 +87,7 @@ for (f in simDatFiles) {
 			res1 <- cbind(
 		
 				# save settings of condition to results:
-				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "selProp", "tau", "kFD", "sel", "qrp")],
+				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "censor", "tau", "qrp")],
 		
 				# save analysis results:
 				res0
@@ -101,3 +102,4 @@ for (f in simDatFiles) {
 	
 	save(res, file=paste0("analysisParts/analysis_", basename(f)), compress="gzip")
 } # of "f in simDatFiles"
+

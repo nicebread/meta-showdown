@@ -47,7 +47,7 @@ B <- 1000	# number of simulation replications per condition (should be dividable
 
 print(start <- Sys.time())
 
-for (j in 1:nrow(param)) {
+for (j in 1:nrow(params)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
 
@@ -66,7 +66,7 @@ for (j in 1:nrow(param)) {
 			log2 <- paste0(Sys.time(), ", batch=", batch, ": computing condition ", j, "/", nrow(params), "; rep = ", i)
 			print(log2)
 			
-			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censor=params[j, "censor"], qrpEnv=params[j, "qrpEnv"])
+			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censorFunc=as.character(params[j, "censor"]), qrpEnv=params[j, "qrpEnv"])
 
 							  
 			# remove rownames (otherwise cbind complains)
@@ -94,7 +94,7 @@ for (j in 1:nrow(param)) {
 	} # of foreach loop
 		
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
-	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"), compress="gzip")
+	save(sim, file=paste0("simParts/simData_condition_", j, ".RData"), compress="gzip")
 	
 } # of j (loop through parameter combinations)
 

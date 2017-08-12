@@ -31,29 +31,29 @@ save(res.final, file="dataFiles/res.final.RData")
 
 
 # Show conditions
-tab <- res.final %>% group_by(k, delta, qrpEnv, selProp, tau) %>% summarise(n.MA=length(unique(id)))
+tab <- res.final %>% group_by(k, delta, qrpEnv, censor, tau) %>% summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
 res.final <- res.final %>% droplevels()
 
 # reshape long format to wide format
-res.wide <- dcast(res.final, id + condition + k + delta + qrpEnv + selProp + tau + method ~ term + variable, value.var="value")
+res.wide <- dcast(res.final, id + condition + k + delta + qrpEnv + censor + tau + method ~ term + variable, value.var="value")
 head(res.wide, 16)
 
 # define some meaningful labels for the plots
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
 res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
-res.wide$selProp.label <- factor(res.wide$selProp, levels=unique(res.wide$selProp), labels=paste0("selProp = ", unique(res.wide$selProp)))
+res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("censor = ", unique(res.wide$censor)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
 
 # sanity check: each condition should have 1000 sims
-tab <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
+tab <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
 
 # how many simulations do we have in each condition, after we removed all k<4 for p-curve etc.?
-tab2 <- res.wide %>% group_by(k, delta, qrpEnv, selProp, tau) %>% select(id, method, kSig_estimate) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=sum(!is.na(kSig_estimate) & kSig_estimate >= 4))
+tab2 <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% select(id, method, kSig_estimate) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=sum(!is.na(kSig_estimate) & kSig_estimate >= 4))
 print(tab2, n=54)
 
 res.wide <- inner_join(res.wide, tab2)
@@ -70,7 +70,8 @@ res.wide.red <- res.wide
 res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 
 ## RULE 2: Ignore 3PSM when it doesn't provide a p-value
-res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
+## TODO: I think this is not necessary with the weightr pacakge
+#res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 
 ## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 
@@ -128,7 +129,7 @@ save(res.wide.red, file="dataFiles/res.wide.red.RData", compress="gzip")
 
 posify <- function(x) {x[x<0] <- 0; return(x)}
 
-summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method) %>% 
+summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, censor, censor.label, tau, tau.label, method) %>% 
 	dplyr::summarise(
 		meanEst		= mean(b0_estimate, na.rm=TRUE),
 		meanEst.pos	= mean(posify(b0_estimate), na.rm=TRUE),

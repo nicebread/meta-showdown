@@ -1,4 +1,51 @@
 # ---------------------------------------------------------------------
+# Estimate the 1PSM with the weightr package, as an alternative ML implementation of pcurve/puniform
+# the single cut point is at .025 (one-sided testing)
+
+#' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
+
+onePSM.McShane.est <- function(t.obs, n1, n2, long=TRUE) {	
+	
+	alpha <- .05
+	
+	# define weights to inflict 100% publication bias for non-sig results
+	w1 <- tryCatch(
+		#weightfunct(d, v, steps = c(0.025, 1), mods = NULL, weights = c(1, 0), fe = TRUE, table = TRUE),
+		estimate.extreme.selection.homogeneous(t.obs, n1, n2, alpha = alpha/2, interval = c(0, 2)),
+		error = function(e) NULL
+	)
+	
+  # initialize as empty df
+  res.wide <- data.frame(
+    method = "1PSM",
+    term = "b0",
+    estimate = NA,
+    std.error = NA,
+    statistic = NA,
+    p.value = NA,
+    conf.low = NA,
+    conf.high = NA
+  )
+  if(!is.null(w1)) {
+    if (all(complete.cases(w1))) {
+      SE <- w1[2]
+      res.wide <- data.frame(
+        method = "1PSM",
+        term = c("b0"),
+        estimate = w1[1],
+        std.error = SE,
+        statistic = NA,
+        p.value = pnorm(abs(w1[1]) / SE, lower.tail=FALSE)*2,
+        conf.low = w1[1] + qnorm(alpha/2)*SE,
+        conf.high = w1[1] + qnorm(1-alpha/2)*SE
+      )
+    }
+  }
+  
+  returnRes(res.wide)
+}
+
+# ---------------------------------------------------------------------
 # Estimate the 3PSM (a single step-cutpoint) with the weightr package (should be equivalent to the McShane implementation)
 # the single cut point is at .025 (one-sided testing)
 # The authors suggest to have >= 4 p-values in each interval. If that is not provided, return NA.
@@ -159,10 +206,16 @@ TPSM.McShane.est <- function(t, n1, n2, long=TRUE) {
 }
 
 # set.seed(5)
-# dat <- dataMA(k = 100, delta = 0.2, tau = 0.2, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.4, qrpEnv = "none")
-# dat <- data.frame(dat)
+# dat <- simMA(k = 30, delta = 0.2, tau = 0.1, empN = TRUE, maxN=500, minN=0, meanN=0, censor="B", qrpEnv = "med")
 # TPSM.McShane.est(t=dat$t, n1=dat$n1, n2=dat$n2)
 # threePSM.est(d=dat$d, v=dat$v)
 # fourPSM.est(d=dat$d, v=dat$v)
+# pcurveEst(t=dat$t, df=dat$N-2, progress=FALSE, long=TRUE, CI=FALSE)
+# puniformEst(t.value=dat$t, n1=dat$n1, n2=dat$n2, skipBarelySignificant=TRUE)
+# onePSM.McShane.est(t.obs=dat$t, n1=dat$n1, n2=dat$n2)
+
 # d = dat$d
 # v=dat$v
+# t.obs = dat$t
+# n1 = dat$n1
+# n2 = dat$n2

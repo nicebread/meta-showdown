@@ -37,6 +37,3 @@ source("MA-methods/7b-selection.meta.functions.R")
 source("MA-methods/7-Selection Models.R")
 #source("MA-methods/8-betaSM.R", chdir=TRUE)	# must chdir=TRUE to load the helper functions in /betaSM_functions
 
-# load empirical sample sizes into workspace
-# TODO: This is not quite elegant; should be in data generating function
-perGrp <- read.csv("Empirical n and ES distributions/perGrp.csv")

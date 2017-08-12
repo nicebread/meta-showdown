@@ -47,7 +47,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   colnames(out) <- c("dPcurve","lbPcurve","ubPcurve")
 
   # define dmin and dmax (the range of parameter search)
-  dmin <- -2
+  dmin <- 0
   dmax <- 4
   
   # pcurve_prep is called first to sort the data into a frame and verify it is compatible
@@ -59,7 +59,10 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   }
   
   # now let's get the pcurve ES estimate
-  out[1, 1] <- optim(par=0, fn=pcurve_loss, pc_data = pc_data, method="BFGS")$par
+  #out[1, 1] <- optim(par=0, fn=pcurve_loss, pc_data = pc_data, method="BFGS")$par
+	
+	# Update from ARawles - limits to positive results (which is intended by pcurve anyway)
+	out[1,1] <- optimize(pcurve_loss,interval = c(0, max(pc_data$d_vals)), pc_data = pc_data)$minimum
   
   if (CI==TRUE) {
 	  warning("CI not properly implemented.")
