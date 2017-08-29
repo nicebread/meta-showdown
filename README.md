@@ -23,7 +23,7 @@ Additional folders:
 
 - [helpers](helpers) contains some helper functions as well as some mostly unstructured supplementary analyses. These are not well documented.
 - [Appendices](Appendices) contains the two appendices
-- [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they hae been implemented for two-group t-tests, and might or might not work for other types of tests.
+- [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they have been implemented for two-group t-tests, and might or might not work for other types of tests.
 - [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, etc.
 
 ## Documentation about the most relevant result files
@@ -36,7 +36,7 @@ Additional folders:
 	- Ignore 3PSM when it doesn't provide a p-value
 	- Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 	
-These files are too large for Github. You can generate them yourself by running [3-resultsFramework.R](3-resultsFramework.R).
+These files are too large for Github. You can generate them yourself by running [3-resultsFramework.R](3-resultsFramework.R). Be aware that doing so requires a lot of RAM!
 
 ### Aggregated data files (in /dataFiles)
 - [summ.RData](dataFiles/summ.RData) / [summ.csv](dataFiles/summ.csv): This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition.
