@@ -1,8 +1,6 @@
 
 
 
-setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown")
-
 load("dataFiles/summ.RData") 
 library(reshape2)
 library(dplyr)
@@ -49,7 +47,7 @@ scoreIt = function(X,metric){
 
 
 
-colorTable = function(metric,sel,positive=F){
+colorTable = function(metric,cens,positive=F){
   
   Delta = c(0,.2,.5,.8)
   Tau = c(0,.2,.4)
@@ -62,13 +60,13 @@ colorTable = function(metric,sel,positive=F){
       k_set=c(10, 30, 60, 100)
       delta_set=Delta[i]
       qrpEnv_set=c("none", "med", "high")
-      selProp_set=sel
+      censor_set=cens
       tau_set=Tau[j]
       
       params <- expand.grid(k=k_set, 
                             delta=delta_set, 
                             qrpEnv=qrpEnv_set, 
-                            selProp=selProp_set, 
+                            censor=censor_set, 
                             tau=tau_set)
       rownames(params) <- NULL
       print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))
@@ -77,7 +75,7 @@ colorTable = function(metric,sel,positive=F){
                      params[, "delta"],
                      params[, "qrpEnv"],
                      params[,"tau"],
-                     params[,"selProp"])
+                     params[,"censor"])
       
       performScore = data.frame(matrix(NA,nrow(params),8))
       colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","3P")
@@ -90,7 +88,7 @@ colorTable = function(metric,sel,positive=F){
           check = summ %>% filter(delta==params[iCon, "delta"],
                                   tau==params[iCon, "tau"],
                                   k==params[iCon, "k"],
-                                  selProp==params[iCon, "selProp"], 
+                                  censor==as.character(params[iCon, "censor"]),  # kludge to deal w/ factor level trickery
                                   qrpEnv==params[iCon, "qrpEnv"],
                                   method != 'Tau',
                                   method != 'fill',
@@ -105,7 +103,7 @@ colorTable = function(metric,sel,positive=F){
           check = summ %>% filter(delta==params[iCon, "delta"],
                                   tau==params[iCon, "tau"],
                                   k==params[iCon, "k"],
-                                  selProp==params[iCon, "selProp"], 
+                                  censor==as.character(params[iCon, "censor"]),  # kludge to deal w/ factor level trickery 
                                   qrpEnv==params[iCon, "qrpEnv"],
                                   method != 'Tau',
                                   method != 'fill',
@@ -273,7 +271,7 @@ colorTable = function(metric,sel,positive=F){
     posif = "_NotPosified"
   }
   
-  plotFileName=paste0(metric,'_sel',sel,posif,'.pdf')
+  plotFileName=paste0("./ColorTablePlots/", metric,'_sel',cens,posif,'.pdf')
   pdf(file=plotFileName,12,10)
   
   print(plotList[[1]],vp = viewport(width = W, height = 0.25, x = .38, y = .0, just = c("right","bottom")))
@@ -310,7 +308,7 @@ colorTable = function(metric,sel,positive=F){
   
 }
 
-setwd("C:/Users/evan.c.carter/Documents/Meta-analysis showdown/ColorTablePlots")
+dir.create("ColorTablePlots")
 
 #not posified
 colorTable('ME',0)
@@ -318,16 +316,15 @@ colorTable('RMSE',0)
 colorTable('cov',0)
 colorTable('pow',0) #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
-colorTable('ME',.6)
-colorTable('RMSE',.6)
-colorTable('cov',.6) 
-colorTable('pow',.6) #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
+colorTable('ME',  "A")
+colorTable('RMSE',"A")
+colorTable('cov', "A") 
+colorTable('pow', "A") #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
 
-
-colorTable('ME',.9)
-colorTable('RMSE',.9)
-colorTable('cov',.9)
-colorTable('pow',.9)  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
+colorTable('ME',  "B")
+colorTable('RMSE',"B")
+colorTable('cov', "B")
+colorTable('pow', "B")  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
 
 
 #posified
@@ -336,14 +333,13 @@ colorTable('RMSE',0,positive=T)
 colorTable('cov',0,positive=T)
 colorTable('pow',0,positive=T)
 
+colorTable('ME',  "A",positive=T)
+colorTable('RMSE',"A",positive=T)
+colorTable('cov', "A",positive=T)
+colorTable('pow', "A",positive=T)
 
-colorTable('ME',.6,positive=T)
-colorTable('RMSE',.6,positive=T)
-colorTable('cov',.6,positive=T)
-colorTable('pow',.6,positive=T)
-
-colorTable('ME',.9,positive=T)
-colorTable('RMSE',.9,positive=T)
-colorTable('cov',.9,positive=T)
-colorTable('pow',.9,positive=T)
+colorTable('ME',  "B",positive=T)
+colorTable('RMSE',"B",positive=T)
+colorTable('cov', "B",positive=T)
+colorTable('pow', "B",positive=T)
 
