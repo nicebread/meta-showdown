@@ -25,6 +25,7 @@ Additional folders:
 - [Appendices](Appendices) contains the two appendices
 - [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they have been implemented for two-group t-tests, and might or might not work for other types of tests.
 - [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, etc.
+- [oldStuff](oldStuff) The file [oldStuff/hilgard_result_table.R](oldStuff/hilgard_result_table.R) is helpful for breaking down the results into more readable parcels. I hope to expand on this soon.
 
 ## Documentation about the most relevant result files
 

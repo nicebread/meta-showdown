@@ -6,7 +6,8 @@ library(ggplot2)
 
 summ <- summ %>% 
   ungroup() %>% 
-  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "pcurve", "puniform", "3PSM"))
+  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "WAAP-WLS", 
+                       "pcurve.evidence", "pcurve", "puniform", "1PSM", "3PSM", "4PSM"))
 
 summ.pcurve.evi <- summ %>% 
   filter(method == "pcurve.evidence") %>% 
@@ -28,15 +29,15 @@ summ2 <- filter(summ, !(method %in% c("pcurve", "pcurve.evidence", "pcurve.lack"
 # No pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
+  select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -46,19 +47,19 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.6)) +
   scale_y_continuous(limits = c(0, 0.6)) +
-  ggtitle("ME.pos for selProp = 0%")
+  ggtitle("ME.pos for censor = 0%")
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
+  select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -68,18 +69,18 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.6)) +
   scale_y_continuous(limits = c(0, 0.6)) +
-  ggtitle("RMSE.pos for selProp = 0%")
+  ggtitle("RMSE.pos for censor = 0%")
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
+  select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -89,12 +90,12 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 1)) +
   scale_y_continuous(limits = c(0, 1)) +
-  ggtitle("H0.reject.pos.rate for selProp = 0%")
+  ggtitle("H0.reject.pos.rate for censor = 0%")
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  filter(qrpEnv == "none", censor == 0) %>% 
+  select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
@@ -102,8 +103,8 @@ summ2 %>%
 # Some pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
   arrange(tau, delta, k) %>% 
@@ -111,15 +112,15 @@ summ2 %>%
 
 # effects of tau
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
   arrange(delta, k, tau) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -129,19 +130,19 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.55)) +
   scale_y_continuous(limits = c(0, 0.55)) +
-  ggtitle("ME.pos for selProp = 60%")
+  ggtitle("ME.pos for censor = A")
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -151,18 +152,18 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.55)) +
   scale_y_continuous(limits = c(0, 0.55)) +
-  ggtitle("RMSE.pos for selProp = 60%")
+  ggtitle("RMSE.pos for censor = A")
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -172,12 +173,12 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 1)) +
   scale_y_continuous(limits = c(0, 1)) +
-  ggtitle("H0.reject.pos.rate for selProp = 60%")
+  ggtitle("H0.reject.pos.rate for censor = A")
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.6) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  filter(qrpEnv == "none", censor == "A") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
@@ -185,15 +186,15 @@ summ2 %>%
 # Strong pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, ME.pos) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -203,27 +204,27 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.6)) +
   scale_y_continuous(limits = c(0, 0.6)) +
-  ggtitle("ME.pos for selProp = 90%")
+  ggtitle("ME.pos for censor = B")
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, RMSE.pos) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
   arrange(reMA - `3PSM`) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -233,18 +234,18 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 0.6)) +
   scale_y_continuous(limits = c(0, 0.6)) +
-  ggtitle("RMSE.pos for selProp = 90%")
+  ggtitle("RMSE.pos for censor = B")
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -254,26 +255,26 @@ summ2 %>%
   facet_wrap(~method) +
   scale_x_continuous(limits = c(0, 1)) +
   scale_y_continuous(limits = c(0, 1)) +
-  ggtitle("H0.reject.pos.rate for selProp = 90%")
+  ggtitle("H0.reject.pos.rate for censor = B")
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 # OK, 3PSM coverage isn't great. but aren't the alternatives even worse?
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, coverage) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
   select(k:method, coverage) %>% 
   spread(key = method, value = coverage) %>%
   gather(key = method, value = coverage, PEESE.lm:TF) %>% 
@@ -287,7 +288,7 @@ summ2 %>%
 
 # How often does 3PSM coverage outperform other coverage?
 superiority <- summ2 %>%   
-  filter(qrpEnv == "none", selProp == 0.9) %>% 
+  filter(qrpEnv == "none", censor == "B") %>% 
   select(k:method, coverage) %>% 
   spread(key = method, value = coverage) %>%
   gather(key = method, value = coverage, PEESE.lm:TF) %>% 
@@ -296,8 +297,8 @@ with(superiority, table(superior3PSM, method))
 
 # effect of QRPs on false positives
 summ2 %>%   
-  filter(delta == 0, selProp == 0.9) %>% 
-  select(k, delta, tau, qrpEnv, selProp, method, H0.reject.pos.rate) %>% 
+  filter(delta == 0, censor == "B") %>% 
+  select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
@@ -318,7 +319,7 @@ summ <- summ %>%
 summ2 <- summ %>% 
   ungroup() %>% 
   select(-condition, -k.label, -delta.label, -qrp.label,
-         -selProp.label, -tau.label, -meanEst) %>% 
+         -censor.label, -tau.label, -meanEst) %>% 
   filter(!(method %in% c("pcurve.evidence", "pcurve.lack", "pcurve.hack")))
 
 # maybe comparison against RE is useful, e.g. method - RE difference in ME, RMSE, etc?
@@ -344,12 +345,12 @@ summ.ci <- summ2 %>%
   mutate_each(funs(round(., 3)), reMA:`3PSM`)
 
 # How should I filter these? How should I arrange these?
-# Could start by filtering for some delta, selProp, tau
+# Could start by filtering for some delta, censor, tau
 
 # No pub bias and no QRP ----
 
 summ.me %>% 
-  filter(selProp == 0,
+  filter(censor == 0,
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -362,7 +363,7 @@ summ.me %>%
 # 3PSM is perfectly unbiased
 
 summ.rmse %>% 
-  filter(selProp == 0,
+  filter(censor == 0,
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -373,17 +374,17 @@ summ.rmse %>%
 # TopN loses efficiency, of course
 # 3PSM's loss of efficiency is not bad -- more efficient than TF
 
-# selProp = .6, no QRP ----
+# censor = .6, no QRP ----
 # Bias
 summ.me %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   arrange(delta, k, tau) %>% 
   View
 
 # PET and tau
 summ.me %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PET.lm)) +
   geom_point() +
@@ -392,7 +393,7 @@ summ.me %>%
 
 # PEESE and tau
 summ.me %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PEESE.lm)) +
   geom_point() +
@@ -401,7 +402,7 @@ summ.me %>%
 
 # PETPEESE and tau
 summ.me %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PETPEESE.lm)) +
   geom_point() +
@@ -410,14 +411,14 @@ summ.me %>%
 
 # RMSE
 summ.rmse %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   arrange(delta, tau, k) %>% 
   View
 
 # metaregression vs naive
 summ.rmse %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -427,7 +428,7 @@ summ.rmse %>%
 
 # loss of efficiency from TopN vs naive
 summ.rmse %>% 
-  filter(selProp == .6,  
+  filter(censor == "A",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -435,14 +436,14 @@ summ.rmse %>%
   facet_grid(delta~tau) +
   geom_hline(yintercept = 0)
 
-# does moving from selProp .6 to .9 change bias of techniques? ----
+# does moving from censor .6 to .9 change bias of techniques? ----
 summ.me %>% 
-  filter(selProp %in% c(0.6, 0.9),
+  filter(censor %in% c(0.6, 0.9),
          qrpEnv == 'none',
          tau == 0) %>% 
   gather(key = method, value = bias, reMA, topN.fixed, 
          TF, puniform, `3PSM`, PETPEESE.lm) %>% 
-  ggplot(aes(x = as.factor(selProp), y = bias, col = as.factor(delta))) +
+  ggplot(aes(x = as.factor(censor), y = bias, col = as.factor(delta))) +
   geom_point() +
   facet_wrap(~method)
 # just makes bias moreso in reMA, TF, topN,
@@ -450,25 +451,25 @@ summ.me %>%
 # actually helps pcurve/uniform
 
 summ.rmse %>% 
-  filter(selProp %in% c(0.6, 0.9),
+  filter(censor %in% c(0.6, 0.9),
          qrpEnv == 'none',
          tau == 0) %>% 
   gather(key = method, value = bias, reMA, topN.fixed, 
          TF, puniform, `3PSM`, PETPEESE.lm) %>% 
-  ggplot(aes(x = as.factor(selProp), y = bias, col = as.factor(delta))) +
+  ggplot(aes(x = as.factor(censor), y = bias, col = as.factor(delta))) +
   geom_jitter(height = 0, width = .1) +
   facet_wrap(~method)
 
-# selProp == .9, no QRP ---
+# censor == "B", no QRP ---
 summ.me %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   arrange(delta, k, tau) %>% 
   View
 
 # PET and tau
 summ.me %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PET.lm)) +
   geom_point() +
@@ -477,7 +478,7 @@ summ.me %>%
 
 # PEESE and tau
 summ.me %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PEESE.lm)) +
   geom_point() +
@@ -486,7 +487,7 @@ summ.me %>%
 
 # PETPEESE and tau
 summ.me %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PETPEESE.lm)) +
   geom_point() +
@@ -495,7 +496,7 @@ summ.me %>%
 
 # And the rest
 summ.me %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   gather(key = method, value = bias, reMA, topN.fixed, TF, puniform, `3PSM`, PETPEESE.lm) %>% 
   #mutate(method = relevel(method, "reMA")) %>% 
@@ -506,14 +507,14 @@ summ.me %>%
 
 # RMSE
 summ.rmse %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   arrange(delta, tau, k) %>% 
   View
 
 # metaregression vs naive
 summ.rmse %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -523,7 +524,7 @@ summ.rmse %>%
 
 # loss of efficiency from TopN vs naive
 summ.rmse %>% 
-  filter(selProp == .9,  
+  filter(censor == "B",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -532,11 +533,11 @@ summ.rmse %>%
   geom_hline(yintercept = 0)
 
 
-# delta = .5, selProp = .6, tau = .2. ----
+# delta = .5, censor = .6, tau = .2. ----
 # What's influence of k, QRP? 
 summ.me %>% 
   filter(delta == .5, 
-         selProp == .6,
+         censor == "A",
          tau == .2) %>% 
   View
 # RE actually less biased w/ more QRP
@@ -549,7 +550,7 @@ summ.me %>%
 
 summ.rmse %>% 
   filter(delta == .5, 
-         selProp == .6,
+         censor == "A",
          tau == .2) %>% 
   View
 # TF has better RMSE than RE
@@ -563,17 +564,17 @@ summ.rmse %>%
 #   bias/variance tradeoff doesn't break even until k = 30, profit until k = 60
 #   even then, downward bias caused by QRPs is quite bad!
 
-# delta = 0, tau = .2, selProp = .6 ----
+# delta = 0, tau = .2, censor = .6 ----
 # Is tau = .2 appropriate for delta = 0? Maybe not
 summ.me %>% 
   filter(delta == 0, 
-         selProp == .6,
+         censor == "A",
          tau == .2) %>% 
   View
 
 summ.rmse %>% 
   filter(delta == .5, 
-         selProp == .6,
+         censor == "A",
          tau == .2) %>% 
   View
 
@@ -582,7 +583,7 @@ summ.rmse %>%
 summ.me %>% 
   filter(delta == 0, 
          tau == 0) %>% 
-  arrange(selProp, qrpEnv) %>% 
+  arrange(censor, qrpEnv) %>% 
   View
 # TF fails miserably at adjusting to zero
 # PET adjusts to zero, overadjusts when QRPs present
@@ -595,7 +596,7 @@ summ.me %>%
 
 summ.rmse %>% 
   filter(delta == 0, 
-         selProp == .6,
+         censor == "A",
          tau == 0) %>% 
   View
 # TF is less biased than, and roughly as efficient as, RE, so it's an improvement
@@ -612,18 +613,18 @@ summ.rmse %>%
 # Under what conditions does PEESE outperform reMA, TF, puniform, topN?
 summ.me %>% 
   filter(abs(PEESE.lm) < abs(TF), abs(PEESE.lm) < abs(reMA)) %>% 
-  arrange(selProp, delta) %>% 
+  arrange(censor, delta) %>% 
   View()
 # Casual inspection, may not apply to all cases
 # PEESE is less biased than reMA and TF when 
-# 1) The effect size is small (d =< .5) and there is pub bias (selProp >= .6)
-#     a) PEESE's advantage increases with selProp, decreases with delta and QRP
+# 1) The effect size is small (d =< .5) and there is pub bias (censor >= .6)
+#     a) PEESE's advantage increases with censor, decreases with delta and QRP
 summ.rmse %>% 
   filter(abs(PEESE.lm) < abs(TF), abs(PEESE.lm) < abs(reMA)) %>% 
-  arrange(selProp, delta) %>% 
+  arrange(censor, delta) %>% 
   View()
 # PEESE has lower RMSE than reMA and TF when when its bias is small, 
-# e.g. when the advantage of accounting for selProp outweights downward bias of 
+# e.g. when the advantage of accounting for censor outweights downward bias of 
 # high delta or QRP
 # I guess it does not perform well at delta = .8
 # Seems to always guess a smallish d.
@@ -647,7 +648,7 @@ ggplot(summ.me, aes(x = abs(PET.lm), y = abs(PET.rma), col = as.factor(delta))) 
 ggplot(summ.me, aes(x = abs(PET.lm), y = abs(PET.rma), col = as.factor(delta))) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1) +
-  facet_grid(selProp~tau)
+  facet_grid(censor~tau)
 # Difference between PET.lm and PET.rma seems to depend on tau
 
 ggplot(summ.me, aes(x = PEESE.lm, y = PEESE.rma)) +
@@ -711,13 +712,13 @@ summ %>%
 
 # what does posification do to bias?
 summ.me.pos %>% 
-  filter(selProp == 0,
+  filter(censor == 0,
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
 summ.me.pos %>% 
   gather(key = key, value = ME.pos, reMA:`3PSM`) %>% 
-  filter(selProp == 0, qrpEnv == "none", 
+  filter(censor == 0, qrpEnv == "none", 
          key %in% c("3PSM", "pcurve", "puniform", "reMA", "TF")) %>% 
   ggplot(aes(x = key, y = ME.pos, col = key)) +
   geom_point() +
@@ -729,7 +730,7 @@ summ.me.pos %>%
 # 95% CI coverage ----
 # No pub bias and no QRP
 summ.ci %>% 
-  filter(selProp == 0,
+  filter(censor == 0,
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -745,7 +746,7 @@ summ.ci %>%
 
 # 60% pub bias and no QRP
 summ.ci %>% 
-  filter(selProp == 0.6,
+  filter(censor == "A",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -760,7 +761,7 @@ summ.ci %>%
 
 # 90% pub bias and no QRP
 summ.ci %>% 
-  filter(selProp == 0.9,
+  filter(censor == "B",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -796,8 +797,8 @@ summ.me %>%
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = 0, col = "grey40") +
   geom_vline(xintercept = 0, col = "grey40") +
-  #facet_wrap(~selProp) +
-  facet_grid(qrpEnv~selProp) +
+  #facet_wrap(~censor) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Bias, PET")
 summ.me %>%
   #filter(qrpEnv == "none") %>%
@@ -806,7 +807,7 @@ summ.me %>%
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = 0, col = "grey40") +
   geom_vline(xintercept = 0, col = "grey40") +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Bias, PEESE")
 summ.me %>%
   #filter(qrpEnv == "none") %>%
@@ -815,7 +816,7 @@ summ.me %>%
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = 0, col = "grey40") +
   geom_vline(xintercept = 0, col = "grey40") +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Bias, PETPEESE")
 
 # RMSE
@@ -824,22 +825,22 @@ summ.rmse %>%
   ggplot(aes(x = PET.lm, y = PET.rma)) + 
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("RMSE, PET")
 summ.rmse %>%
   #filter(qrpEnv == "none") %>%
   ggplot(aes(x = PEESE.lm, y = PEESE.rma)) + 
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("RMSE, PEESE")
 summ.rmse %>%
   #filter(qrpEnv == "none") %>%
   ggplot(aes(x = PETPEESE.lm, y = PETPEESE.rma)) + 
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
-  facet_grid(qrpEnv~selProp) +
-  #facet_wrap(~selProp) +
+  facet_grid(qrpEnv~censor) +
+  #facet_wrap(~censor) +
   ggtitle("RMSE, PETPEESE")
 
 # Coverage probability
@@ -851,7 +852,7 @@ summ.ci %>%
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = .95) +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Coverage probability, PET")
 summ.ci %>%
   #filter(qrpEnv == "none") %>%
@@ -859,7 +860,7 @@ summ.ci %>%
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = .95) +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Coverage probability, PEESE")
 summ.ci %>%
   #filter(qrpEnv == "none") %>%
@@ -867,6 +868,6 @@ summ.ci %>%
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
   geom_hline(yintercept = .95) +
-  facet_grid(qrpEnv~selProp) +
+  facet_grid(qrpEnv~censor) +
   ggtitle("Coverage probability, PETPEESE")
 }
