@@ -32,8 +32,13 @@ theme_metashowdown <- theme(
 )
 
 
-summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS")) %>% 
-  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS")))
+#summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS")) %>% 
+#  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS")))
+
+# reduced set for revision
+	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+	  mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
+
 
 
 # prepare extra data.frame for the number of successful computation out of 1000 simulations
@@ -73,9 +78,9 @@ buildFacet <- function(dat, title) {
 }
 
 
-plotA <- buildFacet(dat = summ2 %>% filter(censor=="0", delta %in% DELTAS), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = summ2 %>% filter(censor=="A", delta %in% DELTAS), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = summ2 %>% filter(censor=="B", delta %in% DELTAS), bquote("(C) strong publication bias"))
+plotA <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
+plotB <- buildFacet(dat = summ2 %>% filter(censor=="medium", delta %in% DELTAS), bquote("(B) medium publication bias"))
+plotC <- buildFacet(dat = summ2 %>% filter(censor=="strong", delta %in% DELTAS), bquote("(C) strong publication bias"))
 
 
 # ---------------------------------------------------------------------
@@ -91,7 +96,7 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]] 
   return(legend)} 
 
-legOnlyPlot = summ2 %>% filter(censor=="0", delta %in% DELTAS) %>%
+legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
   ggplot(aes(x=factor(k), y=meanEst.pos, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
   geom_point() +
   coord_flip(ylim=YLIM) +
@@ -114,6 +119,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF
 
-pdf("Plots/Fig3-Estimation.pdf", width=15, height=22)
+pdf("Plots/EstimationPlot.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()

@@ -61,7 +61,7 @@ for (f in simDatFiles) {
 			# analyze with all MA techniques
 			res0 <- rbind(
 				RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
-				PETPEESE.est(MAdat$d, MAdat$v, long=TRUE),
+				PETPEESE.est(MAdat$d, MAdat$v, PP.test = "one-sided", long=TRUE),
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),

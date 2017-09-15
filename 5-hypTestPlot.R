@@ -17,9 +17,15 @@ load(file="dataFiles/summ.RData")
 H1 <- 0.5
 
 # select only some methods for displaying
-hyp.sel <-  summ %>% 
-  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
-  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM"))) %>% 
+#hyp.sel <-  summ %>% 
+#  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
+#  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM"))) %>% 
+#	ungroup()
+
+# reduced set for revision
+hyp.sel <-  summ %>%
+ filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>%
+ mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS"))) %>%
 	ungroup()
 	
 	
@@ -76,9 +82,9 @@ buildFacet <- function(dat, title) {
   return(PLOT)	
 }
 
-plotA <- buildFacet(dat = hyp.wide %>% filter(censor=="0"), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = hyp.wide %>% filter(censor=="A"), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = hyp.wide %>% filter(censor=="B"), bquote("(C) strong publication bias"))
+plotA <- buildFacet(dat = hyp.wide %>% filter(censor=="none"), bquote("(A) no publication bias"))
+plotB <- buildFacet(dat = hyp.wide %>% filter(censor=="medium"), bquote("(B) medium publication bias"))
+plotC <- buildFacet(dat = hyp.wide %>% filter(censor=="strong"), bquote("(C) strong publication bias"))
 
 
 # ---------------------------------------------------------------------
@@ -111,6 +117,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF of plot
 
-pdf("Plots/Fig2-HypothesisTest.pdf", width=15, height=22)
+pdf("Plots/HypothesisTestPlot.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
 dev.off()

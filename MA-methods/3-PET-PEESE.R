@@ -1,5 +1,9 @@
 #' @param long Should the results be returned in long format?
-PETPEESE.est <- function(d, v, PP.test = c("two-sided", "one-sided"), long=TRUE) {
+#' @param PP.test "one-sided" or "two-sided" (Stanley's default = one-sided)
+
+# estimator_type: 1 = WAAP; 2 = WLS; 3 = PET; 4 = PEESE
+
+PETPEESE.est <- function(d, v, PP.test = "one-sided", long=TRUE) {
   
   PP.test <- match.arg(PP.test, PP.test)
   
@@ -46,10 +50,13 @@ PETPEESE.est <- function(d, v, PP.test = c("two-sided", "one-sided"), long=TRUE)
   usePEESE.lm <- ifelse(lm.p.value < p.crit & lm.est > 0, TRUE, FALSE)
   usePEESE.rma <- ifelse(rma.p.value < p.crit & rma.est > 0, TRUE, FALSE)
     
-  res <- rbind(res, 
-		data.frame(method="PETPEESE.lm", if (usePEESE.lm == FALSE) {tidyLM(PET.lm)} else {tidyLM(PEESE.lm)}),
-		data.frame(method="PETPEESE.rma", if (usePEESE.rma == FALSE) {tidyRMA(PET.rma)} else {tidyRMA(PEESE.rma)})
-	  )
+  res <- rbind(res,
+		data.frame(method="PETPEESE.lm", if (usePEESE.lm == TRUE) {tidyLM(PEESE.lm)} else {tidyLM(PET.lm)}),
+		data.frame(method="PETPEESE.rma", if (usePEESE.rma == TRUE) {tidyRMA(PEESE.rma)} else {tidyRMA(PET.rma)})
+	)
+	
+	res <- plyr::rbind.fill(res, data.frame(method="PETPEESE.lm", term="estimator", type=ifelse(usePEESE.lm == TRUE, 4, 3)))	
+	res <- plyr::rbind.fill(res, data.frame(method="PETPEESE.rma", term="estimator", type=ifelse(usePEESE.rma == TRUE, 4, 3)))	
 
   returnRes(res, long)
 }

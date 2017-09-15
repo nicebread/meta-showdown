@@ -44,8 +44,10 @@ head(res.wide, 16)
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
 res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
-res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("censor = ", unique(res.wide$censor)))
+res.wide$censor <- factor(res.wide$censor, levels=c("0", "A", "B"), labels=c("none", "medium", "strong"))
+res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("Publication bias = ", unique(res.wide$censor)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
+res.wide$estimator_type <- factor(res.wide$estimator_type, levels=c(1, 2, 3, 4), labels=c("WAAP", "WLS", "PET", "PEESE"))
 
 # sanity check: each condition should have 1000 sims
 tab <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
@@ -67,7 +69,7 @@ save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
 res.wide.red <- res.wide
 
 ## RULE 1: set estimate of p-curve and p-uniform with < 4 significant studies to NA
-res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
+#res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 
 ## RULE 2: Ignore 3PSM when it doesn't provide a p-value
 ## TODO: I think this is not necessary with the weightr pacakge

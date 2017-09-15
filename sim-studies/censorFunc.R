@@ -7,21 +7,24 @@ clamp <- function(x) {if (x > 1) x=1; if (x < 0) x = 0; return(x)}
 
 censor <- function(pObs, direction, posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0.05){
 	
-  if(direction > 0 & pObs < .05){       #right direction, sig
+	# ---------------------------------------------------------------------
+	# Correct direction fo effect
+	
+  if (direction > 0 & pObs < .05){       #right direction, sig
     pubProb = 1
-	#}else if(direction > 0 & pObs < .05){ #right direction, standard sig
-    #pubProb = .98
-  }else if(direction > 0 & pObs >= .05 & pObs <= .1){ #right direction, trending
+  } else if(direction > 0 & pObs >= .05 & pObs < .1){ #right direction, trending
     pubProb = 1-((1-posSign_NS_baseRate)/.05)*(pObs-.05)
-  }else if (direction > 0 & pObs > .1){	# right direction; non-significant (p > .1)
+  } else if (direction > 0 & pObs >= .1){	# right direction; non-significant (p > .1)
     pubProb =posSign_NS_baseRate
-  }else if(direction <= 0 & pObs < .01){	# wrong direction, highly sig.
+				
+	# ---------------------------------------------------------------------
+	# Wrong direction of effect	
+  } else if(direction <= 0 & pObs < .01){	# wrong direction, highly sig.
     pubProb= 1
-  }else if(direction <= 0 & pObs >= .01 & pObs < .05){ # wrong direction, standard sig.
+  } else if(direction <= 0 & pObs >= .01 & pObs < .05){ # wrong direction, standard sig.
     pubProb= 1-((1-negSign_NS_baseRate)/.04)*(pObs-.01)
-  }else if(direction <= 0 & pObs >= .05){	# wrong direction, non-sig.
+  } else if(direction <= 0 & pObs >= .05){	# wrong direction, non-sig.
     pubProb=negSign_NS_baseRate
   }
   return(pubProb)
 }
-

@@ -103,7 +103,7 @@ summ2 %>%
 # Some pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
@@ -112,7 +112,7 @@ summ2 %>%
 
 # effects of tau
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
@@ -120,7 +120,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -134,7 +134,7 @@ summ2 %>%
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
@@ -142,7 +142,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -156,14 +156,14 @@ summ2 %>%
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -177,7 +177,7 @@ summ2 %>%
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "A") %>% 
+  filter(qrpEnv == "none", censor == "medium") %>% 
   select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
@@ -186,7 +186,7 @@ summ2 %>%
 # Strong pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
@@ -194,7 +194,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -208,7 +208,7 @@ summ2 %>%
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
@@ -216,7 +216,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
@@ -224,7 +224,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -238,14 +238,14 @@ summ2 %>%
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -259,7 +259,7 @@ summ2 %>%
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
@@ -267,14 +267,14 @@ summ2 %>%
 
 # OK, 3PSM coverage isn't great. but aren't the alternatives even worse?
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k:method, coverage) %>% 
   spread(key = method, value = coverage) %>%
   gather(key = method, value = coverage, PEESE.lm:TF) %>% 
@@ -288,7 +288,7 @@ summ2 %>%
 
 # How often does 3PSM coverage outperform other coverage?
 superiority <- summ2 %>%   
-  filter(qrpEnv == "none", censor == "B") %>% 
+  filter(qrpEnv == "none", censor == "strong") %>% 
   select(k:method, coverage) %>% 
   spread(key = method, value = coverage) %>%
   gather(key = method, value = coverage, PEESE.lm:TF) %>% 
@@ -297,7 +297,7 @@ with(superiority, table(superior3PSM, method))
 
 # effect of QRPs on false positives
 summ2 %>%   
-  filter(delta == 0, censor == "B") %>% 
+  filter(delta == 0, censor == "strong") %>% 
   select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
@@ -377,14 +377,14 @@ summ.rmse %>%
 # censor = .6, no QRP ----
 # Bias
 summ.me %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   arrange(delta, k, tau) %>% 
   View
 
 # PET and tau
 summ.me %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PET.lm)) +
   geom_point() +
@@ -393,7 +393,7 @@ summ.me %>%
 
 # PEESE and tau
 summ.me %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PEESE.lm)) +
   geom_point() +
@@ -402,7 +402,7 @@ summ.me %>%
 
 # PETPEESE and tau
 summ.me %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PETPEESE.lm)) +
   geom_point() +
@@ -411,14 +411,14 @@ summ.me %>%
 
 # RMSE
 summ.rmse %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   arrange(delta, tau, k) %>% 
   View
 
 # metaregression vs naive
 summ.rmse %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -428,7 +428,7 @@ summ.rmse %>%
 
 # loss of efficiency from TopN vs naive
 summ.rmse %>% 
-  filter(censor == "A",  
+  filter(censor == "medium",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -460,16 +460,16 @@ summ.rmse %>%
   geom_jitter(height = 0, width = .1) +
   facet_wrap(~method)
 
-# censor == "B", no QRP ---
+# censor == "strong", no QRP ---
 summ.me %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   arrange(delta, k, tau) %>% 
   View
 
 # PET and tau
 summ.me %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PET.lm)) +
   geom_point() +
@@ -478,7 +478,7 @@ summ.me %>%
 
 # PEESE and tau
 summ.me %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PEESE.lm)) +
   geom_point() +
@@ -487,7 +487,7 @@ summ.me %>%
 
 # PETPEESE and tau
 summ.me %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   ggplot(aes(x = k, y = PETPEESE.lm)) +
   geom_point() +
@@ -496,7 +496,7 @@ summ.me %>%
 
 # And the rest
 summ.me %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   gather(key = method, value = bias, reMA, topN.fixed, TF, puniform, `3PSM`, PETPEESE.lm) %>% 
   #mutate(method = relevel(method, "reMA")) %>% 
@@ -507,14 +507,14 @@ summ.me %>%
 
 # RMSE
 summ.rmse %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   arrange(delta, tau, k) %>% 
   View
 
 # metaregression vs naive
 summ.rmse %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -524,7 +524,7 @@ summ.rmse %>%
 
 # loss of efficiency from TopN vs naive
 summ.rmse %>% 
-  filter(censor == "B",  
+  filter(censor == "strong",  
          qrpEnv == "none") %>% 
   gather(key = method, value = rmse, TF, topN.fixed, PETPEESE.lm, reMA) %>% 
   ggplot(aes(x = k, y = rmse, col = method)) +
@@ -537,7 +537,7 @@ summ.rmse %>%
 # What's influence of k, QRP? 
 summ.me %>% 
   filter(delta == .5, 
-         censor == "A",
+         censor == "medium",
          tau == .2) %>% 
   View
 # RE actually less biased w/ more QRP
@@ -550,7 +550,7 @@ summ.me %>%
 
 summ.rmse %>% 
   filter(delta == .5, 
-         censor == "A",
+         censor == "medium",
          tau == .2) %>% 
   View
 # TF has better RMSE than RE
@@ -568,13 +568,13 @@ summ.rmse %>%
 # Is tau = .2 appropriate for delta = 0? Maybe not
 summ.me %>% 
   filter(delta == 0, 
-         censor == "A",
+         censor == "medium",
          tau == .2) %>% 
   View
 
 summ.rmse %>% 
   filter(delta == .5, 
-         censor == "A",
+         censor == "medium",
          tau == .2) %>% 
   View
 
@@ -596,7 +596,7 @@ summ.me %>%
 
 summ.rmse %>% 
   filter(delta == 0, 
-         censor == "A",
+         censor == "medium",
          tau == 0) %>% 
   View
 # TF is less biased than, and roughly as efficient as, RE, so it's an improvement
@@ -746,7 +746,7 @@ summ.ci %>%
 
 # 60% pub bias and no QRP
 summ.ci %>% 
-  filter(censor == "A",
+  filter(censor == "medium",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -761,7 +761,7 @@ summ.ci %>%
 
 # 90% pub bias and no QRP
 summ.ci %>% 
-  filter(censor == "B",
+  filter(censor == "strong",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()

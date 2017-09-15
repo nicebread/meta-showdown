@@ -1,6 +1,3 @@
-
-
-
 load("dataFiles/summ.RData") 
 library(reshape2)
 library(dplyr)
@@ -311,35 +308,35 @@ colorTable = function(metric,cens,positive=F){
 dir.create("ColorTablePlots")
 
 #not posified
-colorTable('ME',0)
-colorTable('RMSE',0)
-colorTable('cov',0)
-colorTable('pow',0) #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
+colorTable('ME', "none")
+colorTable('RMSE', "none")
+colorTable('cov', "none")
+colorTable('pow', "none") #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
-colorTable('ME',  "A")
-colorTable('RMSE',"A")
-colorTable('cov', "A") 
-colorTable('pow', "A") #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
+colorTable('ME',  "medium")
+colorTable('RMSE',"medium")
+colorTable('cov', "medium") 
+colorTable('pow', "medium") #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
 
-colorTable('ME',  "B")
-colorTable('RMSE',"B")
-colorTable('cov', "B")
-colorTable('pow', "B")  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
+colorTable('ME',  "strong")
+colorTable('RMSE',"strong")
+colorTable('cov', "strong")
+colorTable('pow', "strong")  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
 
 
 #posified
-colorTable('ME',0,positive=T)
-colorTable('RMSE',0,positive=T)
-colorTable('cov',0,positive=T)
-colorTable('pow',0,positive=T)
+colorTable('ME', "none", positive=T)
+colorTable('RMSE', "none", positive=T)
+colorTable('cov', "none", positive=T)
+colorTable('pow', "none", positive=T)
 
-colorTable('ME',  "A",positive=T)
-colorTable('RMSE',"A",positive=T)
-colorTable('cov', "A",positive=T)
-colorTable('pow', "A",positive=T)
+colorTable('ME',  "medium", positive=T)
+colorTable('RMSE',"medium", positive=T)
+colorTable('cov', "medium", positive=T)
+colorTable('pow', "medium", positive=T)
 
-colorTable('ME',  "B",positive=T)
-colorTable('RMSE',"B",positive=T)
-colorTable('cov', "B",positive=T)
-colorTable('pow', "B",positive=T)
+colorTable('ME',  "strong", positive=T)
+colorTable('RMSE',"strong", positive=T)
+colorTable('cov', "strong", positive=T)
+colorTable('pow', "strong", positive=T)
 

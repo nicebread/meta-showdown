@@ -1,5 +1,9 @@
-# Weighted least squares estimator: Stanley, T. D., & Doucouliagos, H. (2015). Neither fixed nor random: weighted least squares meta-analysis. Statistics in Medicine, 34(13), 2116–2127. http://doi.org/10.1002/sim.6481
+# estimator_type: 1 = WAAP; 2 = WLS; 3 = PET; 4 = PEESE
 
+# ---------------------------------------------------------------------
+# WLS estimator
+
+# Weighted least squares estimator: Stanley, T. D., & Doucouliagos, H. (2015). Neither fixed nor random: weighted least squares meta-analysis. Statistics in Medicine, 34(13), 2116–2127. http://doi.org/10.1002/sim.6481
 WLS.est <- function(d, v, long=TRUE) {
   se <- sqrt(v)
   d.precision <- 1/se
@@ -18,6 +22,10 @@ WLS.est <- function(d, v, long=TRUE) {
   )
   returnRes(res, long)
 }
+
+
+# ---------------------------------------------------------------------
+# WAAP-WLS estimator
 
 # Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. A. (2017). Finding the power to reduce publication bias. Statistics in Medicine, 54(3), 30–19. http://doi.org/10.1002/sim.7228
 
