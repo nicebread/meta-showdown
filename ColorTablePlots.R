@@ -43,8 +43,8 @@ scoreIt = function(X,metric){
 
 
 
-
-colorTable = function(metric,cens,positive=F){
+#selectedMethods = c("RE", "TF", "PT", "PE", "PP", "PC", "PU", "3P")
+colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "TF", "PP", "PC", "PU", "3P", "WA")){
   
   Delta = c(0,.2,.5,.8)
   Tau = c(0,.2,.4)
@@ -71,11 +71,11 @@ colorTable = function(metric,cens,positive=F){
       conLab = paste(params[, "k"],
                      params[, "delta"],
                      params[, "qrpEnv"],
-                     params[,"tau"],
-                     params[,"censor"])
+                     params[, "tau"],
+                     params[, "censor"])
       
-      performScore = data.frame(matrix(NA,nrow(params),8))
-      colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","3P")
+      performScore = data.frame(matrix(NA,nrow(params),9))
+      colnames(performScore)=c("RE","TF","PT","PE","PP","PC","PU","3P", "WA")
       pb = txtProgressBar(min = 1, max = nrow(params), style = 3)
       
       for(iCon in 1:nrow(params)){
@@ -114,7 +114,7 @@ colorTable = function(metric,cens,positive=F){
         }
         
         
-        if(positive==T){
+        if(positive==TRUE){
           condition = data.frame(check$delta,
                                  check$tau,
                                  check$k,
@@ -141,9 +141,9 @@ colorTable = function(metric,cens,positive=F){
         
         #Make sure each method is represented. If not, leave as NA.
         if(metric=='pow'){
-          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve.evidence","puniform","3PSM")        
+          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve.evidence","puniform","3PSM", "WAAP-WLS")        
         }else{
-          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM")        
+          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM", "WAAP-WLS")        
         }
         
         for(iMethod in 1:length(methodNames2)){
@@ -187,6 +187,10 @@ colorTable = function(metric,cens,positive=F){
   getPalette = colorRampPalette(brewer.pal(3, 'Blues'))
   brkColors = getPalette(colorCnt)
   
+	# reduce to relevant methods
+	finalOut <- finalOut %>% filter(variable %in% selectedMethods)
+	
+	
   #Break it up by each to-be-ploted data set
   
   plotList = list()
@@ -195,8 +199,7 @@ colorTable = function(metric,cens,positive=F){
   for(i in 1:length(Delta)){
     for(j in 1:length(Tau)){
       
-      toPlot = subset(finalOut,
-                      finalOut$Delta==i & finalOut$Tau==j)
+      toPlot = subset(finalOut, finalOut$Delta==i & finalOut$Tau==j)
       
       plot = ggplot(toPlot, aes(variable, id)) + 
         geom_tile(aes(fill = brks), colour = "white") + 
@@ -325,18 +328,18 @@ colorTable('pow', "strong")  #p-curve and p-uniform will be NA. See note in 3-re
 
 
 #posified
-colorTable('ME', "none", positive=T)
-colorTable('RMSE', "none", positive=T)
-colorTable('cov', "none", positive=T)
-colorTable('pow', "none", positive=T)
+colorTable('ME', "none", positive=TRUE)
+colorTable('RMSE', "none", positive=TRUE)
+colorTable('cov', "none", positive=TRUE)
+colorTable('pow', "none", positive=TRUE)
 
-colorTable('ME',  "medium", positive=T)
-colorTable('RMSE',"medium", positive=T)
-colorTable('cov', "medium", positive=T)
-colorTable('pow', "medium", positive=T)
+colorTable('ME',  "medium", positive=TRUE)
+colorTable('RMSE',"medium", positive=TRUE)
+colorTable('cov', "medium", positive=TRUE)
+colorTable('pow', "medium", positive=TRUE)
 
-colorTable('ME',  "strong", positive=T)
-colorTable('RMSE',"strong", positive=T)
-colorTable('cov', "strong", positive=T)
-colorTable('pow', "strong", positive=T)
+colorTable('ME',  "strong", positive=TRUE)
+colorTable('RMSE',"strong", positive=TRUE)
+colorTable('cov', "strong", positive=TRUE)
+colorTable('pow', "strong", positive=TRUE)
 

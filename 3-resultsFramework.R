@@ -50,7 +50,7 @@ res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=p
 res.wide$estimator_type <- factor(res.wide$estimator_type, levels=c(1, 2, 3, 4), labels=c("WAAP", "WLS", "PET", "PEESE"))
 
 # sanity check: each condition should have 1000 sims
-tab <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
+tab <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% dplyr::select(id) %>% dplyr::summarise(n.MA=length(unique(id)))
 print(tab, n=50)
 
 
