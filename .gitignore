@@ -15,7 +15,7 @@ vignettes/*.pdf
 
 
 # for the moment: do not upload simParts (1.2GB overall) and analysisParts
-simParts/*.RData
+#simParts/*.RData
 #analysisParts/*.RData
 
 # shell script for automatically adding files > 50 MB:
