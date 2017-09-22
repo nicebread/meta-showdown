@@ -13,7 +13,8 @@ load("dataFiles/summ.RData")
 # ---------------------------------------------------------------------
 # Plot settings
 
-YLIM <- c(-0.09, 1.2)
+#YLIM <- c(-0.09, 1.2)
+YLIM <- c(-0.52, 1.2)
 DELTAS <- c(0, 0.5)
 
 theme_metashowdown <- theme(
@@ -49,14 +50,17 @@ summ2$n.validEstimates.label[summ2$n.validEstimates.label=="1000"] <- ""
 
 summ2$n.validEstimates.symbol <- cut(summ2$n.validEstimates, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))
 
-summ2$nPos <- summ2$perc2.5.pos
-summ2$nPos[summ2$delta > 0] <- summ2$perc97.5.pos[summ2$delta > 0]
+#summ2$nPos <- summ2$perc2.5.pos
+#summ2$nPos[summ2$delta > 0] <- summ2$perc97.5.pos[summ2$delta > 0]
+summ2$nPos <- summ2$perc2.5
+summ2$nPos[summ2$delta > 0] <- summ2$perc97.5[summ2$delta > 0]
 
 #dat = summ2 %>% filter(censor==0, delta %in% DELTAS)
 
 buildFacet <- function(dat, title) {
   PLOT <- dat %>%
-    ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
+   # ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
+	 ggplot(aes(x=factor(k), y=meanEst, ymin=perc2.5, ymax=perc97.5, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
     geom_hline(yintercept=DELTAS[1], color="skyblue") + 
     geom_hline(yintercept=DELTAS[2], color="black") + 
     geom_pointrange(position=position_dodge(width=.7), size = 0.4) +	
@@ -97,7 +101,7 @@ g_legend<-function(a.gplot){
   return(legend)} 
 
 legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
-  ggplot(aes(x=factor(k), y=meanEst.pos, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+  ggplot(aes(x=factor(k), y=meanEst, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
   geom_point() +
   coord_flip(ylim=YLIM) +
   facet_grid(tau.label~method) +
