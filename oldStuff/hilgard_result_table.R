@@ -29,7 +29,7 @@ summ2 <- filter(summ, !(method %in% c("pcurve", "pcurve.evidence", "pcurve.lack"
 # No pub bias ----
 # ME.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
@@ -37,7 +37,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k:method, ME.pos) %>% 
   spread(key = method, value = ME.pos) %>%
   gather(key = method, value = ME.pos, PEESE.lm:TF) %>% 
@@ -51,7 +51,7 @@ summ2 %>%
 
 # RMSE.pos
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k, delta, tau, qrpEnv, censor, method, RMSE.pos) %>% 
   mutate(RMSE.pos = round(RMSE.pos, 3)) %>% 
   spread(key = method, value = RMSE.pos) %>% 
@@ -59,7 +59,7 @@ summ2 %>%
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k:method, RMSE.pos) %>% 
   spread(key = method, value = RMSE.pos) %>%
   gather(key = method, value = RMSE.pos, PEESE.lm:TF) %>% 
@@ -73,14 +73,14 @@ summ2 %>%
 
 # Power estimates
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k, delta, tau, qrpEnv, censor, method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>% 
   arrange(tau, delta, k) %>% 
   View()
 
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k:method, H0.reject.pos.rate) %>% 
   spread(key = method, value = H0.reject.pos.rate) %>%
   gather(key = method, value = H0.reject.pos.rate, PEESE.lm:TF) %>% 
@@ -94,7 +94,7 @@ summ2 %>%
 
 # Coverage
 summ2 %>%   
-  filter(qrpEnv == "none", censor == 0) %>% 
+  filter(qrpEnv == "none", censor == "none") %>% 
   select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
@@ -350,7 +350,7 @@ summ.ci <- summ2 %>%
 # No pub bias and no QRP ----
 
 summ.me %>% 
-  filter(censor == 0,
+  filter(censor == "none",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -363,7 +363,7 @@ summ.me %>%
 # 3PSM is perfectly unbiased
 
 summ.rmse %>% 
-  filter(censor == 0,
+  filter(censor == "none",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
@@ -712,13 +712,13 @@ summ %>%
 
 # what does posification do to bias?
 summ.me.pos %>% 
-  filter(censor == 0,
+  filter(censor == "none",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
 summ.me.pos %>% 
   gather(key = key, value = ME.pos, reMA:`3PSM`) %>% 
-  filter(censor == 0, qrpEnv == "none", 
+  filter(censor == "none", qrpEnv == "none", 
          key %in% c("3PSM", "pcurve", "puniform", "reMA", "TF")) %>% 
   ggplot(aes(x = key, y = ME.pos, col = key)) +
   geom_point() +
@@ -730,7 +730,7 @@ summ.me.pos %>%
 # 95% CI coverage ----
 # No pub bias and no QRP
 summ.ci %>% 
-  filter(censor == 0,
+  filter(censor == "none",
          qrpEnv == "none") %>% 
   arrange(tau, delta) %>% 
   View()
