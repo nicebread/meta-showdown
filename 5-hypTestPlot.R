@@ -25,7 +25,7 @@ H1 <- 0.5
 # reduced set for revision
 hyp.sel <-  summ %>%
  filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>%
- mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS"))) %>%
+ mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve.evidence", "puniform", "PETPEESE.lm", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"))) %>%
 	ungroup()
 	
 	
