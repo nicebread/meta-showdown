@@ -1,8 +1,8 @@
-plotCensorFunction <- function(posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0.10, log.x = TRUE) {
+plotCensorFunction <- function(posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0.10, counterSig_rate = 0.50, log.x = TRUE) {
 	pubProb <- data.frame()
 	for (p in seq(0.001, 1, by=0.001)) {
-		pubProb <- rbind(pubProb, data.frame(p=p, d=-1, facet="Wrong sign", pubProb=censor(p, -1, posSign_NS_baseRate, negSign_NS_baseRate)))
-		pubProb <- rbind(pubProb, data.frame(p=p, d=+1, facet="Expected sign", pubProb=censor(p, +1, posSign_NS_baseRate, negSign_NS_baseRate)))
+		pubProb <- rbind(pubProb, data.frame(p=p, d=-1, facet="Wrong sign", pubProb=censor(p, -1, posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)))
+		pubProb <- rbind(pubProb, data.frame(p=p, d=+1, facet="Expected sign", pubProb=censor(p, +1, posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)))
 	}
 
 	ann <- data.frame(
@@ -23,9 +23,11 @@ plotCensorFunction <- function(posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 
 		p1
 }
 
-c1 <- plotCensorFunction(1, 1) + ggtitle("(A) No publication bias") + xlab("") + ylab("")
-c2 <- plotCensorFunction(0.30, 0.10) + ggtitle("(B) Medium publication bias") + xlab("")
-c3 <- plotCensorFunction(0.05, 0.01) + ggtitle("(C) Strong publication bias") + ylab("")
+#plotCensorFunction(0.30, 0.10, 0.5)
+
+c1 <- plotCensorFunction(1, 1, 1) + ggtitle("(A) No publication bias") + xlab("") + ylab("")
+c2 <- plotCensorFunction(0.20, 0.05, 0.5) + ggtitle("(B) Medium publication bias") + xlab("")
+c3 <- plotCensorFunction(0.05, 0, 0.2) + ggtitle("(C) Strong publication bias") + ylab("")
 
 # ---------------------------------------------------------------------
 # Save PDF
