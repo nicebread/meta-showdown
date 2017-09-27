@@ -71,8 +71,9 @@ buildFacet <- function(dat, title) {
                fill=factor(delta))) + 
     #geom_hline(yintercept=DELTAS[1], color="skyblue") + 
     #geom_hline(yintercept=DELTAS[2], color="black") + 
-    geom_point(#position=position_dodge(width=.7), 
-      size = 0.4) +	
+    geom_point(position=position_dodge(width=.7), 
+      size = 2
+      ) +	
     #coord_flip(ylim=YLIM) +
     # geom_text(aes(x=factor(k), 
     #               y=nPos, 
@@ -87,6 +88,7 @@ buildFacet <- function(dat, title) {
                #,labeller = label_bquote(rows = tau == .(tau))
                ) + 
     theme_metashowdown +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     #scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
     scale_shape_manual(values=c(21,22,24)) + 
     scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
@@ -104,6 +106,19 @@ plotB <- buildFacet(dat = summ2 %>% filter(censor=="medium", delta %in% DELTAS),
                     bquote("(B) medium publication bias"))
 plotC <- buildFacet(dat = summ2 %>% filter(censor=="strong", delta %in% DELTAS), 
                     bquote("(C) strong publication bias"))
+
+ungroup(summ2) %>% 
+  filter(censor == "none", delta %in% DELTAS) %>% 
+  select(k, delta, qrpEnv, censor, tau) %>% 
+  unique() %>% 
+  as.data.frame()
+
+
+filter(summ2, censor == "none", delta %in% DELTAS) %>% 
+  ggplot(aes(x = interaction(k, qrpEnv), y = RMSE, color = method)) +
+  geom_point(position = position_dodge(width = 1)) +
+  facet_grid(delta~tau)
+  
 
 
 # ---------------------------------------------------------------------
