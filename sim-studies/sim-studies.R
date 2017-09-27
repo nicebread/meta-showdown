@@ -621,25 +621,31 @@ dataMA <- function(k, delta, tau,
 #' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples; not necessary when empN == TRUE
 #' @param minN the min of the truncated normal for sample size; not necessary when empN == TRUE
 #' @param meanN the average of the truncated normal for sample size; not necessary when empN == TRUE
-#' @param censor The censoring function - either "0" (none), "A" (medium publication bias), "B" (high publication bias), or a vector of 3 values for the censoring function
+#' @param censor The censoring function - either "none", "med" (medium publication bias), "high" (high publication bias), or a vector of 3 values for the censoring function
 #' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
 #' @param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
 
 # k=10;delta=.3;tau=.1;qrpEnv="med";censorFunc="A"; empN=TRUE; maxN = 1000; meanN = NA; minN = 0; empN.boost = 0
-simMA <- function(k, delta, tau, qrpEnv, censorFunc = "0", empN = TRUE, maxN = 1000, meanN = NA, minN = 0, empN.boost = 0, verbose=FALSE) {  
+simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), censorFunc = c("none", "medium", "high"), empN = TRUE, maxN = 1000, meanN = NA, minN = 0, empN.boost = 0, verbose=FALSE) {  
     
+	# validate parameters
+	if (length(censorFunc) == 1) {
+		censorFunc <- match.arg(censorFunc, c("none", "medium", "high"))
+	}
+	qrpEnv <- match.arg(qrpEnv, c("none", "low", "medium", "high"))
+		
   # Define the QRP environments:
 	# get the proportions of studies produced under each QRP strategy
   if (qrpEnv == 'none'){
     noneP = 1; modP = 0; aggP = 0
   } else if (qrpEnv == 'low'){
     noneP = 0.50; modP = 0.40; aggP = 0.10
-  } else if (qrpEnv == 'med'){
+  } else if (qrpEnv == 'medium'){
 		noneP = 0.30; modP = 0.50; aggP = 0.20
   } else if (qrpEnv == 'high'){
 		noneP = 0.10; modP = 0.40; aggP = 0.50
   } else {
-		print('ERROR: qrpEnv must be none, low, med, or high')
+		print('ERROR: qrpEnv must be none, low, medium, or high')
 	}
   
 	
@@ -661,14 +667,14 @@ simMA <- function(k, delta, tau, qrpEnv, censorFunc = "0", empN = TRUE, maxN = 1
 		}
 		
 		# inflict publication bias via the censoring function
-		if (is.character(censorFunc) && censorFunc == "0") {
+		if (is.character(censorFunc) && censorFunc == "none") {
 			publish <- 1
-		} else if (is.character(censorFunc) && censorFunc == "A") {
+		} else if (is.character(censorFunc) && censorFunc == "medium") {
 			# predefined censor function for "medium publication bias"
-			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = 0.30, negSign_NS_baseRate = 0.10))
-		} else if (is.character(censorFunc) && censorFunc == "B") {
+			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = 0.20, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50))
+		} else if (is.character(censorFunc) && censorFunc == "high") {
 			# predefined censor function for "strong publication bias"
-			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = 0.05, negSign_NS_baseRate = 0.01))
+			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = 0.05, negSign_NS_baseRate = 0.00, counterSig_rate = 0.20))
 		} else if (is.vector(censorFunc) && length(censorFunc)==3) {
 			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = censorFunc[1], negSign_NS_baseRate1 = censorFunc[2], negSign_NS_baseRate2 = censorFunc[3]))
 		} else {

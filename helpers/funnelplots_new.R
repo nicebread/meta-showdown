@@ -1,3 +1,14 @@
+
+# realistic n
+dat.strongPB <- simMA(k=100, delta=0, tau=0.2, qrpEnv="med", censorFunc = "high", empN = TRUE, maxN = 1000, verbose=FALSE)
+dat.mediumPB <- simMA(k=100, delta=0, tau=0.2, qrpEnv="med", censorFunc = "med", empN = TRUE, maxN = 1000, verbose=FALSE)
+
+
+library(meta)
+(meta1 <- metagen(dat$d, dat$se))
+meta::funnel(meta1, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1, 1.5))
+
+
 #' @param k the number of studies in the MA
 #' @param delta the true effect (or the average of the true effects if heterogeneity exists)
 #' @param tau the SD around the true effect
