@@ -67,14 +67,15 @@ summ2$nPos[summ2$delta > 0] <- summ2$perc97.5[summ2$delta > 0]
 buildFacet <- function(dat, title) {
   PLOT <- dat %>%
     # ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
+    filter(k %in% c(10, 100)) %>% 
     ggplot(aes(x=method, 
-               y=RMSE, 
+               y=log(RMSE), 
                #ymin=perc2.5, ymax=perc97.5, 
-               shape=qrp.label, color=factor(delta), 
-               fill=factor(delta))) + 
+               shape=qrp.label, color=factor(k), 
+               fill=factor(k))) + 
     #geom_hline(yintercept=DELTAS[1], color="skyblue") + 
     #geom_hline(yintercept=DELTAS[2], color="black") + 
-    geom_point(position=position_dodge(width=.7), 
+    geom_point(position=position_dodge(width=.5), 
       size = 2
       ) +	
     #coord_flip(ylim=YLIM) +
@@ -87,17 +88,17 @@ buildFacet <- function(dat, title) {
     #           position=position_dodge(width=0.7), 
     #           size=3, 
     #           vjust=0.9) +
-    facet_grid(k~tau
+    facet_grid(delta.label~tau.label
                #,labeller = label_bquote(rows = tau == .(tau))
-               ) + 
+               , scales = 'free') + 
     theme_metashowdown +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     #scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
     scale_shape_manual(values=c(21,22,24)) + 
     scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
     scale_fill_manual(values=c("skyblue", "black")) +
-    ylab("Estimated effect size") +
-    xlab(expression(italic("k"))) +
+    ylab("log(RMSE)") +
+    xlab("method") +
     ggtitle(title)
   return(PLOT)
 }
@@ -110,85 +111,6 @@ plotB <- buildFacet(dat = summ2 %>% filter(censor=="medium", delta %in% DELTAS),
 plotC <- buildFacet(dat = summ2 %>% filter(censor=="strong", delta %in% DELTAS), 
                     bquote("(C) strong publication bias"))
 
-ungroup(summ2) %>% 
-  filter(censor == "none", delta %in% DELTAS) %>% 
-  select(k, delta, qrpEnv, censor, tau) %>% 
-  unique() %>% 
-  as.data.frame()
-
-# First draft
-filter(summ2, censor == "none", delta %in% DELTAS) %>% 
-  ggplot(aes(x = k, y = RMSE, color = method)) +
-  geom_point(position = position_dodge(width = 1)) +
-  facet_grid(delta~tau)
-
-# make x-axis function of k and qrp?
-filter(summ2, censor == "none", delta %in% DELTAS) %>% 
-  ggplot(aes(x = interaction(k, qrpEnv), y = RMSE, color = method)) +
-  geom_point(position = position_dodge(width = 1)) +
-  facet_grid(delta~tau)
-
-# restrict to qrp == "none"?
-filter(summ2, censor == "none", qrpEnv == "none", delta %in% DELTAS) %>% 
-  ggplot(aes(x = k.label, y = RMSE, color = method)) +
-  geom_point(position = position_dodge(width = .5)) +
-  facet_grid(delta.label~tau.label)
-  
-# log y axis?
-filter(summ2, censor == "none", qrpEnv == "none", delta %in% DELTAS) %>% 
-  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
-  geom_point(position = position_dodge(width = .5)) +
-  facet_grid(delta.label~tau.label)
-
-# keep playing with this...
-filter(summ2, censor == "none", tau == 0, delta %in% DELTAS) %>% 
-  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
-  geom_point(position = position_dodge(width = .75)) +
-  facet_grid(delta.label~qrp.label)
-filter(summ2, censor == "none", tau == 0.2, delta %in% DELTAS) %>% 
-  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
-  geom_point(position = position_dodge(width = .75)) +
-  facet_grid(delta.label~qrp.label)
-
-#pcurve vs puniform, does one dominate?
-filter(summ2, method %in% c("p-curve", "p-uniform")) %>% 
-  ungroup() %>% 
-  select(condition:tau.label, method, RMSE) %>% 
-  spread(key = method, value = RMSE) %>% 
-  ggplot(aes(x = `p-curve`, y = `p-uniform`)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0)
-
-# huck em all together and see what happens
-ggplot(summ2, aes(x = RMSE)) +
-  geom_density() +
-  facet_grid(method~.)
-ggplot(summ2, aes(x = RMSE)) +
-  geom_histogram() +
-  facet_grid(method~.)
-# split by effect size
-ggplot(summ2, aes(x = RMSE)) +
-  geom_density() +
-  facet_grid(method~delta.label)
-# split by qrp / pub bias, smooth density acroos k and tau
-filter(summ2, qrpEnv == "none", censor == "none") %>% 
-  ggplot(aes(x = log(RMSE))) +
-  geom_density() +
-  geom_rug() +
-  # geom_vline() + # would require some complicated grouping
-  facet_grid(method~delta.label)
-filter(summ2, qrpEnv == "med", censor == "medium") %>% 
-  ggplot(aes(x = log(RMSE))) +
-  geom_density() +
-  geom_rug() +
-  # geom_vline() + # would require some complicated grouping
-  facet_grid(method~delta.label)
-filter(summ2, qrpEnv == "high", censor == "strong") %>% 
-  ggplot(aes(x = log(RMSE))) +
-  geom_density() +
-  geom_rug() +
-  # geom_vline() + # would require some complicated grouping
-  facet_grid(method~delta.label)
 
 # ---------------------------------------------------------------------
 # Build legend
@@ -203,8 +125,8 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]] 
   return(legend)} 
 
-legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
-  ggplot(aes(x=factor(k), y=meanEst, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS, k %in% c(10, 100)) %>%
+  ggplot(aes(x=factor(k), y=meanEst, shape=factor(qrpEnv),color=factor(k),fill=factor(k))) + 
   geom_point() +
   coord_flip(ylim=YLIM) +
   facet_grid(tau.label~method) +
@@ -216,8 +138,8 @@ legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
     legend.text = element_text(size=12)
   ) + 
   scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
-  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta), override.aes = list(size=6))) +
-  scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))
+  scale_color_manual(values=values, guide = guide_legend(title = bquote(k), override.aes = list(size=6))) +
+  scale_fill_manual(values=values, guide = guide_legend(title = bquote(k)))
 
 
 legend <- g_legend(legOnlyPlot) 
@@ -229,3 +151,5 @@ legend <- g_legend(legOnlyPlot)
 pdf("Plots/RMSEPlot.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
+
+# WIP WORKBENCH ------ 
