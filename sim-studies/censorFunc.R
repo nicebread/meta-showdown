@@ -6,8 +6,8 @@ clamp <- function(x) {if (x > 1) x=1; if (x < 0) x = 0; return(x)}
 
 #' @param p observed p value
 #' @param p_range Range of observed p-values where the easing takes place
-#' @param from_prob Probability of publication
-#' @param p observed p value
+#' @param from_prob Probability of publication (starting position)
+#' @param to_prob Probability of publication (end position)
 easeOutExpo <- function (p, p_range, from_prob, to_prob) {
 	p_start <- p_range[1]
 	p_range_length <- diff(range(p_range))
@@ -45,4 +45,15 @@ censor <- function(pObs, direction, posSign_NS_baseRate = 0.3, negSign_NS_baseRa
     pubProb=negSign_NS_baseRate
   }
   return(pubProb)
+}
+
+
+# some predefined settings: medium publication bias
+censorMedium <- function(pObs, direction) {
+	censor(pObs, direction, posSign_NS_baseRate = 0.20, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50)
+}
+
+# some predefined settings: strong publication bias
+censorHigh <- function(pObs, direction) {
+	censor(pObs, direction, posSign_NS_baseRate = 0.05, negSign_NS_baseRate = 0.00, counterSig_rate = 0.20)
 }

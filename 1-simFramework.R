@@ -23,7 +23,7 @@ registerDoParallel(cores=20)
 k_set <- c(10, 30, 60, 100)							# number of studies in each MA
 delta_set <- c(0, .2, .5, .8)						# true mean of effect sizes
 qrpEnv_Set <- c("none", "med", "high")	# QRP environment
-censor_set <- c("0", "A", "B")					# publication bias
+censor_set <- c("none", "med", "high")	# publication bias
 tau_set <- c(0, .2, .4)									# heterogeneity; assumed to follow a normal distribution
 
 # params stores all possible combinations of experimental factors
@@ -66,7 +66,7 @@ for (j in 1:nrow(params)) {
 			log2 <- paste0(Sys.time(), ", batch=", batch, ": computing condition ", j, "/", nrow(params), "; rep = ", i)
 			print(log2)
 			
-			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censorFunc=as.character(params[j, "censor"]), qrpEnv=params[j, "qrpEnv"])
+			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censorFunc=as.character(params[j, "censor"]), qrpEnv=as.character(params[j, "qrpEnv"]))
 
 							  
 			# remove rownames (otherwise cbind complains)

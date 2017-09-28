@@ -5,8 +5,11 @@ dat.mediumPB <- simMA(k=100, delta=0, tau=0.2, qrpEnv="med", censorFunc = "med",
 
 
 library(meta)
-(meta1 <- metagen(dat$d, dat$se))
+meta1 <- metagen(dat.mediumPB$d, dat.mediumPB$se)
 meta::funnel(meta1, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1, 1.5))
+
+meta2 <- metagen(dat.strongPB$d, dat.strongPB$se)
+meta::funnel(meta2, ref=0, contour=c(0.9, 0.95), xlab="Effect size", cex=.5, pch=19, xlim=c(-1, 1.5))
 
 
 #' @param k the number of studies in the MA
