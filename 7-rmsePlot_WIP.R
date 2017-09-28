@@ -2,11 +2,14 @@
 ## This is WIP code for an MSE plot
 ## ======================================================================
 
+# NB, logRMSE seems to make the little differences easier to see, 
+#   less likely to be swamped by big difference btwn RE and PET-PEESE
 
 library(ggplot2)
 library(dplyr)
 library(grid)
 library(gridExtra)
+library(tidyr)
 
 load("dataFiles/summ.RData")
 
@@ -113,13 +116,79 @@ ungroup(summ2) %>%
   unique() %>% 
   as.data.frame()
 
+# First draft
+filter(summ2, censor == "none", delta %in% DELTAS) %>% 
+  ggplot(aes(x = k, y = RMSE, color = method)) +
+  geom_point(position = position_dodge(width = 1)) +
+  facet_grid(delta~tau)
 
+# make x-axis function of k and qrp?
 filter(summ2, censor == "none", delta %in% DELTAS) %>% 
   ggplot(aes(x = interaction(k, qrpEnv), y = RMSE, color = method)) +
   geom_point(position = position_dodge(width = 1)) +
   facet_grid(delta~tau)
-  
 
+# restrict to qrp == "none"?
+filter(summ2, censor == "none", qrpEnv == "none", delta %in% DELTAS) %>% 
+  ggplot(aes(x = k.label, y = RMSE, color = method)) +
+  geom_point(position = position_dodge(width = .5)) +
+  facet_grid(delta.label~tau.label)
+  
+# log y axis?
+filter(summ2, censor == "none", qrpEnv == "none", delta %in% DELTAS) %>% 
+  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
+  geom_point(position = position_dodge(width = .5)) +
+  facet_grid(delta.label~tau.label)
+
+# keep playing with this...
+filter(summ2, censor == "none", tau == 0, delta %in% DELTAS) %>% 
+  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
+  geom_point(position = position_dodge(width = .75)) +
+  facet_grid(delta.label~qrp.label)
+filter(summ2, censor == "none", tau == 0.2, delta %in% DELTAS) %>% 
+  ggplot(aes(x = k.label, y = log(RMSE), color = method)) +
+  geom_point(position = position_dodge(width = .75)) +
+  facet_grid(delta.label~qrp.label)
+
+#pcurve vs puniform, does one dominate?
+filter(summ2, method %in% c("p-curve", "p-uniform")) %>% 
+  ungroup() %>% 
+  select(condition:tau.label, method, RMSE) %>% 
+  spread(key = method, value = RMSE) %>% 
+  ggplot(aes(x = `p-curve`, y = `p-uniform`)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0)
+
+# huck em all together and see what happens
+ggplot(summ2, aes(x = RMSE)) +
+  geom_density() +
+  facet_grid(method~.)
+ggplot(summ2, aes(x = RMSE)) +
+  geom_histogram() +
+  facet_grid(method~.)
+# split by effect size
+ggplot(summ2, aes(x = RMSE)) +
+  geom_density() +
+  facet_grid(method~delta.label)
+# split by qrp / pub bias, smooth density acroos k and tau
+filter(summ2, qrpEnv == "none", censor == "none") %>% 
+  ggplot(aes(x = log(RMSE))) +
+  geom_density() +
+  geom_rug() +
+  # geom_vline() + # would require some complicated grouping
+  facet_grid(method~delta.label)
+filter(summ2, qrpEnv == "med", censor == "medium") %>% 
+  ggplot(aes(x = log(RMSE))) +
+  geom_density() +
+  geom_rug() +
+  # geom_vline() + # would require some complicated grouping
+  facet_grid(method~delta.label)
+filter(summ2, qrpEnv == "high", censor == "strong") %>% 
+  ggplot(aes(x = log(RMSE))) +
+  geom_density() +
+  geom_rug() +
+  # geom_vline() + # would require some complicated grouping
+  facet_grid(method~delta.label)
 
 # ---------------------------------------------------------------------
 # Build legend
@@ -157,6 +226,6 @@ legend <- g_legend(legOnlyPlot)
 # ---------------------------------------------------------------------
 # Save PDF
 
-pdf("Plots/EstimationPlot.pdf", width=15, height=22)
+pdf("Plots/RMSEPlot.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
