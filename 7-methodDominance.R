@@ -2,6 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(grid)
 library(gridExtra)
+library(reshape2)
 
 load(file="dataFiles/summ.RData")
 head(summ)
@@ -12,7 +13,7 @@ s2  <- summ %>%
 	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "PET.rma", "PEESE.rma", "PETPEESE.rma"))
 
 # get experimental factors
-conditions <- s2 %>% filter(method=="reMA") %>% select(1:6)
+conditions <- summ %>% filter(method=="reMA") %>% select(1:11)
 
 
 # ---------------------------------------------------------------------
@@ -88,7 +89,7 @@ scores <- res2 %>% group_by(condition) %>% summarise(
 	TPSM = sum(winner=="3PSM")*2
 )
 
-scores.long <- melt(scores, id.vars="condition")
+scores.long <- gather(scores, key = method, value = score, RE:TPSM)
 
 scores$winner <- ""
 for (i in 1:nrow(scores)) {
@@ -102,18 +103,22 @@ scores$winner <- factor(scores$winner, levels=names(sort(table(scores$winner), d
 
 sort(table(scores$winner), decreasing=TRUE)
 
-ggplot(scores, aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
+ggplot(scores, aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + 
+  geom_point(size=6) + 
+  facet_grid(censor~k+tau)
 
 # That looks ugly ...
 scores.long$loop <- paste0(scores.long$delta, ":", scores.long$qrpEnv, ":", scores.long$tau)
-ggplot(scores.long, aes(y=value, x=loop, color=factor(variable), group=factor(variable))) + geom_line() + facet_grid(k~selProp)
+ggplot(scores.long, aes(y=score, x=loop, color=factor(method), group=factor(method))) + 
+  geom_line() + 
+  facet_grid(k~censor)
 
 # ---------------------------------------------------------------------
 # strong (absolute) dominance
 
 s2  <- summ %>% 
 	ungroup() %>% 
-	select(condition, k, delta, qrpEnv, selProp, tau, method, ME.pos, RMSE.pos) %>% 
+	select(condition, k, delta, qrpEnv, censor, tau, method, ME.pos, RMSE.pos) %>% 
 	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "PET.rma", "PEESE.rma", "PETPEESE.rma"))
 	
 # which method is best in ME?
@@ -132,8 +137,11 @@ sort(table(fullDominance$winner[fullDominance$winner != ""]), decreasing = TRUE)
 
 s3 <- merge(fullDominance, conditions, by="condition")
 
-
-ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
+s3 %>% 
+  filter(winner != "") %>% 
+  ggplot(aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + 
+  geom_point(size=6) + 
+  facet_grid(censor~k+tau)
 
 
 ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
