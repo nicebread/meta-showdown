@@ -69,7 +69,7 @@ buildFacet <- function(dat, title) {
     # ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
     filter(k %in% c(10, 100)) %>% 
     ggplot(aes(x=method, 
-               y=log(RMSE), 
+               y=log(RMSE, 2), 
                #ymin=perc2.5, ymax=perc97.5, 
                shape=qrp.label, color=factor(k), 
                fill=factor(k))) + 
@@ -103,15 +103,60 @@ buildFacet <- function(dat, title) {
   return(PLOT)
 }
 
+# alternative style
+buildFacet2 <- function(dat, title) {
+  PLOT <- dat %>%
+    # ggplot(aes(x=factor(k), y=meanEst.pos, ymin=perc2.5.pos, ymax=perc97.5.pos, shape=qrp.label, color=factor(delta), fill=factor(delta))) + 
+    filter(delta %in% c(0, 0.5)) %>% 
+    ggplot(aes(x=method, 
+               y=log(RMSE, 2), 
+               #ymin=perc2.5, ymax=perc97.5, 
+               shape=qrp.label, color=factor(delta), 
+               fill=factor(delta))) + 
+    #geom_hline(yintercept=DELTAS[1], color="skyblue") + 
+    #geom_hline(yintercept=DELTAS[2], color="black") + 
+    geom_point(position=position_dodge(width=.5), 
+               size = 2
+    ) +	
+    #coord_flip(ylim=YLIM) +
+    # geom_text(aes(x=factor(k), 
+    #               y=nPos, 
+    #               label=n.validEstimates.symbol, 
+    #               hjust=just, 
+    #               group=qrp.label, 
+    #               color=factor(delta)), 
+    #           position=position_dodge(width=0.7), 
+    #           size=3, 
+    #           vjust=0.9) +
+    facet_grid(k.label~tau.label
+               #,labeller = label_bquote(rows = tau == .(tau))
+               #, scales = 'free'
+               ) + 
+    theme_metashowdown +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    #scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
+    scale_shape_manual(values=c(21,22,24)) + 
+    scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
+    scale_fill_manual(values=c("skyblue", "black")) +
+    ylab("log(RMSE)") +
+    xlab("method") +
+    ggtitle(title)
+  return(PLOT)
+}
 
 plotA <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), 
                     bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = summ2 %>% filter(censor=="medium", delta %in% DELTAS), 
+plotB <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), 
                     bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = summ2 %>% filter(censor=="strong", delta %in% DELTAS), 
+plotC <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), 
                     bquote("(C) strong publication bias"))
 
-
+plotA1 <- buildFacet2(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), 
+           bquote("(A) no publication bias"))
+plotB1 <- buildFacet2(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), 
+           bquote("(B) medium publication bias"))
+plotC1 <- buildFacet2(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), 
+           bquote("(C) strong publication bias"))
 # ---------------------------------------------------------------------
 # Build legend
 
@@ -150,6 +195,10 @@ legend <- g_legend(legOnlyPlot)
 
 pdf("Plots/RMSEPlot.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
+dev.off()
+
+pdf("Plots/RMSEPlot1.pdf", width=15, height=22)
+grid.arrange(plotA1, plotB1, plotC1, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
 
 # WIP WORKBENCH -------------------------------------------------------
