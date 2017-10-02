@@ -32,7 +32,8 @@ save(res.final, file="dataFiles/res.final.RData")
 
 # Show conditions
 tab <- res.final %>% group_by(k, delta, qrpEnv, censor, tau) %>% summarise(n.MA=length(unique(id)))
-print(tab, n=50)
+print(tab, n=432)
+all(tab$n.MA == 1000)
 
 res.final <- res.final %>% droplevels()
 
@@ -44,7 +45,6 @@ head(res.wide, 16)
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
 res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
-res.wide$censor <- factor(res.wide$censor, levels=c("0", "A", "B"), labels=c("none", "medium", "strong"))
 res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("Publication bias = ", unique(res.wide$censor)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
 res.wide$estimator_type <- factor(res.wide$estimator_type, levels=c(1, 2, 3, 4), labels=c("WAAP", "WLS", "PET", "PEESE"))

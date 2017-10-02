@@ -83,8 +83,8 @@ buildFacet <- function(dat, title) {
 
 
 plotA <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = summ2 %>% filter(censor=="medium", delta %in% DELTAS), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = summ2 %>% filter(censor=="strong", delta %in% DELTAS), bquote("(C) strong publication bias"))
+plotB <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), bquote("(B) medium publication bias"))
+plotC <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), bquote("(C) strong publication bias"))
 
 
 # ---------------------------------------------------------------------
