@@ -316,15 +316,15 @@ colorTable('RMSE', "none")
 colorTable('cov', "none")
 colorTable('pow', "none") #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
-colorTable('ME',  "medium")
-colorTable('RMSE',"medium")
-colorTable('cov', "medium") 
-colorTable('pow', "medium") #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
+colorTable('ME',  "med")
+colorTable('RMSE',"med")
+colorTable('cov', "med") 
+colorTable('pow', "med") #p-curve and p-uniform will be NA. See note in 3-resultsFramework  
 
-colorTable('ME',  "strong")
-colorTable('RMSE',"strong")
-colorTable('cov', "strong")
-colorTable('pow', "strong")  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
+colorTable('ME',  "high")
+colorTable('RMSE',"high")
+colorTable('cov', "high")
+colorTable('pow', "high")  #p-curve and p-uniform will be NA. See note in 3-resultsFramework
 
 
 #posified
@@ -333,13 +333,13 @@ colorTable('RMSE', "none", positive=TRUE)
 colorTable('cov', "none", positive=TRUE)
 colorTable('pow', "none", positive=TRUE)
 
-colorTable('ME',  "medium", positive=TRUE)
-colorTable('RMSE',"medium", positive=TRUE)
-colorTable('cov', "medium", positive=TRUE)
-colorTable('pow', "medium", positive=TRUE)
+colorTable('ME',  "med", positive=TRUE)
+colorTable('RMSE',"med", positive=TRUE)
+colorTable('cov', "med", positive=TRUE)
+colorTable('pow', "med", positive=TRUE)
 
-colorTable('ME',  "strong", positive=TRUE)
-colorTable('RMSE',"strong", positive=TRUE)
-colorTable('cov', "strong", positive=TRUE)
-colorTable('pow', "strong", positive=TRUE)
+colorTable('ME',  "high", positive=TRUE)
+colorTable('RMSE',"high", positive=TRUE)
+colorTable('cov', "high", positive=TRUE)
+colorTable('pow', "high", positive=TRUE)
 

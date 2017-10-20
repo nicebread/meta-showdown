@@ -61,3 +61,41 @@ ggplot(WAAP_desc.long, aes(x=k.label, y=percentage, fill=estimator_type)) + geom
 # zoom into the mixed delta=0.2 conditions:
 
 ggplot(WAAP_desc.long %>% filter(delta == 0.2), aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(tau.label~qrp.label~censor.label)
+
+
+## ======================================================================
+## Average I^2 estimates in conditions without publication bias and without QRPs:
+## i.e., what are the I^2 values that correspond to our chosen tau values?
+## ======================================================================
+
+I2 <- res.wide.red %>% 
+	filter(method == "reMA", censor == "none", qrpEnv=="none", !is.na(I2_estimate)) %>% 
+	select(k, k.label, delta, delta.label, tau, tau.label, I2_estimate) %>% 
+	group_by(k, k.label, delta, delta.label, tau, tau.label) %>% 
+	summarise(
+		I2.mean = mean(I2_estimate, na.rm=TRUE),
+		I2.SD = sd(I2_estimate, na.rm=TRUE)
+	) %>% arrange(tau, delta, k)
+
+print(I2, n=100)
+
+# stronger aggregation: aggregate over k
+I2b <- res.wide.red %>% 
+	filter(method == "reMA", censor == "none", qrpEnv=="none", !is.na(I2_estimate)) %>% 
+	select(delta, delta.label, tau, tau.label, I2_estimate) %>% 
+	group_by(delta, delta.label, tau, tau.label) %>% 
+	summarise(
+		I2.mean = mean(I2_estimate, na.rm=TRUE),
+		I2.SD = sd(I2_estimate, na.rm=TRUE)
+	) %>% arrange(tau, delta)
+	
+	
+# even stronger aggregation: aggregate over k and delta
+I2b <- res.wide.red %>% 
+	filter(method == "reMA", censor == "none", qrpEnv=="none", !is.na(I2_estimate)) %>% 
+	select(tau, tau.label, I2_estimate) %>% 
+	group_by(tau, tau.label) %>% 
+	summarise(
+		I2.mean = mean(I2_estimate, na.rm=TRUE),
+		I2.SD = sd(I2_estimate, na.rm=TRUE)
+	) %>% arrange(tau, delta)	
