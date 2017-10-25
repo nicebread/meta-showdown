@@ -49,3 +49,5 @@ for(i in 1:dim(cond)[1]){
   
   check[i] = length(test[,1])
 }
+
+sum(is.na(check))
