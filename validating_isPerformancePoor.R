@@ -2,7 +2,6 @@
 
 
 
-setwd("/barleyhome/ecarter/Documents/meta-showdown/dataFiles")
 source("isPerformancePoor_Functions.R")
 
 k_set = c("any",10,30,60,100)
