@@ -46,7 +46,7 @@ performsPoorly = function(k="any",method,
     stop("performanceLB needs to be less than performanceUB.")
   }
   if(metric=="ME"){
-    if(performanceLB<=-1 | abs(performanceUB)>=1){
+    if(abs(performanceUB)>=1){
       print("performanceLB or performanceUB may not match the scale of metric")
     }
   }
