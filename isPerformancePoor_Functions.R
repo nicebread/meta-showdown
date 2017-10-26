@@ -56,7 +56,7 @@ performsPoorly = function(k="any",method,
     }
   }
   if(metric=="Coverage" | metric=="RejectH0"){
-    if(abs(performanceLB)<0 | abs(performanceUB)>1){
+    if(performanceLB<0 | performanceUB>1){
       print("performanceLB or performanceUB may not match the scale of metric")
     }
   }
