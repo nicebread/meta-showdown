@@ -63,6 +63,7 @@ performsPoorly = function(k="any",method,
   
   #save the entered term before recoding
   methodEntered = method  
+  metricEntered = metric
   #recode arguments to match summ.RData
   if(method=="RE"){method="reMA"}  
   if(method=="PT"){method="PET.lm"}
@@ -81,17 +82,11 @@ performsPoorly = function(k="any",method,
   
   #pull specific conditions by redefining check data frame
   check = summ
-  #dim(check)
   if(k!="any"){check = check[check$k==k,]}
-  #dim(check)
   if(Delta!="any"){check = check[check$delta==Delta,]}
-  #dim(check)
   if(Tau!="any"){check = check[check$tau==Tau,]}
-  #dim(check)
   if(PB!="any"){check = check[check$censor==PB,]}
-  #dim(check)
   if(QRP!="any"){check = check[check$qrpEnv==QRP,]}
-  #dim(check)  
   check = check[check$method==method,]
   
   
@@ -106,10 +101,11 @@ performsPoorly = function(k="any",method,
   performance[out[,"performance"]] = "Yes"
   performance[out[,"performance"]==F] = "No"
   out[,"performance"] = performance  
-  
+  #add comlumn names to out
   colnames(out)=c("k","Delta","Tau","Pub Bias","QRPs","Poor performance")
   
-  print(paste0(methodEntered, " performance where 'good performance' is defined by the ", metric, " interval [", 
+  #provide description of what was asked for
+  print(paste0(methodEntered, " performance where 'good performance' is defined by the ", metricEntered, " interval [", 
                performanceLB, ", ", performanceUB, "]." ))
   return(out)
 }
