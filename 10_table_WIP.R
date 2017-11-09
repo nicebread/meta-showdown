@@ -2,10 +2,12 @@
 # or is k = 100 too easy and would k = 60 be more informative
 
 library(dplyr)
-library(tidyr)
+library(tidyverse)
 load("dataFiles/summ.RData")
 
-
+summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+  mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
+                         labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
 
 # k = 100, is it always perfect power for delta = 0.5?
 filter(summ2, delta == .5, k == 100, tau %in% c(0, 0.2)) %>% 
@@ -62,3 +64,10 @@ write.csv(output.ME, "tables/ME_table.csv", row.names = F)
 write.csv(output.RMSE, "tables/RMSE_table.csv", row.names = F)
 write.csv(output.pow, "tables/pow_table.csv", row.names = F)
 write.csv(output.coverage, "tables/coverage_table.csv", row.names = F)
+
+# Try to plot some stuff to figure out effects of QRPs.
+
+filter(master, method == "RE") %>% 
+  ggplot(aes(x = interaction(delta, tau), y = ME, shape = qrpEnv)) +
+  geom_point() +
+  facet_grid(k~censor)
