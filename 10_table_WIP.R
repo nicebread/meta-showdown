@@ -66,8 +66,48 @@ write.csv(output.pow, "tables/pow_table.csv", row.names = F)
 write.csv(output.coverage, "tables/coverage_table.csv", row.names = F)
 
 # Try to plot some stuff to figure out effects of QRPs.
+MEplot <- function(dat, est) {
+  filter(dat, method == est) %>% 
+    ggplot(aes(x = interaction(tau, delta), y = ME, color = qrpEnv)) +
+    geom_point(size = 2) +
+    geom_hline(yintercept = 0) +
+    scale_y_continuous(limits = c(-.3, .5)) +
+    facet_grid(k~censor)
+}
+MEplot(master, "RE")
+MEplot(master, "TF")
+MEplot(master, "WAAP-WLS")
+MEplot(master, "PET-PEESE")
+MEplot(master, "p-curve")
+MEplot(master, "p-uniform")
+MEplot(master, "3PSM")
 
-filter(master, method == "RE") %>% 
-  ggplot(aes(x = interaction(delta, tau), y = ME, shape = qrpEnv)) +
-  geom_point() +
-  facet_grid(k~censor)
+RMSEplot <- function(dat, est) {
+  filter(dat, method == est) %>% 
+    ggplot(aes(x = interaction(tau, delta), y = RMSE, color = qrpEnv)) +
+    geom_point(size = 2) +
+    scale_y_continuous(limits = c(0, 0.575)) +
+    facet_grid(k~censor)
+}
+RMSEplot(master, "RE")
+RMSEplot(master, "TF")
+RMSEplot(master, "WAAP-WLS")
+RMSEplot(master, "PET-PEESE")
+RMSEplot(master, "p-curve")
+RMSEplot(master, "p-uniform")
+RMSEplot(master, "3PSM")
+
+powplot <- function(dat, est) {
+  filter(dat, method == est) %>% 
+    ggplot(aes(x = interaction(tau, delta), y = H0.reject.rate, color = qrpEnv)) +
+    geom_point(size = 2) +
+    scale_y_continuous(limits = c(0, 1)) +
+    facet_grid(k~censor)
+}
+powplot(master, "RE")
+powplot(master, "TF")
+powplot(master, "WAAP-WLS")
+powplot(master, "PET-PEESE")
+powplot(master, "p-curve")
+powplot(master, "p-uniform")
+powplot(master, "3PSM")
