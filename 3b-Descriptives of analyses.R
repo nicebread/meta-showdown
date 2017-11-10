@@ -91,11 +91,42 @@ I2b <- res.wide.red %>%
 	
 	
 # even stronger aggregation: aggregate over k and delta
-I2b <- res.wide.red %>% 
+I2c <- res.wide.red %>% 
 	filter(method == "reMA", censor == "none", qrpEnv=="none", !is.na(I2_estimate)) %>% 
 	select(tau, tau.label, I2_estimate) %>% 
 	group_by(tau, tau.label) %>% 
 	summarise(
 		I2.mean = mean(I2_estimate, na.rm=TRUE),
 		I2.SD = sd(I2_estimate, na.rm=TRUE)
-	) %>% arrange(tau, delta)	
+	) %>% arrange(tau)	
+
+I2c	
+
+
+## ======================================================================
+## How many puniform and pcurve results are negative?
+## ======================================================================
+
+estNeg <- res.wide.red %>% 
+	filter(method %in% c("puniform", "pcurve"), !is.na(b0_estimate)) %>% 
+	#select(method, k.label, delta.label, tau.label, censor.label, b0_estimate) %>% 
+	group_by(method, k.label, delta.label, tau.label, censor.label) %>% 
+	summarise(
+		estNegPerc = sum(b0_estimate < 0)/n()
+	) %>% arrange(tau.label, delta.label, k.label)
+
+table(estNeg$estNegPerc)
+
+# --> all pcurve and puniform estimates are truncated at zero.
+
+
+## ======================================================================
+## ANOVA-style analysis: Which experimental factor explains variation in performance?
+## (Not very illuminating)
+## ======================================================================
+
+load("dataFiles/summ.RData")
+
+a1 <- aov(RMSE ~ k.label*delta.label*qrp.label*censor.label*tau.label, data=summ %>% filter(method=="pcurve"))
+e1 <- data.frame(etaSquared(a1))
+e1[order(e1$eta.sq, decreasing=TRUE), ]

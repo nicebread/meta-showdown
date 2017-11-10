@@ -13,6 +13,13 @@ loadHTML <- function(filename) {
 }
 
 
+alert.create <- function(content, style="info") {
+  HTML(paste0('<div class="alert alert-', style, ' alert-dismissible" role="alert">'),
+    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+    content, 
+    '</div>'
+  )
+}
 
 shinyUI(fluidPage(theme = shinytheme("spacelab"),
 	tags$head(tags$link(rel="stylesheet", type="text/css", href="accordion.css")),	
@@ -26,57 +33,107 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		# ---------------------------------------------------------------------
 		# The input panels, on the left side
 		
-		column(width=4,
-			br(),
-			helpText("What setting describes best the analyzed research environment?"),
+		column(width=4,			
 			
-			h2("Basic settings"),
-			radioButtons("selProp", "How many % of original studies are submitted to publication bias?:",
-			 			             c("0%" = 0, "60%" = 0.6, "90%" = 0.9), inline=TRUE),
-			radioButtons("tau", "Heterogeneity (tau):",
-			 			             c("0" = 0, "0.2" = 0.2, "0.4" = 0.4), inline=TRUE),
-			radioButtons("k", "Number of studies in meta-analysis:",
-			             c("10" = 10, "30" = 30, "60" = 60, "100"=100), inline=TRUE),
+			# input options for the first three output panels
+			conditionalPanel("input.tabs1 != 'Method performance check'",
+			
+				br(),
+				helpText("What setting describes best the analyzed research environment?"),
+			
+				h2("Basic settings"),
+				radioButtons("censor", "Severity of publication bias:",
+				 			             c("none" = "none", "medium" = "med", "high" = "high"), inline=TRUE),
+				radioButtons("tau", "Heterogeneity (tau):",
+				 			             c("0" = 0, "0.2" = 0.2, "0.4" = 0.4), inline=TRUE),
+				radioButtons("k", "Number of studies in meta-analysis:",
+				             c("10" = 10, "30" = 30, "60" = 60, "100"=100), inline=TRUE),
 									 
-			conditionalPanel("input.tabs1 != 'Funnel plots'",
-				radioButtons("delta", "True effect size under H1 (for power computation)",
-				             c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE)
-			),
-			conditionalPanel("input.tabs1 == 'Funnel plots'",
-				radioButtons("deltaFull", "True effect size",
-				             c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE)
+				conditionalPanel("input.tabs1 != 'Funnel plots'",
+					radioButtons("delta", "True effect size under H1 (for power computation)",
+					             c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE)
+				),
+				conditionalPanel("input.tabs1 == 'Funnel plots'",
+					radioButtons("deltaFull", "True effect size",
+					             c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE)
+				),
+			
+				radioButtons("qrpEnv", "QRP environment:",
+				             c("none", "med", "high"), inline=TRUE)
 			),
 			
-			radioButtons("qrpEnv", "QRP environment:",
-			             c("none", "med", "high"), inline=TRUE),
-									 
+			# input options for the methods performance checke
+			conditionalPanel("input.tabs1 == 'Method performance check'",
+				
+				br(),
+				helpText("Please select all conditions that are plausible for the meta-analyzed research environment. Check at least one for each dimension!"),
+				
+				h2("Basic settings"),
+				
+				checkboxGroupInput("censor_perf", "Severity of publication bias:",
+				 			       choices = c("none" = "none", "medium" = "med", "high" = "high"), 
+										 selected = c("none" = "none", "medium" = "med", "high" = "high"), inline=TRUE),
+				checkboxGroupInput("tau_perf", "Heterogeneity (tau):",
+				 			       choices = c("0" = 0, "0.2" = 0.2, "0.4" = 0.4), 
+										 selected = c("0" = 0, "0.2" = 0.2, "0.4" = 0.4), inline=TRUE),
+				checkboxGroupInput("k_perf", "Number of studies in meta-analysis:",
+				             choices = c("10" = 10, "30" = 30, "60" = 60, "100"=100),
+										 selected = c("10" = 10, "30" = 30, "60" = 60, "100"=100), inline = TRUE),									 
+				checkboxGroupInput("delta_perf", "True effect size",
+					           choices = c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), 
+										 selected = c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE),
+				checkboxGroupInput("qrpEnv_perf", "QRP environment:",
+				             choices = c("none", "med", "high"), 
+										 selected = c("none", "med", "high"), inline=TRUE),
+				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "pcurve", "puniform")),
+				radioButtons("performanceMeasure", "Performance measure", c("Mean error" = "ME", "RMSE" = "RMSE", "Mean error and RMSE (combination)" = "ME+RMSE", "Mean absolute error (MAE)" = "MAD", "Mean error and MAE" = "ME+MAD")),
+				conditionalPanel("input.performanceMeasure == 'ME' | input.performanceMeasure == 'ME+RMSE' | input.performanceMeasure == 'ME+MAD'",
+					textInput("ME_tolerance", "Good performance is defined as a maximum deviation of ... from the true delta: ", value = "0.1")
+				),
+				conditionalPanel("input.performanceMeasure == 'RMSE' | input.performanceMeasure == 'ME+RMSE'",
+					textInput("RMSE_upperbound", "Good performance is defined as a maximum RMSE of: ", value = "0.1")
+				),
+				conditionalPanel("input.performanceMeasure == 'MAD' | input.performanceMeasure == 'ME+MAD'",
+					textInput("MAD_upperbound", "Good performance is defined as a maximum MAD of: ", value = "0.1")
+				)
+			), # of conditionalPanel
+			
+			
+			# Advanced options
 		 conditionalPanel("input.tabs1 != 'Funnel plots'",
 				h2("Advanced options"),			
 				radioButtons("PETPEESEmodel", "Model PET/PEESE as:",
 			             c("lm (default)" = "lm", "rma" = "rma"), inline=TRUE),
-									 
+								 
 				conditionalPanel("input.tabs1 == 'Estimation'",
 					selectInput("dropNegatives", "Set negative estimates to zero:",
-			             c("Set to zero (default)" = TRUE, "Keep all estimates (regardless of sign)" = FALSE))									 
+			             c("Keep all estimates, regardless of sign (default)" = FALSE, "Set to zero" = TRUE))									 
 				)
 			),
-			h2("Output options"),
+						
 			conditionalPanel("input.tabs1 == 'Funnel plots'",
  				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
 				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),
 				checkboxInput("show_PET", "Show PET meta-regression in plot", TRUE),
 				checkboxInput("show_PEESE", "Show PEESE meta-regression in plot", TRUE)
  			),
-															 
-			conditionalPanel("input.tabs1 != 'Funnel plots'",						 
+														 
+			conditionalPanel("input.tabs1 != 'Funnel plots' & input.tabs1 != 'Method performance check'",
+				h2("Output options"),
 				radioButtons("plotOrTable", "Output as:", c(Plot="Plot", Table="Table"), inline=TRUE)
 			)
 		),
 		
-		# ---------------------------------------------------------------------
-		# The output panels, on the right side
+		
+		
+		## ======================================================================
+		## The output panels, on the right side
+		## ======================================================================
 		
 		column(width=8, 
+			
+			alert.create("Please note: All results covered in this app are based on two-group t-tests."),
+			
 			tabsetPanel(id ="tabs1",	
 			
 			# ---------------------------------------------------------------------
@@ -148,6 +205,16 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						helpText("Horizontal error bars are 95% quantiles (i.e., 95% of simulated replications were in that range).")
 					)
 				),
+				
+				
+				# ---------------------------------------------------------------------
+				# check performance of methods
+				
+				tabPanel("Method performance check",
+					h2("Under which conditions does a method perform well?"),
+					uiOutput("perfPlot")
+				),	
+				
 				# ---------------------------------------------------------------------
 				# About
 				

@@ -41,7 +41,7 @@ hyp.wide$rejectionRatio <- hyp.wide$Power/hyp.wide$TypeI
 hyp.wide$errorSum <- (1-hyp.wide$Power) + hyp.wide$TypeI
 
 save(hyp.wide, file="dataFiles/hyp.wide.RData")
-save(hyp.wide, file="Shiny/MAexplorer/hyp.wide.RData")
+save(hyp.wide, file="Shiny/metaExplorer/hyp.wide.RData")
 
 
 theme_metashowdown <- theme(

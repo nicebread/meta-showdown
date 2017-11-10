@@ -1,0 +1,11 @@
+base
+lavaan
+ggplot2
+lattice
+tkrplot
+RSA
+dplyr
+knitr
+bindrcpp
+reshape2
+rmarkdown

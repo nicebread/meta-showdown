@@ -9,7 +9,7 @@ if(!exists("summ")){
 require(reshape2)
 require(dplyr)
 
-performsPoorly = function(k="any",method,
+performsPoorly <- function(k="any",method,
                           Delta="any",Tau="any",PB="any",QRP="any",
                           metric,performanceLB,performanceUB){
     

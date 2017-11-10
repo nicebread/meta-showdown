@@ -77,7 +77,7 @@ res.wide.red <- res.wide
 
 ## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 
-PUNI <- res.wide[res.wide$method == "puniform", ]
+PUNI <- res.wide[res.wide$method == "puniform" & !is.na(res.wide$b0_conf.high), ]
 table(is.na(PUNI$b0_conf.low))
 res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
 

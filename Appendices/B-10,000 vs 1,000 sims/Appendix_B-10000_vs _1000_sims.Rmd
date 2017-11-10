@@ -7,15 +7,18 @@ classoption: landscape
 
 
 ```{r setup, include=FALSE}
+library(dplyr)
 library(knitr)
 library(ggplot2)
+library(reshape2)
 
 # library(rmarkdown);render('Appendix_B-10000_vs _1000_sims.Rmd', output_format='pdf_document', clean=FALSE, run_pandoc = FALSE)
+# library(rmarkdown);render('Appendix_B-10000_vs _1000_sims.Rmd', output_format='pdf_document')
 
 ```
 
 
-```{r echo=FALSE, cache=TRUE, results="hide"}
+```{r echo=FALSE, cache=FALSE, results="hide"}
 ## ======================================================================
 ## This file loads the results of the meta-analyses (which were generated in 2-analysisFramework.R)
 ## and computes summaries of them (such as mean error, MSE, coverage, etc.)
@@ -47,29 +50,32 @@ str(res.final)
 
 
 # Show conditions
-tab <- res.final %>% group_by(k, delta, selProp, tau) %>% summarise(n.MA=length(unique(id)))
-print(tab, n=50)
+#tab <- res.final %>% group_by(k, delta, censor, tau) %>% summarise(n.MA=length(unique(id)))
+#print(tab, n=50)
 
 
 # Reshape to wide format
-res.wide <- res.final %>% filter(term %in% c("b0", "kSig")) %>% dcast(id + condition + simBatch + k + delta + qrpEnv + selProp + tau + method + term ~ variable, value.var="value")
+#res.wide <- res.final %>% filter(term %in% c("b0", "kSig")) %>% dcast(id + condition + simBatch + k + delta + qrpEnv + censor + tau + method + term ~ variable, value.var="value")
+res.wide <- res.final %>% 
+	filter(term %in% c("b0"), method %in% c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE.lm", "3PSM")) %>% 
+	dcast(id + condition + simBatch + k + delta + qrpEnv + censor + tau + method + term ~ variable, value.var="value")
 
 # get id's with kSig >= 4
-incl <- res.wide %>% filter(term=="kSig") %>% group_by(id) %>% summarise(kSig_include = estimate >= 4)
-incl.ids <- incl$id[incl$kSig_include == TRUE]
-
-# Set p-curve and p-uniform to NA where kSig < 4
-res.wide$estimate[!res.wide$id %in% incl.ids & res.wide$method %in% c("puniform", "pcurve.b0") & res.wide$term == "b0"] <- NA
+# incl <- res.wide %>% filter(term=="kSig") %>% group_by(id) %>% summarise(kSig_include = estimate >= 4)
+# incl.ids <- incl$id[incl$kSig_include == TRUE]
+#
+# # Set p-curve and p-uniform to NA where kSig < 4
+# res.wide$estimate[!res.wide$id %in% incl.ids & res.wide$method %in% c("puniform", "pcurve.b0") & res.wide$term == "b0"] <- NA
 
 
 # define some meaningful labels for the plots
 res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), labels=paste0("delta = ", unique(res.wide$delta)))
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
-res.wide$selProp.label <- factor(res.wide$selProp, levels=unique(res.wide$selProp), labels=paste0("selProp = ", unique(res.wide$selProp)))
+res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("Publication bias = ", unique(res.wide$censor)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
 
 
-summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, selProp.label, tau.label, method) %>% summarise(
+summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, censor.label, tau.label, method) %>% dplyr::summarise(
   meanEst		= mean(estimate, na.rm=TRUE),
   ME 			= mean(estimate - delta, na.rm=TRUE),
   RMSE			= sqrt(mean((estimate - delta)^2, na.rm=TRUE)),
@@ -88,12 +94,12 @@ Simulations were run with 10,000 replications for a selection of conditions. The
 ## Variance in ES estimates between simulation batches
 
 ```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
-ggplot(summ, aes(x=method, y=meanEst, color=simBatch, shape=factor(delta.label))) + geom_point() + geom_hline(aes(yintercept=delta), linetype="dotted") + facet_grid(selProp.label~k.label~tau.label) + coord_flip(ylim=c(-0.5, 1))
+ggplot(summ, aes(x=method, y=meanEst, color=simBatch, shape=factor(delta.label))) + geom_point() + geom_hline(aes(yintercept=delta), linetype="dotted") + facet_grid(k.label~tau.label~censor.label) + coord_flip(ylim=c(-0.5, 1))
 ```
 
 
 ## Variance in RMSE between simulation batches
 
 ```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
-ggplot(summ, aes(x=method, y=RMSE, color=simBatch, shape=delta.label)) + geom_point() + facet_grid(selProp.label~k.label~tau.label) + coord_flip(ylim=c(-.8, .8))
+ggplot(summ, aes(x=method, y=RMSE, color=simBatch, shape=delta.label)) + geom_point() + facet_grid(k.label~tau.label~censor.label) + coord_flip(ylim=c(-.8, .8))
 ```
