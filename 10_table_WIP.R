@@ -5,7 +5,9 @@ library(dplyr)
 library(tidyverse)
 load("dataFiles/summ.RData")
 
-summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+summ2 <- summ %>% 
+  filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
+  mutate(method = ifelse(method == "pcurve.evidence", "pcurve", method)) %>% 
   mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
                          labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
 
@@ -74,13 +76,30 @@ MEplot <- function(dat, est) {
     scale_y_continuous(limits = c(-.3, .5)) +
     facet_grid(k~censor)
 }
-MEplot(master, "RE")
-MEplot(master, "TF")
-MEplot(master, "WAAP-WLS")
-MEplot(master, "PET-PEESE")
-MEplot(master, "p-curve")
-MEplot(master, "p-uniform")
-MEplot(master, "3PSM")
+MEplot(master, "RE") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
+MEplot(master, "TF") # QRP generally increases ME when h0 true, but less than for RE
+MEplot(master, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
+MEplot(master, "PET-PEESE") # QRP sharply decreases ME across conditions, often strong negative bias
+MEplot(master, "p-curve") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(master, "p-uniform") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(master, "3PSM") # QRP decreases ME across conditions, sometimes negative bias
+
+# max diff from QRP
+master %>% 
+  filter(method != "p-curve_H0") %>% 
+  group_by(method, delta, tau, k, censor) %>% 
+  summarize(maxMEdiff = max(ME) - min(ME)) %>% 
+  ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
+  geom_histogram() + 
+  facet_wrap(~method)
+# max diff from censoring
+master %>% 
+  filter(method != "p-curve_H0") %>% 
+  group_by(method, delta, tau, k, qrpEnv) %>% 
+  summarize(maxMEdiff = max(ME) - min(ME)) %>% 
+  ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
+  geom_histogram() + 
+  facet_wrap(~method)
 
 RMSEplot <- function(dat, est) {
   filter(dat, method == est) %>% 
@@ -89,25 +108,58 @@ RMSEplot <- function(dat, est) {
     scale_y_continuous(limits = c(0, 0.575)) +
     facet_grid(k~censor)
 }
-RMSEplot(master, "RE")
-RMSEplot(master, "TF")
-RMSEplot(master, "WAAP-WLS")
-RMSEplot(master, "PET-PEESE")
-RMSEplot(master, "p-curve")
-RMSEplot(master, "p-uniform")
+RMSEplot(master, "RE") # QRP generally increases RMSE slightly, but more influential under pub bias
+RMSEplot(master, "TF") # same
+RMSEplot(master, "WAAP-WLS") # same
+RMSEplot(master, "PET-PEESE") # QRP generally increases RMSE, can decrease it if bias is strong
+RMSEplot(master, "p-curve") # QRP increases RMSE when null is false, homogeneity; decreases o.w.
+RMSEplot(master, "p-uniform") # same
 RMSEplot(master, "3PSM")
+
+# max diff from QRP
+master %>% 
+  filter(method != "p-curve_H0") %>% 
+  group_by(method, delta, tau, k, censor) %>% 
+  summarize(maxRMSEdiff = max(RMSE) - min(RMSE)) %>% 
+  ggplot(aes(x = maxRMSEdiff, fill = as.factor(delta))) +
+  geom_histogram() + 
+  facet_wrap(~method)
+# max diff from censoring
+master %>% 
+  filter(method != "p-curve_H0") %>% 
+  group_by(method, delta, tau, k, qrpEnv) %>% 
+  summarize(maxRMSEdiff = max(RMSE) - min(RMSE)) %>% 
+  ggplot(aes(x = maxRMSEdiff, fill = as.factor(delta))) +
+  geom_histogram() + 
+  facet_wrap(~method)
 
 powplot <- function(dat, est) {
   filter(dat, method == est) %>% 
     ggplot(aes(x = interaction(tau, delta), y = H0.reject.rate, color = qrpEnv)) +
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0, 1)) +
+    geom_hline(yintercept = c(.05, .80), lty = 2) +
     facet_grid(k~censor)
 }
-powplot(master, "RE")
-powplot(master, "TF")
-powplot(master, "WAAP-WLS")
-powplot(master, "PET-PEESE")
-powplot(master, "p-curve")
-powplot(master, "p-uniform")
+powplot(master, "RE") # increase in Type I is considerable but small compared to pub bias
+powplot(master, "TF") # QRP still increases Type I given pub bias
+powplot(master, "WAAP-WLS") # QRP has small effect on power, complex effect on pub bias
+powplot(master, "PET-PEESE") # QRP increases Type I and Type II error both.  Wrong sign?
+#powplot(master, "p-curve")
+#powplot(master, "p-uniform")
 powplot(master, "3PSM")
+
+ciplot <- function(dat, est) {
+  filter(dat, method == est) %>% 
+    ggplot(aes(x = interaction(tau, delta), y = coverage, color = qrpEnv)) +
+    geom_point(size = 2) +
+    scale_y_continuous(limits = c(0, 1)) +
+    geom_hline(yintercept = .95, lty = 2) +
+    facet_grid(k~censor)
+}
+ciplot(master, "RE") # generally speaking, a loss of coverage
+ciplot(master, "TF") # complex
+ciplot(master, "WAAP-WLS") # complex
+ciplot(master, "PET-PEESE") # some complexity; generally a loss of coverage
+ciplot(master, "p-uniform") # better coverage when h0 true or tau = 0.2
+ciplot(master, "3PSM") # better coverage, sometimes, when there's pub bias
