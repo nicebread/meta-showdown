@@ -76,6 +76,9 @@ MEplot <- function(dat, est) {
     scale_y_continuous(limits = c(-.3, .5)) +
     facet_grid(k~censor)
 }
+# how much bias can QRPs alone cause?
+filter(master, method == "RE", censor == "med", delta == 0, tau == 0)
+
 MEplot(master, "RE") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
 MEplot(master, "TF") # QRP generally increases ME when h0 true, but less than for RE
 MEplot(master, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
@@ -141,6 +144,9 @@ powplot <- function(dat, est) {
     geom_hline(yintercept = c(.05, .80), lty = 2) +
     facet_grid(k~censor)
 }
+# increase in Type I error given true null and no pub bias
+filter(master, method == "RE", censor == "none", delta == 0)
+
 powplot(master, "RE") # increase in Type I is considerable but small compared to pub bias
 powplot(master, "TF") # QRP still increases Type I given pub bias
 powplot(master, "WAAP-WLS") # QRP has small effect on power, complex effect on pub bias
