@@ -36,7 +36,7 @@ master <- summ2 %>%
          tau %in% c(0, 0.2),
          k %in% c(10, 60)) %>% 
   ungroup() %>% 
-  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, H0.reject.rate, coverage)
+  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, H0.reject.rate, coverage, H0.reject.pos.rate)
 
 output.ME <- master %>% 
   dplyr::select(delta:censor, ME) %>% 
@@ -154,6 +154,14 @@ powplot(master, "PET-PEESE") # QRP increases Type I and Type II error both.  Wro
 #powplot(master, "p-curve")
 #powplot(master, "p-uniform")
 powplot(master, "3PSM")
+
+# is it wrong sign in PET-PEESE?
+filter(master, method == "PET-PEESE") %>% 
+  ggplot(aes(x = interaction(tau, delta), y = H0.reject.pos.rate, color = qrpEnv)) +
+  geom_point(size = 2) +
+  scale_y_continuous(limits = c(0, 1)) +
+  geom_hline(yintercept = c(.05, .80), lty = 2) +
+  facet_grid(k~censor)
 
 ciplot <- function(dat, est) {
   filter(dat, method == est) %>% 
