@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Study id="ratlifflab.uflrick.manylabs2" datagroup="research">
+
+    <!-- This is the English lab version of ManyLabs, version 2 created to reference task.js from common folder to stop "Dev2 data not recording" warning from showing up. -->
+	
+    <Definitions>
+        
+        <Task id="startpage">Instructions.jsp</Task>
+        <Task id="realstart">realstart.html</Task>		
+        <Task id="last">lastpage.html</Task>
+		<Task id="omdimc3">omdimc3.jsp</Task>  
+        <Task id="debriefing">debriefing.jsp</Task>
+
+        <Task id="anchorinstruct">anchorinstruct.html</Task>
+        <Task id="anchoring1a">anchoring1a.html</Task>
+        <Task id="anchoring1b">anchoring1b.html</Task>
+        <Task id="anchoring2a">anchoring2a.html</Task>
+        <Task id="anchoring2b">anchoring2b.html</Task>
+        <Task id="anchoring3a">anchoring3a.html</Task>
+        <Task id="anchoring3b">anchoring3b.html</Task>
+        <Task id="anchoring4a">anchoring4a.html</Task>
+        <Task id="anchoring4b">anchoring4b.html</Task>
+        <Task id="diseaseframinga">diseaseframinga.html</Task>
+        <Task id="diseaseframingb">diseaseframingb.html</Task>
+        <Task id="gamblerfallacya">gamblerfallacya.html</Task>
+        <Task id="gamblerfallacyb">gamblerfallacyb.html</Task>
+        <Task id="sunkcosta">sunkcosta.html</Task>
+        <Task id="sunkcostb">sunkcostb.html</Task>
+        <Task id="scalesa">scalesa.html</Task>
+        <Task id="scalesb">scalesb.html</Task>
+
+        <Task id="reciprocityusa">reciprocityusa.html</Task>
+        <Task id="reciprocityusb">reciprocityusb.html</Task>		
+        <Task id="reciprocityothera">reciprocityothera.html</Task>
+        <Task id="reciprocityotherb">reciprocityotherb.html</Task>	
+		
+        <Task id="allowedforbiddena">allowedforbiddena.html</Task>
+        <Task id="allowedforbiddenb">allowedforbiddenb.html</Task>
+        <Task id="quotea">quotea.html</Task>
+        <Task id="quoteb">quoteb.html</Task>	
+
+        <Task id="imagineda">imagineda.html</Task>
+        <Task id="imaginedb">imaginedb.html</Task>
+        <Task id="imagineddescribe">imagineddescribe.html</Task>
+        <Task id="imaginedexplicit">imaginedexplicit.html</Task>
+
+        <Task id="flagpriminga">flagpriminga.html</Task>		
+        <Task id="flagprimingb">flagprimingb.html</Task>		
+        <Task id="flagprimedv1">flagprimedv1.html</Task>		
+        <Task id="flagprimedv2">flagprimedv2.html</Task>
+		
+		<Task id="moneyprimea">moneyprimea.html</Task>		
+        <Task id="moneyprimeb">moneyprimeb.html</Task>	
+        <Task id="moneyprimescale1">moneyprimescale1.html</Task>		
+		
+		<Task id="iatinstructions" >iatinstructions.htm</Task>
+		<Task id="iata" file="iata.xml" properties="iatdefaults.xml">iattask.jsp</Task>
+		<Task id="iatb" file="iatb.xml" properties="iatdefaults.xml">iattask.jsp</Task>
+
+		<Task id="iatexplicitthermmath">iatexplicitthermmath.html</Task>
+		<Task id="iatexplicitmath1">iatexplicitmath1.html</Task>
+		<Task id="iatexplicitmath2">iatexplicitmath2.html</Task>
+		<Task id="iatexplicitmath3">iatexplicitmath3.html</Task>
+		<Task id="iatexplicitmath4">iatexplicitmath4.html</Task>
+		<Task id="iatexplicitmath5">iatexplicitmath5.html</Task>
+		<Task id="iatexplicitmath6">iatexplicitmath6.html</Task>	
+
+		<Task id="iatexplicitthermart">iatexplicitthermart.html</Task>
+		<Task id="iatexplicitart1">iatexplicitart1.html</Task>		
+		<Task id="iatexplicitart2">iatexplicitart2.html</Task>
+		<Task id="iatexplicitart3">iatexplicitart3.html</Task>
+		<Task id="iatexplicitart4">iatexplicitart4.html</Task>
+		<Task id="iatexplicitart5">iatexplicitart5.html</Task>
+		<Task id="iatexplicitart6">iatexplicitart6.html</Task>
+		
+		<Task id="characteristics">characteristics.html</Task>
+		<Task id="rasurvey">rasurvey.html</Task>
+		<Task id="flagprimesupplement">flagprimesupplement.html</Task>
+		
+		
+    </Definitions>
+    <Map>
+        <Task id="startpage" />
+		<Task id="rasurvey" />
+        <Task id="realstart" />
+        
+		
+		<Branch type="group" select="11" id="overall">
+		
+					<Branch type="group" random="false" id="anchoring">
+					
+						<Task id="anchorinstruct" />
+					
+							<Branch type="group" select="4" id="anchoringrand">
+					
+								<Branch type="group" select="1" id="anchoring1">
+										<Task id="anchoring1a" />
+										<Task id="anchoring1b" />
+								</Branch>
+
+								<Branch type="group" select="1" id="anchoring2">
+										<Task id="anchoring2a" />
+										<Task id="anchoring2b" />
+								</Branch>
+
+								<Branch type="group" select="1" id="anchoring3">
+										<Task id="anchoring3a" />
+										<Task id="anchoring3b" />
+								</Branch>
+								
+								<Branch type="group" select="1" id="anchoring4">
+										<Task id="anchoring4a" />
+										<Task id="anchoring4b" />
+								</Branch>
+					
+							</Branch>
+					</Branch>
+			
+                <Branch type="group" select="1" id="diseaseframing">
+                        <Task id="diseaseframinga" />
+                        <Task id="diseaseframingb" />
+                </Branch>
+				
+                <Branch type="group" select="1" id="gamblerfallacy">
+                        <Task id="gamblerfallacya" />
+                        <Task id="gamblerfallacyb" />
+                </Branch>
+				
+                <Branch type="group" select="1" id="sunkcost">
+                        <Task id="sunkcosta" />
+                        <Task id="sunkcostb" />
+                </Branch>
+				
+				<Branch type="group" select="1" id="scales">
+                        <Task id="scalesa" />
+                        <Task id="scalesb" />
+                </Branch>
+				
+				<Branch type="group" select="1" id="reciprocity">
+						<Branch type="group" random="false" id="reciprocityusfirst">
+								<Task id="reciprocityusa" />
+								<Task id="reciprocityothera" />
+						</Branch>
+						<Branch type="group" random="false" id="reciprocityotherfirst">
+								<Task id="reciprocityotherb" />
+								<Task id="reciprocityusb" />
+						</Branch>				
+				</Branch>	
+				
+				<Branch type="group" select="1" id="allowedforbidden">
+                        <Task id="allowedforbiddena" />
+                        <Task id="allowedforbiddenb" />
+                </Branch>
+				
+				<Branch type="group" select="1" id="quote">
+                        <Task id="quotea" />
+                        <Task id="quoteb" />
+                </Branch>	
+							
+				<Branch type="group" random="false" id="imagined">
+						<Branch type="group" select="1" id="imaginedselect">
+								<Task id="imagineda" />
+								<Task id="imaginedb" />
+						</Branch>
+						<Task id="imagineddescribe" />
+						<Task id="imaginedexplicit" />
+				</Branch>
+				
+				<Branch type="group" random="false" id="flagprime">
+						<Branch type="group" select="1" id="flagprimeselect">
+							<Task id="flagpriminga" />
+							<Task id="flagprimingb" />
+						</Branch>
+						<Task id="flagprimedv1" />
+						<Task id="flagprimedv2" />
+				</Branch>	
+				
+				<Branch type="group" random="false" id="moneyprime">
+						<Branch type="group" select="1" id="moneyprimeselect">
+								<Task id="moneyprimea" />
+								<Task id="moneyprimeb" />
+						</Branch>
+						<Task id="moneyprimescale1" />
+				</Branch>
+
+		</Branch>	
+				
+				<Task id="iatinstructions" />
+					<Branch type="group" select="1" id="iat">
+						<Task id="iata"/>
+						<Task id="iatb"/>
+					</Branch>
+			
+			<Branch type="group" select="2" id="iatexplicit">
+				
+				<Branch type="group" random="false" id="explicitmath">
+					<Task id="iatexplicitthermmath"/>
+					<Task id="iatexplicitmath1"/>
+					<Task id="iatexplicitmath2"/>
+					<Task id="iatexplicitmath3"/>
+					<Task id="iatexplicitmath4"/>
+					<Task id="iatexplicitmath5"/>
+					<Task id="iatexplicitmath6"/>
+				</Branch>
+				
+				<Branch type="group" random="false" id="explicitart">
+					<Task id="iatexplicitthermart"/>
+					<Task id="iatexplicitart1"/>
+					<Task id="iatexplicitart2"/>
+					<Task id="iatexplicitart3"/>
+					<Task id="iatexplicitart4"/>
+					<Task id="iatexplicitart5"/>
+					<Task id="iatexplicitart6"/>
+				</Branch>
+				
+			</Branch>
+		
+		<Task id="omdimc3" />
+		<Task id="characteristics" />
+		<Task id="flagprimesupplement" />
+		
+        <Task id="last" />
+        <Task id="debriefing" />
+    </Map>
+</Study>

@@ -8,7 +8,7 @@
 # source("2-analysisFramework.R", echo=TRUE)
 
 # load all functions and packages
-source("start.R")
+source("0-start.R")
 
 library(doParallel)
 # detectCores()
@@ -21,7 +21,6 @@ simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
 
 library(gtools)
 simDatFiles <- mixedsort(simDatFiles)
-# f <- simDatFiles[[33]]
 
 
 # loop through all simParts files
@@ -62,15 +61,25 @@ for (f in simDatFiles) {
 			# analyze with all MA techniques
 			res0 <- rbind(
 				RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
-				PETPEESE.est(MAdat$d, MAdat$v, long=TRUE),
+				PETPEESE.est(MAdat$d, MAdat$v, PP.test = "one-sided", long=TRUE),
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
-				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
-				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="fixed", fixed.effect=0.3),
-				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="rma"),
-				#topN(MAdat$d, MAdat$v, MAdat$n1, MAdat$n2, est="PEESE"),
-				TPSM.est(t=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, long=TRUE),
-				betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
+				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
+				onePSM.McShane.est(t.obs=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
+				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE),
+				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE, fallback=FALSE),
+				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
+				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
+			)
+			
+			## add some extra informations:			
+			
+			# the average true delta of all positive significant studies (=estimand of pcurve)
+			delta.included.M <- mean(MAdat$D[MAdat$p < .05 & MAdat$D >= 0])
+			if (is.nan(delta.included.M)) delta.included.M <- NA
+			
+			res0 <- rbind(res0,
+				data.frame(method="pcurve", term="delta.included", variable="mean", value = delta.included.M)	
 			)
 			
 	
@@ -78,7 +87,7 @@ for (f in simDatFiles) {
 			res1 <- cbind(
 		
 				# save settings of condition to results:
-				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "selProp", "tau", "kFD", "sel", "qrp")],
+				MAdat[rep(1, nrow(res0)), c("id", "condition", "k", "delta", "qrpEnv", "censor", "tau", "qrp")],
 		
 				# save analysis results:
 				res0
@@ -92,10 +101,5 @@ for (f in simDatFiles) {
 	} # of dopar
 	
 	save(res, file=paste0("analysisParts/analysis_", basename(f)), compress="gzip")
-	
-	# send a push notification after each 50 finished conditions:
-	if (which(simDatFiles == f) %% 50 == 0) {
-	  userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
-	  send_push(userkey, paste0("Condition ", which(simDatFiles == f), " finished"))
-	}
 } # of "f in simDatFiles"
+

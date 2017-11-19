@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<args>
+	<arg name="INITIAL_LOADING">Loading Task</arg>
+	<arg name="FAILED_LOADING">Failed to load task!</arg>
+	<arg name="BUILD_LOADING">Building Task</arg>
+	<arg name="IMAGE_LOADING">Loading Stimuli</arg>
+	<arg name="BEGIN_LABEL"><![CDATA[<font color="#FF0000"><b>&lt;&lt; Click here to begin &gt;&gt;</b></font>]]></arg>
+	<arg name="ERR"><![CDATA[<font color="#FF0000" size="48"><b>X</b></font>]]></arg>
+	<arg name="SEP">or</arg>
+	<arg name="INSTRUCTIONS"><![CDATA[<font size="14"><p>Put your middle or index fingers on the <b>E</b> and <b>I</b> keys of your keyboard. Words or images representing the categories at the top will appear one-by-one in the middle of the screen. When the item belongs to a category on the left, press the <b>E</b> key; when the item belongs to a category on the right, press the <b>I</b> key. Items belong to only one category. If you make an error, an <font color="#FF0000"><b>X</b></font> will appear - fix the error by hitting the other key.</p><br /><p>This is a timed sorting task. <b>GO AS FAST AS YOU CAN</b> while making as few mistakes as possible. Going too slow or making too many errors will result in an uninterpretable score. This task will take about 5 minutes to complete.</p><br /><p align="center">Press the <b>space bar</b> to begin.</p></font>]]></arg>
+	<arg name="END_WAIT">Please Wait</arg>
+	<arg name="END_CONT">Press spacebar to continue</arg>
+	<arg name="FAST_TXT">There were too many fast trials to determine a result.</arg>
+	<arg name="ERR_TXT">There were too many errors made to determine a result.</arg>
+	<arg name="SCORE_ERR">The result could not be determined.</arg>
+	<arg name="FONT">Arial</arg>
+	<arg name="FONTSIZE">24</arg>
+	<arg name="FONTCOLOR">FFFFFF</arg>
+	<arg name="CAT_PADDING">5</arg>
+	<arg name="INST_MARGIN">20</arg>
+	<arg name="INST_PADDING">20</arg>
+	<arg name="ERROR_PADDING">50</arg>
+	<arg name="LEFT_KEY">69</arg>
+	<arg name="RIGHT_KEY">73</arg>
+	<arg name="ERR_CORR">1</arg>
+	<arg name="ERR_FEED">1</arg>
+	<arg name="STIM_DELAY">250</arg>
+	<arg name="IMAGE_URL">/implicit/user/kratliff/uflrick/manylabs/manylabs2/images/</arg>
+	<arg name="POST_URL">/implicit/AS</arg>
+	<arg name="NEXT_URL">/implicit/Study</arg>
+	<arg name="SKIP">1</arg>
+	<arg name="DEBUG">0</arg>
+</args>

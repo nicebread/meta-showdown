@@ -8,8 +8,7 @@ summary(social)
 
 social$nper <- social$reis_n/2
 
-
-ns <- social$nper
+ns <- na.omit(social$nper)
 
 ggplot(social, aes(x= nper)) +
   theme_bw() +
@@ -19,3 +18,10 @@ ggplot(social, aes(x= nper)) +
   stat_function(fun = dnbinom, size=1, color='hotpink', args=list(size=2.3, mu=48)) ## this gives us the parameters to pick N
 
 
+
+perGrp <- read.csv("perGrp.csv")
+par(mfcol=c(1, 2))
+hist(perGrp$x, breaks=seq(0, 500, by=20))
+hist(ns, breaks=seq(0, 500, by=20))
+
+#  

@@ -1,7 +1,11 @@
-#VERSION NOTES
-#new framework for implementing QRPs and selection
+# MAIN FUNCTION to use: dataMA
+# (see from line 440)
 
-######################################################################
+# load empirical sample sizes into workspace
+perGrp <- read.csv("perGrp.csv")
+
+# load censoring function
+source("censorFunc.R")
 
 #==============
 #   Outlier   #
@@ -28,7 +32,7 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
+expFinU = function(delta, tau, empN = TRUE, meanN, minN, empN.boost=0){
   
   #get the per-group sample size 
   if (empN==TRUE){
@@ -63,16 +67,18 @@ expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
   n2 = n
   df = 2*n-2
   
-  #get the pooled variance
+  #get the pooled variance (formula from Hedge's g as)
   S = sqrt( ((n1 - 1)*v1 + (n2 - 1)*v2) / df )
   
   #compare the two distributions
-  test = t.test(Ye,Yc)
+  test = t.test(Ye, Yc)
   
   #calculate d, the variance of d, the p-value, the t-stat, and n.
   d = (m1 - m2)/S
-  d_v = (n1 + n2)/(n1 * n2) + (d^2 / (2 *df)) * (n1 + n2) / df
+	
+  d_v = (n1 + n2)/(n1 * n2) + (d^2 / (2*(n1+n2)))
   d_se = sqrt(d_v)
+	
   p = test$p.value
   t = as.numeric(test$statistic)
   N = n1+n2
@@ -82,7 +88,7 @@ expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
   pwr = pow$power 
   
   #output 
-  out = c(d,p,t,N,d_v,d_se,pwr,n1,n2,D)
+  out = c(d, p, t, N, d_v, d_se, pwr, n1, n2, D)
   
 }
 
@@ -99,8 +105,7 @@ expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
 # output is 4 vectors of length maxN
 # This is called within expFinB
 
-expDataB = function(delta,tau,
-                    cbdv,maxN){                    
+expDataB = function(delta, tau, cbdv, maxN){                    
   
   #calculate the treatement effect as a function of the 
   #true effect, delta, and heterogeneity (defined as tau)
@@ -325,8 +330,8 @@ analyB <- function(g1,g2,g3,g4,D,multDV,out,mod){
 # Produces results, a, from a p-hacked experiment.
 expFinB = function(delta, tau, empN, maxN, meanN, minN, strat, empN.boost=empN.boost){
   
-  #correlation between multiple DVs is set to 0.50 as default
-  cbdv = 0.5
+  #correlation between multiple DVs is set to 0.20 as default
+  cbdv = 0.2
   
   # if QRP strategy is NONE
   if (strat=='none'){
@@ -459,7 +464,7 @@ dataMA <- function(k, delta, tau,
                    empN, maxN, meanN, minN,
                    selProp, qrpEnv, empN.boost = 0) {  
   
-  #get the number of studies exposed to publication selection bias (and those now exposed)
+  #get the number of studies exposed to publication selection bias (and those not exposed)
   kB = round(k*selProp)
   kU = k-kB
   
@@ -592,4 +597,119 @@ dataMA <- function(k, delta, tau,
                        'qrp')     # 0 = 'none', 1 = 'mod', 2 = 'agg'
   
   return(outMat)
+}
+
+
+
+
+
+
+
+## ======================================================================
+## New implementation with new censoring functions
+## ======================================================================
+
+
+# Produces a dataset for meta-analysis. Applies both QRP
+# and selection at a proportion specified by propB if 
+# sel and QRP are 1 not 0. 
+
+#' @param k the number of studies in the MA
+#' @param delta the true effect (or the average of the true effects if heterogeneity exists)
+#' @param tau the SD around the true effect
+#' @param empN a logical, whether to use the empirical per-group N distribution
+#' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples; not necessary when empN == TRUE
+#' @param minN the min of the truncated normal for sample size; not necessary when empN == TRUE
+#' @param meanN the average of the truncated normal for sample size; not necessary when empN == TRUE
+#' @param censor The censoring function - either "none", "med" (medium publication bias), "high" (high publication bias), or a vector of 3 values for the censoring function (posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)
+#' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
+#' @param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
+
+# k=10;delta=.3;tau=.1;qrpEnv="med";censorFunc="A"; empN=TRUE; maxN = 1000; meanN = NA; minN = 0; empN.boost = 0
+simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), censorFunc = c("none", "medium", "high"), empN = TRUE, maxN = 1000, meanN = NA, minN = 0, empN.boost = 0, verbose=FALSE) {  
+    
+	# validate parameters
+	if (length(censorFunc) == 1) {
+		censorFunc <- match.arg(censorFunc, c("none", "medium", "high"))
+	}
+	qrpEnv <- match.arg(qrpEnv, c("none", "low", "medium", "high"))
+		
+  # Define the QRP environments:
+	# get the proportions of studies produced under each QRP strategy
+  if (qrpEnv == 'none'){
+    noneP = 1; modP = 0; aggP = 0
+  } else if (qrpEnv == 'low'){
+    noneP = 0.50; modP = 0.40; aggP = 0.10
+  } else if (qrpEnv == 'medium'){
+		noneP = 0.30; modP = 0.50; aggP = 0.20
+  } else if (qrpEnv == 'high'){
+		noneP = 0.10; modP = 0.40; aggP = 0.50
+  } else {
+		print('ERROR: qrpEnv must be none, low, medium, or high')
+	}
+  
+	
+	datMA <- data.frame()
+	
+	# repeatedly add a new study from that environment until the desired number of k is achieved
+	repeat {		
+		thisStudiesHackingStyle <- sample(x = c("none", "mod", "agg"), size=1, replace=TRUE, prob = c(noneP, modP, aggP))
+		
+		if (thisStudiesHackingStyle == "none") {
+      res <- expFinU(delta=delta, tau=tau, empN=empN, meanN=meanN, minN=minN, empN.boost=empN.boost)			
+      res[11] = 0 #QRP style
+		} else if (thisStudiesHackingStyle == "mod") {
+      res <- expFinB(delta=delta, tau=tau, empN=empN, maxN=maxN, meanN=meanN, minN=minN, strat="mod", empN.boost=empN.boost)			
+      res[11] = 1 #QRP style
+		} else if (thisStudiesHackingStyle == "agg") {
+      res <- expFinB(delta=delta, tau=tau, empN=empN, maxN=maxN, meanN=meanN, minN=minN, strat="agg", empN.boost=empN.boost)			
+      res[11] = 2 #QRP style
+		}
+		
+		# inflict publication bias via the censoring function
+		if (is.character(censorFunc) && censorFunc == "none") {
+			publish <- 1
+		} else if (is.character(censorFunc) && censorFunc == "medium") {
+			# predefined censor function for "medium publication bias"
+			publish <- rbinom(n=1, size=1, prob=censorMedium(res[2], direction = sign(res[1])))
+		} else if (is.character(censorFunc) && censorFunc == "high") {
+			# predefined censor function for "strong publication bias"
+			publish <- rbinom(n=1, size=1, prob=censorHigh(res[2], direction = sign(res[1])))
+		} else if (is.vector(censorFunc) && length(censorFunc)==3) {
+			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = censorFunc[1], negSign_NS_baseRate = censorFunc[2], counterSig_rate = censorFunc[3]))
+		} else {
+			stop("Wrong specification of censor function!")
+		}
+				
+		if (publish == 1) {
+			datMA <- rbind(datMA, res)
+			if (verbose==TRUE) print(nrow(datMA))
+		}
+		
+		if (nrow(datMA) >= k) {break}
+		
+	} # of repeat
+  
+  #name columnes
+  colnames(datMA) = c( 'd',       # effect size, d
+                       'p',       # p value for the two group comparison
+                       't',       # t value for the two group comparison
+                       'N',       # total N
+                       'v',       # variance for the effect size
+                       'se',      # standard error for the effect size
+                       'pow',     # power given the true effect for the two group comparison
+                       'n1',      # experimental group sample size
+                       'n2',      # control group sample size
+                       'D',       # the study-level true effect
+                       'qrp')     # 0 = 'none', 1 = 'mod', 2 = 'agg'
+											 
+											 
+ 	# Add Hedge's correction factor
+	df = datMA$n1 + datMA$n2 - 2
+ 	J = 1- 3/(4*df - 1)
+ 	datMA$g = datMA$d*J
+ 	datMA$g_v = datMA$v*J^2
+ 	datMA$g_se = sqrt(datMA$g_v)											 
+  
+  return(datMA)
 }

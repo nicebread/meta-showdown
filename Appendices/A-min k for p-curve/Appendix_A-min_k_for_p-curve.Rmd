@@ -1,0 +1,110 @@
+---
+title: "Supplementary Appendix A: Minimum number of studies for p-curve and p-uniform"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+```
+
+
+```{r echo=FALSE, cache=TRUE, results="hide"}
+
+# library(rmarkdown);render('Appendix_A-min_k_for_p-curve.Rmd', output_format='pdf_document', clean=FALSE, run_pandoc = FALSE)
+# pandoc('Appendix_A-min_k_for_p-curve.knit.md', format='latex')
+load(file="../../dataFiles/res.wide.RData")
+
+min.simulations <- 10
+
+# estimation
+res.est <- res.wide %>% filter(method %in% c("pcurve", "puniform")) %>% dplyr::select(1:9, kSig_estimate, 41:45)
+
+# hypothesis test
+res.hyp <- res.wide %>% filter(method %in% c("pcurve", "pcurve.evidence", "puniform")) %>% dplyr::select(1:9, b0_p.value, skewtest_p.value, kSig_estimate, 41:45)
+
+# change NaNs to NA
+res.hyp$skewtest_p.value[is.nan(res.hyp$skewtest_p.value)] <- NA
+
+# Compute summary measures across replications for estimation
+# ignore the "k" factor: it is irrelevant, how many studies there could have been - we only are interested in the number
+# of significant studies
+summ.est <- res.est %>% 	
+	group_by(delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, method, kSig_estimate) %>% 	
+	filter(!is.na(kSig_estimate)) %>% 
+	dplyr::summarise(
+		n = n(),
+		meanEst	= mean(b0_estimate, na.rm=TRUE),
+		ME 	 	= mean(b0_estimate - delta, na.rm=TRUE),
+		RMSE 	= sqrt(mean((b0_estimate - delta)^2, na.rm=TRUE)),
+		MAD		= mean(abs(b0_estimate - delta), na.rm=TRUE) # mean absolute deviation
+	) %>% ungroup()
+
+
+# Compute summary measures across replications for the hypothesis test
+# ignore the "k" factor: it is irrelevant, how many studies there could have been - we only are interested in the number
+# of significant studies
+summ.hyp <- res.hyp %>%  
+	filter(!is.na(kSig_estimate), kSig_estimate > 0) %>% 
+	group_by(delta, delta.label, qrpEnv, qrp.label, selProp, selProp.label, tau, tau.label, kSig_estimate) %>% 
+	dplyr::summarise(
+		n = n(),
+		pcurve.evidence = sum(na.omit(skewtest_p.value < .05)) / sum(!is.na(skewtest_p.value)),
+		puniform = sum(na.omit(b0_p.value < .05)) / sum(!is.na(b0_p.value))
+	) %>% ungroup()
+	
+summ.hyp.long <- melt(summ.hyp, id.vars=c("delta", "delta.label", "qrpEnv", "qrp.label", "selProp", "selProp.label", "tau", "tau.label", "kSig_estimate", "n"))
+	
+```
+
+This is Online Appendix A for:
+
+Carter, E. C., Schönbrodt, F. D., Hilgard, J., &amp; Gervais, W. (2017). *Correcting for bias in psychology: A comparison of meta-analytic methods.* Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
+
+## Method ##
+
+Effect size estimates and p-values from p-curve and p-uniform were grouped by the number of significant studies that were entered into the methods. Only groups with more than `r min.simulations` simulated meta-analyses were used for the plots. Furthermore, we only looked at the conditions without publication bias (because conditions with 60% or 95% publication bias rarely had less than 10 significant studies in each meta-analysis).
+
+Based on the results below, we decided to keep only p-curve and p-uniform estimates based on k >= 4 significant and directionally consistent studies.
+
+
+## Mean error (ME) in Cohen's *d*, grouped by "# of significant studies"
+
+```{r echo=FALSE}
+ggplot(summ.est %>% filter(kSig_estimate <= 10, n>=min.simulations, selProp==0), aes(x=kSig_estimate, y=ME, color=factor(delta), shape=method)) + geom_point() + geom_line(aes(group=factor(delta):factor(method))) + geom_hline(yintercept=0, linetype="dotted") + facet_grid(qrp.label~tau.label) + theme_bw()+ xlab("# of significant studies entered in method") + scale_x_continuous(breaks=c(2, 4, 6, 8, 10))
+```
+
+### ME with zoomed y-scale: ###
+
+```{r echo=FALSE}
+ggplot(summ.est %>% filter(kSig_estimate <= 10, n>=min.simulations, selProp==0), aes(x=kSig_estimate, y=ME, color=factor(delta), shape=method)) + geom_point() + geom_line(aes(group=factor(delta):factor(method))) + geom_hline(yintercept=0, linetype="dotted") + facet_grid(qrp.label~tau.label) + theme_bw()+ xlab("# of significant studies entered in method") + scale_x_continuous(breaks=c(2, 4, 6, 8, 10)) + coord_cartesian(ylim=c(-1.1, 0.5))
+```
+
+## Root mean square error (RMSE) in Cohen's *d*, grouped by "# of significant studies"
+
+```{r echo=FALSE}
+ggplot(summ.est %>% filter(kSig_estimate <= 10, n>=min.simulations, selProp==0), aes(x=kSig_estimate, y=RMSE, color=factor(delta), shape=method)) + geom_point() + geom_line(aes(group=factor(delta):factor(method))) + geom_hline(yintercept=0, linetype="dotted") + facet_grid(qrp.label~tau.label) + theme_bw()+ xlab("# of significant studies entered in method") + scale_x_continuous(breaks=c(2, 4, 6, 8, 10))
+```
+
+## RMSE with zoomed y-scale
+
+```{r echo=FALSE}
+ggplot(summ.est %>% filter(kSig_estimate <= 10, n>=min.simulations, selProp==0), aes(x=kSig_estimate, y=RMSE, color=factor(delta), shape=method)) + geom_point() + geom_line(aes(group=factor(delta):factor(method))) + geom_hline(yintercept=0, linetype="dotted") + facet_grid(qrp.label~tau.label) + theme_bw()+ xlab("# of significant studies entered in method") + scale_x_continuous(breaks=c(2, 4, 6, 8, 10)) + coord_cartesian(ylim=c(0, 2))
+```
+
+
+## False positive rate (Type I errors)
+
+```{r echo=FALSE}
+ggplot(summ.hyp.long %>% filter(kSig_estimate <= 15, n>=min.simulations, delta==0, selProp==0), aes(x=kSig_estimate, y=value, shape=variable, color=variable)) + geom_point() + geom_line(aes(group=variable)) + geom_hline(yintercept=0.05, linetype="dotted") + facet_grid(qrp.label~tau.label) + theme_bw() + ylab("False positive (Type I) error rate") + xlab("# of significant studies entered in method") + ggtitle("Type I error rate for 0% publication bias")
+```
+
+## True positive rate (statistical power) for $\delta$ = 0.2
+
+```{r echo=FALSE}
+ggplot(summ.hyp.long %>% filter(kSig_estimate <= 15, n>=min.simulations, delta==0.2, selProp==0), aes(x=kSig_estimate, y=value, shape=variable, color=variable)) + geom_point() + geom_line(aes(group=variable)) + geom_hline(yintercept=0.80, linetype="dotted")  + facet_grid(qrp.label~tau.label) + theme_bw() + ylab("Power") + xlab("# of significant studies entered in method") + ggtitle(bquote("Power for "~delta~" = 0.2 and 0% publication bias"))
+```

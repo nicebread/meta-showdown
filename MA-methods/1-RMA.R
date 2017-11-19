@@ -5,19 +5,26 @@ RMA.est <- function(d, v, long=TRUE) {
   #produces estimate of true effect, CI around estimate,
   #and estimate of tau (could get CIs if wanted)
 
-  reMA <- rma(d, v, method="DL")
-  
+	# adjust stepadj (make it smaller by x0.5) and increase maxiter from 100 to 500 to prevent convergence problems
+	#reMA <- rma(d, v, method="REML")
+	
+	reMA <- tryCatch(
+		rma(d, v, method="REML", control = list(stepadj = .5, maxiter=500)),
+		error = function(e) rma(d, v, method="DL")
+	)
+	  
   # assign NULL to tfMA if an error is raised
-  tfMA <- tryCatch({
-	  tfMA = trimfill(reMA)
-  }, error=function(e) NULL)  
+	tfMA <- NULL
+  try({
+	  tfMA <- trimfill(reMA, side="left", maxiter=500)
+  }, silent=TRUE)  
   
   res <- data.frame(method="reMA", tidyRMA(reMA))
   res <- plyr::rbind.fill(res, data.frame(
 	  method="reMA",
-	  term="tau2",
-	  estimate=reMA$tau2,
-	  std.error=reMA$se.tau2
+	  term=c("tau2", "I2", "Q"),
+	  estimate=c(reMA$tau2, reMA$I2, reMA$QE),
+	  std.error=c(reMA$se.tau2, NA, NA)
 	))		
 	  
     

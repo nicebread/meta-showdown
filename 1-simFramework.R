@@ -1,8 +1,13 @@
+## ======================================================================
+## This file generates the simulated data sets, which are stored in separate
+## files in folder /simParts
+## ======================================================================
+
 # run this file:
 # source("1-simFramework.R", echo=TRUE)
 
 # load all functions and packages
-source("start.R")
+source("0-start.R")
 
 # register CPU cores for parallel processing
 library(doParallel)
@@ -18,11 +23,11 @@ registerDoParallel(cores=20)
 k_set <- c(10, 30, 60, 100)							# number of studies in each MA
 delta_set <- c(0, .2, .5, .8)						# true mean of effect sizes
 qrpEnv_Set <- c("none", "med", "high")	# QRP environment
-selProp_set <- c(0, .6, .9)							# publication bias
-tau_set <- c(0, .2, .4)									# heterogeneity
+censor_set <- c("none", "med", "high")	# publication bias
+tau_set <- c(0, .2, .4)									# heterogeneity; assumed to follow a normal distribution
 
 # params stores all possible combinations of experimental factors
-params <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, selProp=selProp_set, tau=tau_set)
+params <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set)
 rownames(params) <- NULL
 print(paste0(nrow(params), " fully crossed experimental conditions have been generated."))
 
@@ -41,13 +46,10 @@ B <- 1000	# number of simulation replications per condition (should be dividable
 ## ======================================================================
 
 print(start <- Sys.time())
-cat(paste0("New simulation started at: ", start), file="output.txt", append=FALSE, sep = "\n")
 
-
-for (j in 1:nrow(param)) {
+for (j in 1:nrow(params)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
-	cat(log1, file="output.txt", append=TRUE, sep = "\n")
 
 	# use %dopar% for parallel processing, or %do% for single thread
 	# "batch" stores the id of the parallel process
@@ -56,19 +58,15 @@ for (j in 1:nrow(param)) {
 		# how many replications are simulated within each fork?
 		b <- round(B/getDoParWorkers())
 	
-		# res stores the results, pre-allocate memory
-		# TODO: adjust ncol to final number of columns
-		#res <- matrix(NA, nrow=sum(params$k[j])*b, ncol=21)
+		# res stores the results
 		res <- data.frame()
-		#counter <- 1	# counter stores the current position in the results matrix
 	
 		for (i in 1:b) {
 			
 			log2 <- paste0(Sys.time(), ", batch=", batch, ": computing condition ", j, "/", nrow(params), "; rep = ", i)
 			print(log2)
-			cat(log2, file="output.txt", append=TRUE, sep = "\n")
 			
-			MA1 <- dataMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, selProp=params[j, "selProp"], qrpEnv=params[j, "qrpEnv"])
+			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censorFunc=as.character(params[j, "censor"]), qrpEnv=as.character(params[j, "qrpEnv"]))
 
 							  
 			# remove rownames (otherwise cbind complains)
@@ -81,7 +79,7 @@ for (j in 1:nrow(param)) {
 			res0 <- cbind(
 	  			  batch		= batch, 
 	  			  replication	= i, 
-				  condition	= j,
+				  	condition	= j,
 		  
 	  			  # settings of the condition
 	  			  p,
@@ -89,22 +87,15 @@ for (j in 1:nrow(param)) {
 	  			  # results of the computation
 	  			  as.matrix(MA1))
 
-			  # collect results in the matrix
-			  #res[counter:(counter+nrow(MA1)-1), ] <- res0
-			  #counter <- counter+nrow(MA1)
 			  res <- rbind(res, res0)
 		} # of b-loop
 
-		#colnames(res) <- colnames(res0)
 		return(res)
 	} # of foreach loop
 		
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
-	save(sim, file=paste0("simPartsDemo/simData_condition_", j, ".RData"), compression="gzip")
+	save(sim, file=paste0("simParts/simData_condition_", j, ".RData"), compress="gzip")
 	
-	# send a push notification after each finished condition:
-	# userkey <- "uY7zyarxM2HoNaTLeX8HXjWvpFA4Cp" #Define user key
-	# send_push(userkey, paste0("Condition ", j, "/", nrow(params), " finished"))
 } # of j (loop through parameter combinations)
 
 
