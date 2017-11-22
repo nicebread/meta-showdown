@@ -1,7 +1,7 @@
 # Do I want to focus on k = 10 and k = 100
 # or is k = 100 too easy and would k = 60 be more informative
 
-library(dplyr)
+#library(dplyr)
 library(tidyverse)
 load("dataFiles/summ.RData")
 
@@ -11,27 +11,21 @@ summ2 <- summ %>%
   mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
                          labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
 
-# k = 100, is it always perfect power for delta = 0.5?
-filter(summ2, delta == .5, k == 100, tau %in% c(0, 0.2)) %>% 
-  ggplot(aes(x = H0.reject.rate, fill = method)) + 
-  geom_histogram() # looks like it's only an issue for 3psm really
-
-filter(summ2, delta == .5, k == 100, tau %in% c(0, 0.2)) %>% 
-  pull(H0.reject.rate) %>% 
-  summary() # min: 68%, median: 100%, mean: 99%
-
-# is k = 60 more interesting?
-filter(summ2, delta == .5, k == 60, tau %in% c(0, 0.2)) %>% 
-  ggplot(aes(x = H0.reject.rate, fill = method)) + 
-  geom_histogram() # now an issue for 3psm and PP
-
-filter(summ2, delta == .5, k == 60, tau %in% c(0, 0.2)) %>% 
-  pull(H0.reject.rate) %>% 
-  summary() # min: 56%, median: 100%, mean: 97%
-
+# aux dataset for p-curve power
+summ3 <- summ %>% 
+  filter(method %in% c("pcurve.evidence", "puniform")) %>% 
+  dplyr::select(method, delta:censor, H0.reject.pos.rate)
+  
 # qrpEnv is none med high
 # censor is none med high
 master <- summ2 %>% 
+  filter(delta %in% c(0, 0.5),
+         tau %in% c(0, 0.2),
+         k %in% c(10, 60)) %>% 
+  ungroup() %>% 
+  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, H0.reject.rate, coverage, H0.reject.pos.rate)
+
+master2 <- summ3 %>% 
   filter(delta %in% c(0, 0.5),
          tau %in% c(0, 0.2),
          k %in% c(10, 60)) %>% 
@@ -74,7 +68,8 @@ MEplot <- function(dat, est) {
     geom_point(size = 2) +
     geom_hline(yintercept = 0) +
     scale_y_continuous(limits = c(-.3, .5)) +
-    facet_grid(k~censor)
+    facet_grid(k~censor) +
+    ggtitle(est)
 }
 # how much bias can QRPs alone cause?
 filter(master, method == "RE", censor == "med", delta == 0, tau == 0)
@@ -109,7 +104,8 @@ RMSEplot <- function(dat, est) {
     ggplot(aes(x = interaction(tau, delta), y = RMSE, color = qrpEnv)) +
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0, 0.575)) +
-    facet_grid(k~censor)
+    facet_grid(k~censor) +
+    ggtitle(est)
 }
 RMSEplot(master, "RE") # QRP generally increases RMSE slightly, but more influential under pub bias
 RMSEplot(master, "TF") # same
@@ -142,7 +138,17 @@ powplot <- function(dat, est) {
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0, 1)) +
     geom_hline(yintercept = c(.05, .80), lty = 2) +
-    facet_grid(k~censor)
+    facet_grid(k~censor) +
+    ggtitle(est)
+}
+powplot.pos <- function(dat, est) {
+  filter(dat, method == est) %>% 
+    ggplot(aes(x = interaction(tau, delta), y = H0.reject.pos.rate, color = qrpEnv)) +
+    geom_point(size = 2) +
+    scale_y_continuous(limits = c(0, 1)) +
+    geom_hline(yintercept = c(.05, .80), lty = 2) +
+    facet_grid(k~censor) +
+    ggtitle(est)
 }
 # increase in Type I error given true null and no pub bias
 filter(master, method == "RE", censor == "none", delta == 0)
@@ -152,8 +158,34 @@ powplot(master, "TF") # QRP still increases Type I given pub bias
 powplot(master, "WAAP-WLS") # QRP has small effect on power, complex effect on pub bias
 powplot(master, "PET-PEESE") # QRP increases Type I and Type II error both.  Wrong sign?
 #powplot(master, "p-curve")
+powplot.pos(master, "p-curve")
 #powplot(master, "p-uniform")
+powplot.pos(master, "p-uniform")
 powplot(master, "3PSM")
+
+# trying to see how bad the drop is in points
+filter(master, method %in% c("p-curve", "p-uniform"), 
+       delta == 0.5,
+       censor %in% c("med", "high"), 
+       k == 10, 
+       !is.na(H0.reject.pos.rate)) %>% 
+  arrange(method, delta, censor) %>% 
+  View()
+
+filter(master, method == "3PSM",
+       delta == 0.5,
+       censor %in% c('med', 'high'),
+       k == 10) %>% 
+  arrange(method, delta, censor) %>% 
+  View()
+
+filter(master, method == "PET-PEESE",
+       delta == 0.5,
+       censor %in% c('none', 'med', 'high'),
+       k == 10) %>% 
+  arrange(method, delta, censor) %>% 
+  View()
+
 
 # is it wrong sign in PET-PEESE?
 filter(master, method == "PET-PEESE") %>% 
@@ -169,7 +201,8 @@ ciplot <- function(dat, est) {
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0, 1)) +
     geom_hline(yintercept = .95, lty = 2) +
-    facet_grid(k~censor)
+    facet_grid(k~censor) +
+    ggtitle(est)
 }
 ciplot(master, "RE") # generally speaking, a loss of coverage
 ciplot(master, "TF") # complex
