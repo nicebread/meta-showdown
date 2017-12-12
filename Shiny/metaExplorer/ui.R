@@ -86,16 +86,26 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				             choices = c("none", "med", "high"), 
 										 selected = c("none", "med", "high"), inline=TRUE),
 				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "pcurve", "puniform")),
-				radioButtons("performanceMeasure", "Performance measure", c("Mean error" = "ME", "RMSE" = "RMSE", "Mean error and RMSE (combination)" = "ME+RMSE", "Mean absolute error (MAE)" = "MAD", "Mean error and MAE" = "ME+MAD")),
-				conditionalPanel("input.performanceMeasure == 'ME' | input.performanceMeasure == 'ME+RMSE' | input.performanceMeasure == 'ME+MAD'",
-					textInput("ME_tolerance", "Good performance is defined as a maximum deviation of ... from the true delta: ", value = "0.1")
-				),
-				conditionalPanel("input.performanceMeasure == 'RMSE' | input.performanceMeasure == 'ME+RMSE'",
-					textInput("RMSE_upperbound", "Good performance is defined as a maximum RMSE of: ", value = "0.1")
-				),
-				conditionalPanel("input.performanceMeasure == 'MAD' | input.performanceMeasure == 'ME+MAD'",
-					textInput("MAD_upperbound", "Good performance is defined as a maximum MAD of: ", value = "0.1")
-				)
+
+				# radioButtons("performanceMeasure", "Performance measure", c("Mean error" = "ME", "RMSE" = "RMSE", "Mean error and RMSE (combination)" = "ME+RMSE", "Mean absolute error (MAE)" = "MAD", "Mean error and MAE" = "ME+MAD")),
+				# conditionalPanel("input.performanceMeasure == 'ME' | input.performanceMeasure == 'ME+RMSE' | input.performanceMeasure == 'ME+MAD'",
+				# 	textInput("ME_tolerance", "Good performance is defined as a maximum deviation of ... from the true delta: ", value = "0.1")
+				# ),
+				# conditionalPanel("input.performanceMeasure == 'RMSE' | input.performanceMeasure == 'ME+RMSE'",
+				# 	textInput("RMSE_upperbound", "Good performance is defined as a maximum RMSE of: ", value = "0.1")
+				# ),
+				# conditionalPanel("input.performanceMeasure == 'MAD' | input.performanceMeasure == 'ME+MAD'",
+				# 	textInput("MAD_upperbound", "Good performance is defined as a maximum MAE of: ", value = "0.1")
+				# )
+				
+				h2("Good performance is defined as ..."),
+				helpText("Fields without a value are not evaluated."),
+				textInput("ME_tolerance", "... a maximum deviation of the average estimate from true delta (i.e. bias): ", value = ""),
+				textInput("MAD_upperbound", "... a maximum mean absolute error (MAE) of: ", value = ""),
+				textInput("RMSE_upperbound", "... a maximum root mean square error (RMSE) of: ", value = ""),
+				textInput("consisZero_lowerbound", "... a minimum coverage of the 95% CI in percentage (default: 95): ", value = ""),
+				textInput("TypeI_upperbound", "... a maximum false positive rate in percentage (default: 5): ", value = "")
+				
 			), # of conditionalPanel
 			
 			
@@ -176,7 +186,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						uiOutput("hypTable")
 					),
 					
-					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model")
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator")
 				),
 				
 				# ---------------------------------------------------------------------
@@ -199,7 +209,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						uiOutput("estTable")
 					),
 					
-					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model"),
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator"),
 					
 					conditionalPanel(condition="input.plotOrTable != 'Table'",					
 						helpText("Horizontal error bars are 95% quantiles (i.e., 95% of simulated replications were in that range).")

@@ -130,7 +130,7 @@ summ$stroke <- ifelse(summ$delta == 0, H0.stroke, H1.stroke)
 summ$fill <- ifelse(summ$delta == 0, H0.fill, H1.fill)
 
 summ2 <- summ %>% 
-		filter(method %in% c("reMA", "TF", "WAAP-WLS", "PETPEESE.lm", "PETPEESE.rma", "3PSM", "pcurve", "puniform")) %>% 
+		filter(method %in% c("reMA", "TF", "WAAP-WLS", "PET.lm", "PEESE.lm", "PET.rma", "PEESE.rma", "PETPEESE.lm", "PETPEESE.rma", "3PSM", "pcurve", "puniform")) %>% 
 		ungroup()
 
 # store estimation quantiles in long format		
@@ -139,4 +139,5 @@ summLong <- summ2  %>%
 		melt(id.vars=c("k", "delta", "qrp.label", "censor", "censor.label", "tau", "qrpEnv", "method", "stroke", "fill"), na.rm=FALSE)
 
 
-methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM")
+#methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM")
+methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET", "PEESE", "PET-PEESE", "3PSM")

@@ -31,8 +31,9 @@ C2
 
 
 
-# ---------------------------------------------------------------------
-# Percentage of WAAP vs. WLS in the conditional estimator
+## ======================================================================
+## Percentage of WAAP vs. WLS in the conditional estimator
+## ======================================================================
 
 estimator_types_desc <- res.wide.red %>% 
 	filter(method %in% c("WAAP-WLS", "PETPEESE.lm")) %>% 
@@ -61,6 +62,57 @@ ggplot(WAAP_desc.long, aes(x=k.label, y=percentage, fill=estimator_type)) + geom
 # zoom into the mixed delta=0.2 conditions:
 
 ggplot(WAAP_desc.long %>% filter(delta == 0.2), aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(tau.label~qrp.label~censor.label)
+
+
+
+## ======================================================================
+## How many estimates converge?
+## ======================================================================
+
+load("dataFiles/summ.RData")
+# reduced set for revision
+	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE.lm", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"), ordered=TRUE))
+
+# which method has less than 100% convergence? --> RE, WAAP-WLS and PET-PEESE always converge
+convRate0 <- summ2 %>% 
+	ungroup() %>% 
+	select(k, delta, qrpEnv, censor, tau, method, n.validEstimates) %>% 
+	spread(method, n.validEstimates)
+	
+convRate0 %>% 
+	select(RE, TF, 'WAAP-WLS', 'p-curve', 'p-uniform', 'PET-PEESE', '3PSM') %>% 
+	summarise_all(mean, na.rm=TRUE)
+
+# When does a method fail?	
+
+## TF
+convRate0 %>% filter(TF < 800) %>% print(n=100)
+
+## p-curve
+convRate0 %>% filter(`p-curve` < 900) %>% print(n=100)
+
+## p-uniform
+convRate0 %>% filter(`p-uniform` < 500) %>% print(n=100)
+	
+## 3PSM
+convRate0 %>% filter(`3PSM` < 300) %>% print(n=100)	
+	
+# prepare the full table
+convRate <- summ2 %>% ungroup() %>% 
+	filter(!method %in% c("RE", "WAAP-WLS", "PET-PEESE")) %>% 							# remove methods with 100% convergence
+	select(k, delta, qrpEnv, censor, tau, method, n.validEstimates) %>% 
+	mutate(convRate = paste0(round(n.validEstimates/10), "%")) %>% 
+	select(-n.validEstimates) %>% 
+	arrange(k, delta, qrpEnv, censor, tau, method)
+
+convRate.wide <- spread(convRate, method, convRate)
+colnames(convRate.wide)[1:5] <- c("{k}", "{$\\delta$}", "{QRP}", "{PB}", "{$\\tau$}")
+
+# print full table
+library(xtable)
+x1 <- xtable(convRate.wide, auto=TRUE, label="tab:convRate", caption="QRP = QRP Environment, PB = Publication bias")
+print(x1, file="tex-exports/tab-convRate.tex", include.rownames=FALSE, sanitize.colnames.function=identity, tabular.environment="longtable", floating = FALSE)
 
 
 ## ======================================================================
