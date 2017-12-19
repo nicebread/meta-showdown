@@ -93,11 +93,11 @@ buildFacet <- function(dat, title) {
                , scales = 'free') + 
     theme_metashowdown +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    #scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
+    scale_y_continuous(limits = c(-6.1, 0)) + 
     scale_shape_manual(values=c(21,22,24)) + 
     scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
     scale_fill_manual(values=c("skyblue", "black")) +
-    ylab("log(RMSE)") +
+    ylab("log2(RMSE)") +
     xlab("method") +
     ggtitle(title)
   return(PLOT)
@@ -134,11 +134,11 @@ buildFacet2 <- function(dat, title) {
                ) + 
     theme_metashowdown +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    #scale_y_continuous(breaks = c(-.5,.0,.5,1)) + 
+    scale_y_continuous(limits = c(-6.1, 0)) + 
     scale_shape_manual(values=c(21,22,24)) + 
     scale_color_manual(values=c("steelblue3", "black", "steelblue3", "black")) +
     scale_fill_manual(values=c("skyblue", "black")) +
-    ylab("log(RMSE)") +
+    ylab("log2(RMSE)") +
     xlab("method") +
     ggtitle(title)
   return(PLOT)
@@ -194,11 +194,13 @@ legend <- g_legend(legOnlyPlot)
 # Save PDF
 
 pdf("Plots/RMSEPlot.pdf", width=15, height=22)
-grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
+grid.arrange(plotA, plotB, plotC, legend, nrow=19, 
+             layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
 
 pdf("Plots/RMSEPlot1.pdf", width=15, height=22)
-grid.arrange(plotA1, plotB1, plotC1, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
+grid.arrange(plotA1, plotB1, plotC1, legend, nrow=19, 
+             layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
 
 # WIP WORKBENCH -------------------------------------------------------

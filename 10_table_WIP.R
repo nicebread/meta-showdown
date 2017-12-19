@@ -163,6 +163,8 @@ powplot.pos(master, "p-curve")
 powplot.pos(master, "p-uniform")
 powplot(master, "3PSM")
 
+powplot.pos(master, "PET-PEESE")
+
 # trying to see how bad the drop is in points
 filter(master, method %in% c("p-curve", "p-uniform"), 
        delta == 0.5,
