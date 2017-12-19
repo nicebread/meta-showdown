@@ -66,9 +66,9 @@ buildFacet <- function(dat, title) {
   return(PLOT)	
 }
 
-plotA <- buildFacet(dat = cov.sel %>% filter(selProp==0), bquote("(A) Coverage at 0% publication bias"))
-plotB <- buildFacet(dat = cov.sel %>% filter(selProp==0.6), bquote("(B) Coverage at 60% publication bias"))
-plotC <- buildFacet(dat = cov.sel %>% filter(selProp==0.9), bquote("(C) Coverage at 90% publication bias"))
+plotA <- buildFacet(dat = cov.sel %>% filter(censor=="none"), bquote("(A) Coverage at 0% publication bias"))
+plotB <- buildFacet(dat = cov.sel %>% filter(censor=="med"), bquote("(B) Coverage at 60% publication bias"))
+plotC <- buildFacet(dat = cov.sel %>% filter(censor=="high"), bquote("(C) Coverage at 90% publication bias"))
 
 
 # ---------------------------------------------------------------------
