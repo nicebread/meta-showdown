@@ -11,7 +11,7 @@ shinyServer(function(input, output, session) {
 	output$perfPlot <- renderUI({
 
 		# abort rendering if one of the conditions has no values at all
-		if (is.null(input$k_perf) | is.null(input$tau_perf) | is.null(input$censor_perf) | is.null(input$delta_perf) | is.null(input$qrpEnv_perf) | is.na(input$ME_tolerance)) {
+		if (is.null(input$k_perf) | is.null(input$tau_perf) | is.null(input$censor_perf) | is.null(input$delta_H1_perf) | is.null(input$qrpEnv_perf) | is.na(input$ME_tolerance)) {
 		  validate(FALSE) # abort rendering right away
 		}
 		
@@ -25,74 +25,64 @@ shinyServer(function(input, output, session) {
 			tau %in% input$tau_perf,
 			censor %in% input$censor_perf,
 			qrpEnv %in% input$qrpEnv_perf,
-			delta %in% input$delta_perf
+			delta %in% c(0, input$delta_H1_perf)  # always select delta==0
 		)
 				
 		perf.dat$loop1 <- factor(paste0(perf.dat$tau.label, ", ", perf.dat$k.label))
 		perf.dat$loop2 <- factor(paste0(perf.dat$delta.label, ", ", perf.dat$censor.label, ", ", perf.dat$qrp.label))
-		
+
+		perfMeasureString <- ""
 		
 		if (is.na(as.numeric(input$ME_tolerance))) {
 			perf.dat$ME_check <- TRUE
 		} else {
-			perf.dat$ME_check <- abs(perf.dat$ME) < as.numeric(input$ME_tolerance))
+			perf.dat$ME_check <- abs(perf.dat$ME) <= abs(as.numeric(input$ME_tolerance))
+			perfMeasureString <- paste0(perfMeasureString, "ME <= ", as.numeric(input$ME_tolerance), "; ")
 		} 
 		
 		if (is.na(as.numeric(input$RMSE_upperbound))) {
 			perf.dat$RMSE_check <- TRUE
 		} else {
-			perf.dat$RMSE_check <- perf.dat$RMSE < as.numeric(input$RMSE_upperbound)
+			perf.dat$RMSE_check <- perf.dat$RMSE <= as.numeric(input$RMSE_upperbound)
+			perfMeasureString <- paste0(perfMeasureString, "RMSE <= ", as.numeric(input$RMSE_upperbound), "; ")
 		}
 		
-		if (is.na(as.numeric(input$ME_tolerance))) {
-			perf.dat$ME_check <- TRUE
+		if (is.na(as.numeric(input$MAD_upperbound))) {
+			perf.dat$MAD_check <- TRUE
 		} else {
-			perf.dat$ME_check <- 
+			perf.dat$MAD_check <- perf.dat$MAD <= as.numeric(input$MAD_upperbound)
+			perfMeasureString <- paste0(perfMeasureString, "MAD <= ", as.numeric(input$MAD_upperbound), "; ")
 		}
 		
-		if (is.na(as.numeric(input$ME_tolerance))) {
-			perf.dat$ME_check <- TRUE
+		if (is.na(as.numeric(input$coverage_lowerbound))) {
+			perf.dat$coverage_check <- TRUE
 		} else {
-			perf.dat$ME_check <- abs(perf.dat$ME) < as.numeric(input$ME_tolerance))
+			perf.dat$coverage_check <- perf.dat$coverage >= as.numeric(input$coverage_lowerbound)/100
+			perfMeasureString <- paste0(perfMeasureString, "coverage >= ", as.numeric(input$coverage_lowerbound), "%", "; ")
 		}
 		
-		if (is.na(as.numeric(input$ME_tolerance))) {
-			perf.dat$ME_check <- TRUE
+		if (is.na(as.numeric(input$TypeI_upperbound))) {
+			perf.dat$TypeI_check <- TRUE
 		} else {
-			perf.dat$ME_check <- abs(perf.dat$ME) < as.numeric(input$ME_tolerance))
+			perf.dat$TypeI_check <- perf.dat$TypeI <= as.numeric(input$TypeI_upperbound)/100
+			perfMeasureString <- paste0(perfMeasureString, "false positive rate <= ", as.numeric(input$TypeI_upperbound), "%", "; ")
 		}
 		
-		perf.dat$ <- ifelse(is.na(as.numeric(input$RMSE_upperbound)), TRUE, )
-		perf.dat$MAD_check <- ifelse(is.na(as.numeric(input$MAD_upperbound)), TRUE, perf.dat$MAD < as.numeric(input$MAD_upperbound))
-		perf.dat$consisZero_check <- ifelse(is.na(as.numeric(input$consisZero_lowerbound)), TRUE, perf.dat$consisZero > as.numeric(input$consisZero_lowerbound))
-		#perf.dat$TypeI_check <- ifelse(is.na(as.numeric(input$TypeI_upperbound)), TRUE, perf.dat$TypeI > input$TypeI_upperbound)
+		perf.dat <- perf.dat %>% mutate(performance = factor(ME_check & RMSE_check & MAD_check & coverage_check & TypeI_check, levels=c(TRUE, FALSE), labels=c("good", "poor")))
 		
-		perf.dat <- perf.dat %>% mutate(performance = factor(ME_check & RMSE_check & MAD_check & consisZero_check, levels=c(TRUE, FALSE), labels=c("good", "poor")))
-		
-		# perfMeasureString <- paste0(
-		# 	ifelse()
-		# )
-		# 	"ME"= "|mean error| < X1",
-		# 	"RMSE"= "RMSE < X2",
-		# 	"ME+RMSE"= "|mean error| < X1 + RMSE < X2",
-		# 	"MAD"= "Mean absolute error < X3",
-		# 	"ME+MAD"= "|mean error| < X1 + mean absolute error < X3"
-		# )
-		
-		perfMeasureString <- "XXX"
-		
-		# t2 <- perfMeasure %>%
-		# 	str_replace("X2", input$RMSE_upperbound) %>%
-		# 	str_replace("X1", input$ME_tolerance) %>%
-		# 	str_replace("X3", input$MAD_upperbound)
 			
 		title <- paste0("Method: ", input$evaluatedMethod, "\nCriterion for good performance: ", perfMeasureString)
 		
 		
-		p1 <- ggplot(perf.dat, aes(x=loop1, y=loop2, fill=performance)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
+		p.H1 <- ggplot(perf.dat %>% filter(delta > 0), aes(x=loop1, y=loop2, fill=performance)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
+		
+		p.H0 <- ggplot(perf.dat %>% filter(delta == 0), aes(x=loop1, y=loop2, fill=performance)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
 
 		return(list(
-			renderPlot(p1, height = 650, units="px")
+			h3("Under H1s:"),
+			renderPlot(p.H1, height = 650, units="px"),
+			h3("Under H0:"),
+			renderPlot(p.H0, height = 650, units="px")
 		))
 	})
 	

@@ -79,31 +79,22 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				checkboxGroupInput("k_perf", "Number of studies in meta-analysis:",
 				             choices = c("10" = 10, "30" = 30, "60" = 60, "100"=100),
 										 selected = c("10" = 10, "30" = 30, "60" = 60, "100"=100), inline = TRUE),									 
-				checkboxGroupInput("delta_perf", "True effect size",
-					           choices = c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), 
+				checkboxGroupInput("delta_H1_perf", "True effect size under H1",
+					           choices = c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), 
 										 selected = c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE),
 				checkboxGroupInput("qrpEnv_perf", "QRP environment:",
 				             choices = c("none", "med", "high"), 
 										 selected = c("none", "med", "high"), inline=TRUE),
 				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "pcurve", "puniform")),
 
-				# radioButtons("performanceMeasure", "Performance measure", c("Mean error" = "ME", "RMSE" = "RMSE", "Mean error and RMSE (combination)" = "ME+RMSE", "Mean absolute error (MAE)" = "MAD", "Mean error and MAE" = "ME+MAD")),
-				# conditionalPanel("input.performanceMeasure == 'ME' | input.performanceMeasure == 'ME+RMSE' | input.performanceMeasure == 'ME+MAD'",
-				# 	textInput("ME_tolerance", "Good performance is defined as a maximum deviation of ... from the true delta: ", value = "0.1")
-				# ),
-				# conditionalPanel("input.performanceMeasure == 'RMSE' | input.performanceMeasure == 'ME+RMSE'",
-				# 	textInput("RMSE_upperbound", "Good performance is defined as a maximum RMSE of: ", value = "0.1")
-				# ),
-				# conditionalPanel("input.performanceMeasure == 'MAD' | input.performanceMeasure == 'ME+MAD'",
-				# 	textInput("MAD_upperbound", "Good performance is defined as a maximum MAE of: ", value = "0.1")
-				# )
 				
 				h2("Good performance is defined as ..."),
-				helpText("Fields without a value are not evaluated."),
-				textInput("ME_tolerance", "... a maximum deviation of the average estimate from true delta (i.e. bias): ", value = ""),
+				helpText("Fields without a value are not evaluated; all other fields combined with a logical AND (i.e., all entered conditions must be true to result in a good performance).
+				As p-curve does not have a coverage metric, it is not positively evaluated if you enter a number there."),
+				textInput("ME_tolerance", "... a maximum deviation of the average estimate from true delta (i.e. |ME|): ", value = ""),
 				textInput("MAD_upperbound", "... a maximum mean absolute error (MAE) of: ", value = ""),
 				textInput("RMSE_upperbound", "... a maximum root mean square error (RMSE) of: ", value = ""),
-				textInput("consisZero_lowerbound", "... a minimum coverage of the 95% CI in percentage (default: 95): ", value = ""),
+				textInput("coverage_lowerbound", "... a minimum coverage of the 95% CI in percentage (default: 95): ", value = ""),
 				textInput("TypeI_upperbound", "... a maximum false positive rate in percentage (default: 5): ", value = "")
 				
 			), # of conditionalPanel

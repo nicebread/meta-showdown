@@ -123,6 +123,10 @@ H0.fill <- "skyblue"
 RR.H1 <- summ %>% ungroup() %>% filter(delta > 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack"))  %>% select(k, delta, qrp.label, qrpEnv, censor, censor.label, tau, method, Power = H0.reject.pos.rate)
 RR.H0 <- summ  %>% ungroup() %>% filter(delta == 0, !method %in% c("pcurve", "pcurve.hack", "pcurve.lack")) %>% select(k, delta, qrp.label, qrpEnv, censor, censor.label, tau, method, TypeI = H0.reject.pos.rate)
 
+# add Type I error rate to the delta > 0 conditions
+RR.H0b <- RR.H0
+RR.H0b$method[RR.H0b$method == "pcurve.evidence"] <- "pcurve"
+summ <- inner_join(summ, RR.H0b %>% select(-delta))
 
 # Prepare data for estimation plot
 
