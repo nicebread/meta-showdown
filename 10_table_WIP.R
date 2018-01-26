@@ -16,18 +16,6 @@ summ3 <- summ %>%
   filter(method %in% c("pcurve.evidence", "puniform")) %>% 
   dplyr::select(method, delta:censor, H0.reject.pos.rate)
 
-# Plot them with method in columns, just one outcome, for supplementary tables
-# Power
-master %>% 
-  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
-  # kludge p-curve into place
-  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
-  # clean up the mess
-  dplyr::select(-H0.reject.pos.rate) %>% 
-  filter(!is.na(H0.reject.rate)) %>% 
-  spread(key = method, value = H0.reject.rate)
-
-
 # Plot them with method and k in columns for easier reading as I put it into text
 # qrpEnv is none med high
 # censor is none med high
