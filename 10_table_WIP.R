@@ -15,7 +15,20 @@ summ2 <- summ %>%
 summ3 <- summ %>% 
   filter(method %in% c("pcurve.evidence", "puniform")) %>% 
   dplyr::select(method, delta:censor, H0.reject.pos.rate)
-  
+
+# Plot them with method in columns, just one outcome, for supplementary tables
+# Power
+master %>% 
+  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
+  # kludge p-curve into place
+  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
+  # clean up the mess
+  dplyr::select(-H0.reject.pos.rate) %>% 
+  filter(!is.na(H0.reject.rate)) %>% 
+  spread(key = method, value = H0.reject.rate)
+
+
+# Plot them with method and k in columns for easier reading as I put it into text
 # qrpEnv is none med high
 # censor is none med high
 master <- summ2 %>% 
@@ -30,28 +43,32 @@ master2 <- summ3 %>%
          tau %in% c(0, 0.2),
          k %in% c(10, 60)) %>% 
   ungroup() %>% 
-  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, H0.reject.rate, coverage, H0.reject.pos.rate)
+  dplyr::select(delta, tau, k, method, qrpEnv, censor, H0.reject.pos.rate)
 
 output.ME <- master %>% 
   dplyr::select(delta:censor, ME) %>% 
+  filter(!is.na(ME)) %>% 
   unite(method, method, k) %>% 
   spread(key = method, value = ME) %>% 
   arrange(censor, qrpEnv, tau, delta)
 
 output.RMSE <- master %>% 
   dplyr::select(delta:censor, RMSE) %>% 
+  filter(!is.na(RMSE)) %>% 
   unite(method, method, k) %>% 
   spread(key = method, value = RMSE) %>% 
   arrange(censor, qrpEnv, tau, delta)
 
 output.pow <- master %>% 
   dplyr::select(delta:censor, H0.reject.rate) %>% 
+  filter(!is.na(H0.reject.rate)) %>% 
   unite(method, method, k) %>% 
   spread(key = method, value = H0.reject.rate) %>% 
   arrange(censor, qrpEnv, tau, delta)
 
 output.coverage <- master %>% 
   dplyr::select(delta:censor, coverage) %>% 
+  filter(!is.na(coverage)) %>% 
   unite(method, method, k) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(censor, qrpEnv, tau, delta)
