@@ -48,6 +48,11 @@ estimator_types_desc <- res.wide.red %>%
 
 print(estimator_types_desc, n=432)
 
+print(estimator_types_desc %>% arrange(WAAP_perc), n=432)
+
+mean(estimator_types_desc$WAAP_perc)
+mean(estimator_types_desc$WLS_perc)
+
 # plot WAAP-WLS percentages as small multiples
 
 # reshape to long format
