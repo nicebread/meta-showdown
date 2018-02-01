@@ -69,13 +69,10 @@ save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
 res.wide.red <- res.wide
 
 ## RULE 1: set estimate of p-curve and p-uniform with < 4 significant studies to NA
+## --> We don't do that any more in the revision
 #res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
 
-## RULE 2: Ignore 3PSM when it doesn't provide a p-value
-## TODO: I think this is not necessary with the weightr pacakge
-#res.wide.red[res.wide.red$method == "3PSM" & is.na(res.wide.red$b0_p.value), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
-
-## RULE 3: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+## RULE 2: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
 
 PUNI <- res.wide[res.wide$method == "puniform" & !is.na(res.wide$b0_conf.high), ]
 table(is.na(PUNI$b0_conf.low))
