@@ -5,28 +5,27 @@
 library(tidyverse)
 load("dataFiles/summ.RData")
 
+# Remember, the ugly thing about this is that puniform only has power rates for H0.reject.pos.rate
+#    and p-curve only has power rates for H0.reject.pos.rate, listed under method "pcurve.evidence"
+
 summ2 <- summ %>% 
   filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
+  # Rename pcurve.evidence to pcurve
   mutate(method = ifelse(method == "pcurve.evidence", "pcurve", method)) %>% 
-  mutate(method = factor(method, levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
+  # Rename "reMA" to "RE"
+  mutate(method = factor(method, 
+                         levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
                          labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
 
-# aux dataset for p-curve power
+# pcurve and puniform only provide posified power, so we have to grab those & call it power instead
+#     if we want to put it in the table
 summ3 <- summ %>% 
   filter(method %in% c("pcurve.evidence", "puniform")) %>% 
-  dplyr::select(method, delta:censor, H0.reject.pos.rate)
-
-# Plot them with method in columns, just one outcome, for supplementary tables
-# Power
-master %>% 
-  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
-  # kludge p-curve into place
-  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
-  # clean up the mess
-  dplyr::select(-H0.reject.pos.rate) %>% 
-  filter(!is.na(H0.reject.rate)) %>% 
-  spread(key = method, value = H0.reject.rate)
-
+  # rename pcurve.evidence to pcurve
+  mutate(method = ifelse(method == "pcurve.evidence", "pcurve", "puniform"))
+  
+# TODO: I must have joined these into "master" at one time
+# master <- bind_rows(summ2, summ3)
 
 # Plot them with method and k in columns for easier reading as I put it into text
 # qrpEnv is none med high
@@ -77,6 +76,60 @@ write.csv(output.ME, "tables/ME_table.csv", row.names = F)
 write.csv(output.RMSE, "tables/RMSE_table.csv", row.names = F)
 write.csv(output.pow, "tables/pow_table.csv", row.names = F)
 write.csv(output.coverage, "tables/coverage_table.csv", row.names = F)
+
+# Make smaller, easier tables for starting results section
+output.ME %>%  
+  filter(qrpEnv == "none",
+         censor %in% c("none", "high")) %>% 
+  write.csv("tables/ME_table_small.csv", row.names = F)
+
+output.RMSE %>%  
+  filter(qrpEnv == "none",
+         censor %in% c("none", "high")) %>% 
+  write.csv("tables/RMSE_table_small.csv", row.names = F)
+
+output.pow %>%  
+  filter(qrpEnv == "none",
+         censor %in% c("none", "high")) %>% 
+  write.csv("tables/pow_table_small.csv", row.names = F)
+
+output.coverage %>% 
+  filter(qrpEnv == "none",
+         censor %in% c("none", "high")) %>% 
+  write.csv("tables/cov_table_small.csv", row.names = F)
+
+
+# sort by RMSE
+# TODO: How do I sort within these groups?
+output.RMSE %>% 
+  gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
+  separate(key, into = c("method", "k"), sep ="_") %>% 
+  filter(qrpEnv == "none",
+         censor == "high") %>% 
+  select(delta, tau, k, censor, method, value) %>% 
+  arrange(delta, tau, k, censor, value) %>% 
+  View()
+
+output.coverage %>% 
+  gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
+  separate(key, into = c("method", "k"), sep ="_") %>% 
+  filter(qrpEnv == "none",
+         censor == "high") %>% 
+  select(delta, tau, k, censor, method, value) %>% 
+  arrange(delta, tau, k, censor, value) %>% 
+  View()
+
+# Plot them with method in columns, just one outcome, for supplementary tables
+# Power
+master %>% 
+  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
+  # kludge p-curve into place
+  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
+  # clean up the mess, dropping H0.reject.pos.rate and removing the missing values
+  dplyr::select(-H0.reject.pos.rate) %>% 
+  filter(!is.na(H0.reject.rate)) %>% 
+  spread(key = method, value = H0.reject.rate) %>% View()
+
 
 # Try to plot some stuff to figure out effects of QRPs.
 MEplot <- function(dat, est) {
