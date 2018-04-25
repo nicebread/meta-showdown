@@ -120,7 +120,7 @@ output.coverage %>%
   separate(key, into = c("method", "k"), sep ="_") %>% 
   filter(qrpEnv == "none",
          censor == "high") %>% 
-  select(delta, tau, k, censor, method, value) %>% 
+  dplyr::select(delta, tau, k, censor, method, value) %>% 
   arrange(delta, tau, k, censor, value) %>% 
   View()
 
