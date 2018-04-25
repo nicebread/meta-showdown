@@ -4,6 +4,9 @@ load(file="./dataFiles/summ.RData")
 library(tidyr)
 library(ggplot2)
 
+# Remember, the ugly thing about this is that puniform only has power rates for H0.reject.pos.rate
+#    and p-curve only has power rates for H0.reject.pos.rate, listed under method "pcurve.evidence"
+
 summ <- summ %>% 
   ungroup() %>% 
   filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "WAAP-WLS", 
