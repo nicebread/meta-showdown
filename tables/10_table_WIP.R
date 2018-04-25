@@ -9,24 +9,22 @@ load("dataFiles/summ.RData")
 #    and p-curve only has power rates for H0.reject.pos.rate, listed under method "pcurve.evidence"
 
 summ2 <- summ %>% 
-  filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
+  filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "pcurve.evidence", 
+                       "puniform", "3PSM", "WAAP-WLS")) %>% 
   # Rename pcurve.evidence to pcurve
   mutate(method = ifelse(method == "pcurve.evidence", "pcurve", method)) %>% 
-  # Rename "reMA" to "RE"
+  # Rename "reMA" to "RE" & make hyphenated names pretty
   mutate(method = factor(method, 
                          levels=c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS"), 
                          labels=c("RE", "TF", "PET-PEESE", "p-curve", "p-uniform", "3PSM", "WAAP-WLS")))
 
 # pcurve and puniform only provide posified power, so we have to grab those & call it power instead
 #     if we want to put it in the table
-summ3 <- summ %>% 
-  filter(method %in% c("pcurve.evidence", "puniform")) %>% 
-  # rename pcurve.evidence to pcurve
-  mutate(method = ifelse(method == "pcurve.evidence", "pcurve", "puniform"))
+# summ3 <- summ %>% 
+#   filter(method %in% c("pcurve.evidence", "puniform")) %>% 
+#   # rename pcurve.evidence to pcurve
+#   mutate(method = ifelse(method == "pcurve.evidence", "p-curve", "p-uniform"))
   
-# TODO: I must have joined these into "master" at one time
-# master <- bind_rows(summ2, summ3)
-
 # Plot them with method and k in columns for easier reading as I put it into text
 # qrpEnv is none med high
 # censor is none med high
@@ -35,14 +33,21 @@ master <- summ2 %>%
          tau %in% c(0, 0.2),
          k %in% c(10, 60)) %>% 
   ungroup() %>% 
-  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, H0.reject.rate, coverage, H0.reject.pos.rate)
+  dplyr::select(delta, tau, k, method, qrpEnv, censor, ME, RMSE, 
+                H0.reject.rate, coverage, H0.reject.pos.rate)
 
-master2 <- summ3 %>% 
-  filter(delta %in% c(0, 0.5),
-         tau %in% c(0, 0.2),
-         k %in% c(10, 60)) %>% 
-  ungroup() %>% 
-  dplyr::select(delta, tau, k, method, qrpEnv, censor, H0.reject.pos.rate)
+# TODO: turn p-curve/p-uniform's posified power into power and put it back into master
+
+# master2 <- summ3 %>% 
+#   filter(delta %in% c(0, 0.5),
+#          tau %in% c(0, 0.2),
+#          k %in% c(10, 60)) %>% 
+#   ungroup() %>% 
+#   dplyr::select(delta, tau, k, method, qrpEnv, censor, H0.reject.pos.rate)
+
+# Todo: combine master and master2 in an elegant way for clean reading
+# bind_rows(master, master2) %>% 
+#   filter(method %in% c("pcurve", "p-curve")) %>% View("bound")
 
 output.ME <- master %>% 
   dplyr::select(delta:censor, ME) %>% 

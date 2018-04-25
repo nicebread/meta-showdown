@@ -1,3 +1,5 @@
+# This file seems somewhat deprecated relative to the newest version of 10_table_WIP.R...
+
 # power check
 source("0-start.R")
 load(file="./dataFiles/summ.RData")
@@ -15,14 +17,14 @@ summ <- summ %>%
 summ.pcurve.evi <- summ %>% 
   filter(method == "pcurve.evidence") %>% 
   mutate(method = "pcurve") %>% 
-  select(condition:method, 
+  dplyr::select(condition:method, 
          consisZero.rate, consisZero.rate.pos, 
          H0.reject.rate, H0.reject.pos.rate,
          H0.reject.wrongSign.rate, n.p.values)
 
 summ.pcurve.est <- summ %>% 
   filter(method == "pcurve") %>% 
-  select(condition:method, ME, RMSE, ME.pos, RMSE.pos)
+  dplyr::select(condition:method, ME, RMSE, ME.pos, RMSE.pos)
 
 summ.pcurve <- full_join(summ.pcurve.est, summ.pcurve.evi)
 
@@ -33,7 +35,7 @@ summ2 <- filter(summ, !(method %in% c("pcurve", "pcurve.evidence", "pcurve.lack"
 # ME.pos
 summ2 %>%   
   filter(qrpEnv == "none", censor == "none") %>% 
-  select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
+  dplyr::select(k, delta, tau, qrpEnv, censor, method, ME.pos) %>% 
   mutate(ME.pos = round(ME.pos, 3)) %>% 
   spread(key = method, value = ME.pos) %>% 
   arrange(tau, delta, k) %>% 
@@ -98,7 +100,7 @@ summ2 %>%
 # Coverage
 summ2 %>%   
   filter(qrpEnv == "none", censor == "none") %>% 
-  select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
+  dplyr::select(k, delta, tau, qrpEnv, censor, method, coverage) %>% 
   spread(key = method, value = coverage) %>% 
   arrange(tau, delta, k) %>% 
   View()
