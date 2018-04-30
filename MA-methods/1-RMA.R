@@ -36,11 +36,11 @@ RMA.est <- function(d, v, long=TRUE) {
 		  estimate=tfMA$tau2,
 		  std.error=tfMA$se.tau2
 		))
-  	  res <- plyr::rbind.fill(res, data.frame(
-  		  method="TF",
-  		  term="kFilled",
-  		  estimate=tfMA$k0
-  		))
+	  res <- plyr::rbind.fill(res, data.frame(
+		  method="TF",
+		  term="kFilled",
+		  estimate=tfMA$k0
+		))
   }
     
   returnRes(res, long)

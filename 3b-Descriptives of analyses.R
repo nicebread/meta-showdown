@@ -120,6 +120,7 @@ x1 <- xtable(convRate.wide, auto=TRUE, label="tab:convRate", caption="QRP = QRP 
 print(x1, file="tex-exports/tab-convRate.tex", include.rownames=FALSE, sanitize.colnames.function=identity, tabular.environment="longtable", floating = FALSE)
 
 
+
 ## ======================================================================
 ## Average I^2 estimates in conditions without publication bias and without QRPs:
 ## i.e., what are the I^2 values that correspond to our chosen tau values?

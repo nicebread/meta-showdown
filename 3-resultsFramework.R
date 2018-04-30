@@ -55,7 +55,13 @@ print(tab, n=50)
 
 
 # how many simulations do we have in each condition, after we removed all k<4 for p-curve etc.?
-tab2 <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% select(id, method, kSig_estimate) %>% filter(method=="pcurve") %>%  dplyr::summarise(nMA.with.kSig.larger.3=sum(!is.na(kSig_estimate) & kSig_estimate >= 4))
+tab2 <- res.wide %>% 
+	group_by(k, delta, qrpEnv, censor, tau) %>% 
+	select(id, method, kSig_estimate) %>% 
+	filter(method=="pcurve") %>% 
+	dplyr::summarise(
+		nMA.with.kSig.larger.3 = sum(!is.na(kSig_estimate) & kSig_estimate >= 4)
+	)
 print(tab2, n=54)
 
 res.wide <- inner_join(res.wide, tab2)
@@ -154,7 +160,8 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		H0.reject.wrongSign.rate = sum(H0.reject.wrongSign, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign)),
 
 		n.p.values = sum(!is.na(H0.reject.pos)),
-		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
+		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE),
+		perc.sig = 
 	)
 
 print(summ, n=50)

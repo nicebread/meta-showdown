@@ -56,7 +56,7 @@ outlier=function(x,mean,sd){
 
 
 #==============
-#   expFinU   #
+#   simData.noQRP   #
 #==============
 
 # generate the results from an unbiased experiment
@@ -66,7 +66,7 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
+simData.noQRP = function(delta, tau, empN, meanN, minN, empN.boost=0){
   
   #get the per-group sample size 
   if (empN==TRUE){
@@ -135,7 +135,7 @@ expFinU = function(delta, tau, empN, meanN, minN, empN.boost=0){
 # tau is for heterogeneity
 # cbdv is the correlation between the two outcomes
 # output is 4 vectors of length maxN
-# This is called within expFinB
+# This is called within simData.QRP
 
 expDataB = function(delta,tau,
                     cbdv,maxN){                    
@@ -400,18 +400,18 @@ analyB <- function(g1,g2,g3,g4,D,multDV,out,mod,censorFunction){
 
 
 #==================
-#     expFinB     #     
+#     simData.QRP     #     
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-expFinB = function(delta, tau, empN, maxN, meanN, minN, strat, empN.boost=empN.boost, censorFunction){
+simData.QRP = function(delta, tau, empN, maxN, meanN, minN, strat, empN.boost=empN.boost, censorFunction){
   
   #correlation between multiple DVs is set to 0.50 as default
   cbdv = 0.5
   
   # if QRP strategy is NONE
   if (strat=='none'){
-    a = expFinU(delta, tau, empN, meanN, minN, empN.boost=empN.boost)
+    a = simData.noQRP(delta, tau, empN, meanN, minN, empN.boost=empN.boost)
   } else if (strat=='mod'){   #if QRP strategy is MODERATE
     
     #get data for a study using QRPs
@@ -572,7 +572,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias or from QRP (strat = none)
   if (kU_None > 0){
     for (i in 1: kU_None){
-      rU_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
+      rU_None[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
       rU_None[i,11] = 0 #number file drawered
       rU_None[i,12] = 0 #no sel
       rU_None[i,13] = 0 #no QRP
@@ -582,7 +582,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias but affected by QRP strat = mod
   if (kU_Mod > 0){
     for (i in 1: kU_Mod){
-      rU_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
+      rU_Mod[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
       rU_Mod[i,11] = 0 #number file drawered
       rU_Mod[i,12] = 0 #no sel
       rU_Mod[i,13] = 1 #mod qrp
@@ -592,7 +592,7 @@ dataMA <- function(k, delta, tau,
   #Produce data *unaffected* by publication selection bias and from QRP strat = agg
   if (kU_Agg > 0){
     for (i in 1: kU_Agg){
-      rU_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
+      rU_Agg[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
       rU_Agg[i,11] = 0 #number file drawered
       rU_Agg[i,12] = 0 #no sel
       rU_Agg[i,13] = 2 #agg qrp
@@ -602,14 +602,14 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and by QRP strat = none
   if (kB_None > 0){
     for (i in 1:kB_None){
-      rB_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
+      rB_None[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
       rB_None[i,11] = 0 #number of file drawered studes
       rB_None[i,12] = 1 #selection
       rB_None[i,13] = 0 #no QRP
       
       pPr = publicationProb(censorFunction, rB_None[i,2], rB_None[i,1]) #check result against censor function 
       repeat {if (rbinom(1,size=1,prob = pPr)==1) break else{
-        rB_None[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
+        rB_None[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='none', empN.boost=empN.boost,censorFunction) 
         rB_None[i,11] = rB_None[i,11] + 1} #count file-drawered studies
         rB_None[i,12] = 1 #sel
         rB_None[i,13] = 0 #no QRP
@@ -621,14 +621,14 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and from QRP strat = mod
   if (kB_Mod > 0){
     for (i in 1:kB_Mod){
-      rB_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
+      rB_Mod[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
       rB_Mod[i,11] = 0 #number of file drawered studes
       rB_Mod[i,12] = 1 #sel
       rB_Mod[i,13] = 1 #mod QRP
       
       pPr = publicationProb(censorFunction, rB_Mod[i,2], rB_Mod[i,1]) #check result against censor function 
       repeat {if (rbinom(1,size=1,prob = pPr)==1) break else{
-        rB_Mod[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
+        rB_Mod[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='mod', empN.boost=empN.boost,censorFunction) 
         rB_Mod[i,11] = rB_Mod[i,11] + 1} #count file-drawered studies
         rB_Mod[i,12] = 1 #sel
         rB_Mod[i,13] = 1 #mod QRP
@@ -640,14 +640,14 @@ dataMA <- function(k, delta, tau,
   #Produce data *affected* by publication selection bias and from QRP strat = agg
   if (kB_Agg > 0){
     for (i in 1:kB_Agg){
-      rB_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
+      rB_Agg[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
       rB_Agg[i,11] = 0 #number of file drawered studes
       rB_Agg[i,12] = 1 #sel
       rB_Agg[i,13] = 2 #Agg QRP
       
       pPr = publicationProb(censorFunction, rB_Agg[i,2], rB_Agg[i,1]) #check result against censor function 
       repeat {if (rbinom(1,size=1,prob = pPr)==1) break else{
-        rB_Agg[i,1:10] = expFinB(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
+        rB_Agg[i,1:10] = simData.QRP(delta, tau, empN, maxN, meanN, minN, strat='agg', empN.boost=empN.boost,censorFunction) 
         rB_Agg[i,11] = rB_Agg[i,11] + 1} #count file-drawered studies
         rB_Agg[i,12] = 1 #sel
         rB_Agg[i,13] = 2 #Agg QRP

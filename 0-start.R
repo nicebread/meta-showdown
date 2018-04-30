@@ -35,5 +35,6 @@ source("MA-methods/5-p-uniform.R")
 source("MA-methods/6-WAAP.R")
 source("MA-methods/7b-selection.meta.functions.R")
 source("MA-methods/7-Selection Models.R")
+source("MA-methods/10-ensemble.R")
 #source("MA-methods/8-betaSM.R", chdir=TRUE)	# must chdir=TRUE to load the helper functions in /betaSM_functions
 
