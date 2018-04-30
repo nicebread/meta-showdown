@@ -48,7 +48,7 @@ onePSM.McShane.est <- function(t.obs, n1, n2, long=TRUE) {
 # ---------------------------------------------------------------------
 # Estimate the 3PSM (a single step-cutpoint) with the weightr package (should be equivalent to the McShane implementation)
 # the single cut point is at .025 (one-sided testing)
-# The authors suggest to have >= 4 p-values in each interval. If that is not provided, return NA.
+# The authors suggest to have >= 4 p-values in each interval. 
 
 #' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
 
@@ -72,7 +72,7 @@ threePSM.est <- function(d, v, min.pvalues=1, long=TRUE) {
 	
 	if (is.null(w1)) return(returnRes(res.NA))
 	
-	# if <= 3 p-values in an interval: return NA
+	# if <= min.pvalues p-values in an interval: return NA
 	p.table <- table(cut(w1$p, breaks=c(0, .025, 1)))
 	if (any(p.table < min.pvalues)) {
 	  return(returnRes(res.NA))

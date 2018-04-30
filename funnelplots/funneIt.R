@@ -3,7 +3,7 @@ library(grid)
 library(pwr)
 library(metafor)
 
-#Needs dataMA() and perGrp
+#Needs simMA() and perGrp
 perGrp = read.csv('../Empirical n and ES distributions/perGrp.csv')
 
 set.seed(999)
@@ -11,16 +11,16 @@ set.seed(999)
 nK = 60
 
 #fig1A
-dat1=dataMA(k=nK,delta=0,tau=0,empN=T,maxN=500,minN=0,meanN=0,selProp=0, qrpEnv='none')
-dat2=dataMA(k=nK,delta=.5,tau=0,empN=T,maxN=500,minN=0,meanN=0,selProp=0, qrpEnv='none')
-dat3=dataMA(k=nK,delta=0,tau=.2,empN=T,maxN=500,minN=0,meanN=0,selProp=0, qrpEnv='none')
-dat4=dataMA(k=nK,delta=.5,tau=.2,empN=T,maxN=500,minN=0,meanN=0,selProp=0, qrpEnv='none')
+dat1=simMA(k=nK,delta=0,tau=0,censor="none", qrpEnv='none')
+dat2=simMA(k=nK,delta=.5,tau=0,censor="none", qrpEnv='none')
+dat3=simMA(k=nK,delta=0,tau=.2,censor="none", qrpEnv='none')
+dat4=simMA(k=nK,delta=.5,tau=.2,censor="none", qrpEnv='none')
 
 #fig1B
-dat5=dataMA(k=nK,delta=0,tau=0,empN=T,maxN=500,minN=0,meanN=0,selProp=1, qrpEnv='none')
-dat6=dataMA(k=nK,delta=.5,tau=0,empN=T,maxN=500,minN=0,meanN=0,selProp=1, qrpEnv='none')
-dat7=dataMA(k=nK,delta=0,tau=.2,empN=T,maxN=500,minN=0,meanN=0,selProp=1, qrpEnv='none')
-dat8=dataMA(k=nK,delta=.5,tau=.2,empN=T,maxN=500,minN=0,meanN=0,selProp=1, qrpEnv='none')
+dat5=simMA(k=nK,delta=0,tau=0,censor="medium", qrpEnv='none')
+dat6=simMA(k=nK,delta=.5,tau=0,censor="medium", qrpEnv='none')
+dat7=simMA(k=nK,delta=0,tau=.2,censor="medium", qrpEnv='none')
+dat8=simMA(k=nK,delta=.5,tau=.2,censor="medium", qrpEnv='none')
 
 
 #---------------------------------------------------------

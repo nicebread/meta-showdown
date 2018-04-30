@@ -39,12 +39,12 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 			value=kSig
 		))
 		
-		return(returnRes(res, long))
-		
+		return(returnRes(res, long))		
 	}
 	
+	# No special case? Then proceed with the puniform function
 	
-	# by using side="right", the p-uniform already does a one-sided selection
+	# by using side="right", the p-uniform already does a one-sided selection of p-values
 	PU <- puniform(tobs=t.value, n1i=n1, n2i=n2, alpha = 0.05, side="right", method="P", plot = FALSE)
 	
 	res <- data.frame(
@@ -54,7 +54,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 		std.error = NA,
 		statistic = PU$L.0,
 		p.value = PU$pval.0*2,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect.
-		# We double the p-value here to get two-sided p-values (all other methods return two-sided values, and)
+		# We double the p-value here to get two-sided p-values (all other methods return two-sided values, and we want to have it comparable)
 		conf.low = PU$ci.lb,
 		conf.high = PU$ci.ub
 	)
@@ -74,7 +74,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 }
 
 
-t.value <- c(2.1, 2.2, 1.1)
-n1 <- n2 <- c(20, 23, 24)
-pt(t.value, n1+n2-2, lower.tail=FALSE)*2
-puniformEst(t.value, n1, n2, skipBarelySignificant=TRUE)
+# t.value <- c(2.1, 2.2, 1.1)
+# n1 <- n2 <- c(20, 23, 24)
+# pt(t.value, n1+n2-2, lower.tail=FALSE)*2
+# puniformEst(t.value, n1, n2, skipBarelySignificant=TRUE)

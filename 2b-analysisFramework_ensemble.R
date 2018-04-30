@@ -5,7 +5,7 @@
 ## ======================================================================
 
 # run this file:
-# source("2-analysisFramework.R", echo=TRUE)
+# source("2b-analysisFramework ensemble.R", echo=TRUE)
 
 # load all functions and packages
 source("0-start.R")
@@ -66,10 +66,10 @@ for (f in simDatFiles) {
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
 				onePSM.McShane.est(t.obs=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
-				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=0, long=TRUE),
-				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=0, long=TRUE, fallback=FALSE),
-				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
-				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
+				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE),
+				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=1, long=TRUE, fallback=FALSE),
+				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE),
+				ensemble.est(MAdat, resample=TRUE, includeComponents=FALSE, B=500, long=TRUE, verbose=FALSE)
 			)
 			
 			## add some extra informations:			
@@ -100,6 +100,6 @@ for (f in simDatFiles) {
 		return(res2)
 	} # of dopar
 	
-	save(res, file=paste0("analysisParts/analysis_", basename(f)), compress="gzip")
+	save(res, file=paste0("analysisPartsEnsemble/analysis_", basename(f)), compress="gzip")
 } # of "f in simDatFiles"
 
