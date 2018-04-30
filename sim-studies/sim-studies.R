@@ -390,7 +390,8 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034){
       s <- rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
     }
     
-    s = round(s/2)
+		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
+    s <- round(s/2)
     
     #run the first analysis with some QRPs applied
     a = analyB(g1 = G[,,1][1:s,], #group one, 1:the current sample size
