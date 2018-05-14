@@ -10,7 +10,7 @@ source("0-start.R")
 
 # load the results files which were generated in 2-analysisFramework.R,
 # combine them into one large data frame
-analysisFiles <- list.files("analysisParts", pattern=".*\\.RData", full.names=TRUE)
+analysisFiles <- list.files("analysisPartsRev2", pattern=".*\\.RData", full.names=TRUE)
 
 print(paste0("Collecting results from ", length(analysisFiles), " analysis files."))
 
@@ -160,8 +160,7 @@ summ <- res.wide.red %>% group_by(condition, k, k.label, delta, delta.label, qrp
 		H0.reject.wrongSign.rate = sum(H0.reject.wrongSign, na.rm=TRUE)/sum(!is.na(H0.reject.wrongSign)),
 
 		n.p.values = sum(!is.na(H0.reject.pos)),
-		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE),
-		perc.sig = 
+		n.validEstimates = sum(!is.na(b0_estimate), na.rm=TRUE)
 	)
 
 print(summ, n=50)

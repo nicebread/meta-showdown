@@ -70,14 +70,58 @@ ggplot(WAAP_desc.long %>% filter(delta == 0.2), aes(x=k.label, y=percentage, fil
 
 
 
+
+## ======================================================================
+## Percentage of p-uniform return codes
+# comment codes:
+# 0 = regular converged estimate
+# 1 = "No significant studies on the specified side"
+# 2 = "set to zero if avg. p-value > .025"
+## ======================================================================
+
+puniform_comments <- res.wide.red %>% 
+	filter(method %in% c("puniform")) %>% 
+	select(id, condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, censor, censor.label, tau, tau.label, b0_estimate, b0_comment) %>% 
+	group_by(condition, k, k.label, delta, delta.label, qrpEnv, qrp.label, censor, censor.label, tau, tau.label) %>% 
+	summarise(
+		regular_perc = sum(b0_comment == 0) / n(),
+		noSig_perc = sum(b0_comment == 1) / n(),
+		barelySig_perc = sum(b0_comment == 2) / n()
+	)
+
+print(puniform_comments, n=432)
+
+print(estimator_types_desc %>% arrange(WAAP_perc), n=432)
+
+mean(estimator_types_desc$WAAP_perc)
+mean(estimator_types_desc$WLS_perc)
+
+# plot WAAP-WLS percentages as small multiples
+
+# reshape to long format
+WAAP_desc.long <- melt(estimator_types_desc %>% select(-PET_perc, -PEESE_perc), 
+	id.vars=c("condition", "k", "k.label", "delta", "delta.label", "qrpEnv", "qrp.label", "censor", "censor.label", "tau", "tau.label"),
+	variable.name = "estimator_type", value.name = "percentage")
+	
+library(ggplot2)	
+ggplot(WAAP_desc.long, aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(qrp.label~censor.label~tau.label~delta.label)
+
+
+# zoom into the mixed delta=0.2 conditions:
+
+ggplot(WAAP_desc.long %>% filter(delta == 0.2), aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(tau.label~qrp.label~censor.label)
+
+
+
+
 ## ======================================================================
 ## How many estimates converge?
 ## ======================================================================
 
 load("dataFiles/summ.RData")
 # reduced set for revision
-	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE.lm", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
-	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE.lm", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"), ordered=TRUE))
+	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"), ordered=TRUE))
 
 # which method has less than 100% convergence? --> RE, WAAP-WLS and PET-PEESE always converge
 convRate0 <- summ2 %>% 
@@ -113,6 +157,8 @@ convRate <- summ2 %>% ungroup() %>%
 
 convRate.wide <- spread(convRate, method, convRate)
 colnames(convRate.wide)[1:5] <- c("{k}", "{$\\delta$}", "{QRP}", "{PB}", "{$\\tau$}")
+
+print(convRate.wide, n=432)
 
 # print full table
 library(xtable)

@@ -1,6 +1,8 @@
 # MAIN FUNCTION to use: simMA
 # (see from line 440)
 
+# source("sim-studies.R")
+
 # load censoring function
 source("censorFunc.R")
 
@@ -98,14 +100,14 @@ simData.noQRP <- function(delta, tau, shape=1.51, scale=0.034){
 # output is 4 vectors of length maxN
 # This is called within simData.QRP
 
-expDataB <- function(delta, tau, cbdv, maxN = 1000){
+expDataB <- function(delta, tau, cbdv, maxN = 3000){
   
   # sample the treatment effect as a function of the 
   # true effect, delta, and heterogeneity (defined as tau)
   delta_i = delta + rnorm(1, 0, tau)
   
   # store the true effect for the study
-  D = matrix(delta_i,2,maxN)
+  D = matrix(delta_i, 2, maxN)
   
   #generate four matricies of maxN rows and 2 columns
   #each matrix represents results from maxN subjects experiencing
@@ -221,7 +223,7 @@ testIt=function(DV, lvl, out){
 # Takes groups (g1:g4) from expDataB. Gives a vector of 
 # (d,p,t,N,v,se,power,n1,n2).
 
-analyB <- function(g1, g2, g3, g4, delta_i, multDV, out, mod){
+analyB <- function(g1, g2, g3, g4, D, multDV, out, mod){
   
   #Create combo groups  
   G1=rbind(g1,g3); G2=rbind(g2,g4)
@@ -312,7 +314,7 @@ analyB <- function(g1, g2, g3, g4, delta_i, multDV, out, mod){
   pwr = pow$power
   
   #return the best result
-  out=c(d, p, t, N, d_v, d_se, pwr, n1, n2, delta_i)
+  out=c(d, p, t, N, d_v, d_se, pwr, n1, n2, D)
   
   return(out)
 }
@@ -323,7 +325,7 @@ analyB <- function(g1, g2, g3, g4, delta_i, multDV, out, mod){
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034){
+simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034, maxN = 3000){
   
   #correlation between multiple DVs is set to 0.20 as default
   cbdv = 0.2
@@ -340,9 +342,9 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034){
     G <- expDataB(delta, tau, cbdv)
     
     #determine the starting per-group sample size
-    #using either a specified distribution OR the empirical distribition
     s <- getN(n=1, shape=shape, scale=scale)
     
+		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)
     
     #run the first analysis with some QRPs applied
@@ -383,12 +385,7 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034){
     G = expDataB(delta,tau,cbdv,maxN)
     
     #determine the starting per-group sample size
-    #using either a specified distribution OR the empirical distribition
-    if (empN == TRUE){
-      s <- sample(perGrp$x,1) + empN.boost
-    }else{
-      s <- rtrunc(n=1, spec="nbinom", a=minN, b=Inf, size=2.3, mu=meanN)
-    }
+    s <- getN(n=1, shape=shape, scale=scale)
     
 		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)
@@ -446,10 +443,6 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034){
 #' @param k the number of studies in the MA
 #' @param delta the true effect (or the average of the true effects if heterogeneity exists)
 #' @param tau the SD around the true effect
-#' @param empN a logical, whether to use the empirical per-group N distribution
-#' @param maxN the max possible group size that could be created *this needs to be set higher than what can actually be generated--it doesn't mean you get bigger samples; not necessary when empN == TRUE
-#' @param minN the min of the truncated normal for sample size; not necessary when empN == TRUE
-#' @param meanN the average of the truncated normal for sample size; not necessary when empN == TRUE
 #' @param censor The censoring function - either "none", "med" (medium publication bias), "high" (high publication bias), or a vector of 3 values for the censoring function (posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)
 #' @param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
 #' @param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
@@ -542,3 +535,7 @@ simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), cen
   
   return(datMA)
 }
+
+
+#s1 <- simMA(100, delta=0, tau=0, qrpEnv= "medium", censorFunc = "none", verbose=FALSE)
+#s2 <- simMA(100, delta=0, tau=0, qrpEnv= "high", censorFunc = "none", verbose=FALSE)

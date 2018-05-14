@@ -14,8 +14,6 @@ easeOutExpo <- function (p, p_range, from_prob, to_prob) {
 	(to_prob-from_prob) * (-2^(-10 * (p-p_range[1])/p_range_length) + 1) + from_prob;
 }
 
-easeOutExpo(p, p_range=c(.995, .9995), .05, .5)
-
 easeInExpo <- function (p, p_range, from_prob, to_prob) {
 	p_start <- p_range[1]
 	p_range_length <- p_range[2] - p_range[1]

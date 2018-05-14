@@ -12,6 +12,10 @@
 vignettes/*.html
 vignettes/*.pdf
 
+simPartsRev1/
+simPartsRev2/
+analysisPartsRev1/
+analysisPartsRev2/
 
 
 # for the moment: do not upload simParts (1.2GB overall) and analysisParts
@@ -21,8 +25,16 @@ analysisParts/*.RData
 # shell script for automatically adding files > 50 MB:
 # find . -size +80M  | cut -c 3-1000 >> .gitignore
 
-Appendices/A-min k for p-curve/min_k_for_p-curve_cache/latex/unnamed-chunk-1_19c553a1fb68742e649d9ea84f9fa08f.rdb
+Archive/Rev1 results/res.wide.red.RData
+Archive/Rev1 results/res.wide.RData
+Archive/Rev1 results/res.final.RData
 Appendices/B-10,000 vs 1,000 sims/10,000vs_1,000_sims_cache/latex/unnamed-chunk-1_b8e7109da719555d5286d8f452a80b69.rdb
-dataFiles/res.final.RData
-dataFiles/res.wide.RData
 dataFiles/res.wide.red.RData
+dataFiles/res.wide.RData
+dataFiles/res.final.RData
+.git/objects/0d/f40842cb1c93e8e51f35653d5709a8219235b3
+.git/objects/ec/aa3984128af23402b145add92b07e5bfc94da2
+.git/objects/pack/pack-04e34f809f18eeb4d75e1cc330cb24b24fd26ce0.pack
+.git/objects/1a/0cf66089568b8097b0120f7f31fefc4c2d9961
+.git/objects/21/fa902aca80f1a8e7be02a26584ade32a8920c2
+.git/objects/39/30a87e1740b0f64063b626e6374d5084ec88cd

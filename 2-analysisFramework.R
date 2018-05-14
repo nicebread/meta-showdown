@@ -17,7 +17,7 @@ registerDoParallel(cores=20)
 (ncores <- getDoParWorkers())	# number of parallel processes
 
 # simDatFiles stores the names of all simulated data files in the folder "simParts"
-simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
+simDatFiles <- list.files("simPartsRev2", pattern=".*\\.RData", full.names=TRUE)
 
 library(gtools)
 simDatFiles <- mixedsort(simDatFiles)
@@ -61,11 +61,11 @@ for (f in simDatFiles) {
 			# analyze with all MA techniques
 			res0 <- rbind(
 				RMA.est(d=MAdat$d, v=MAdat$v, long=TRUE),
-				PETPEESE.est(MAdat$d, MAdat$v, PP.test = "one-sided", long=TRUE),
+				PETPEESE.est(MAdat$d, MAdat$v, PP.test = "one-sided", long=TRUE, runRMA=FALSE),
 				pc_skew(t=MAdat$t, df=MAdat$N-2, long=TRUE),
 				pcurveEst(t=MAdat$t, df=MAdat$N-2, progress=FALSE, long=TRUE, CI=FALSE),
 				puniformEst(t.value=MAdat$t, n1=MAdat$n1, n2=MAdat$n2, skipBarelySignificant=TRUE),
-				onePSM.McShane.est(t.obs=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
+				#onePSM.McShane.est(t.obs=MAdat$t, n1=MAdat$n1, n2=MAdat$n2),
 				threePSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=0, long=TRUE),
 				fourPSM.est(d=MAdat$d, v=MAdat$v, min.pvalues=0, long=TRUE, fallback=FALSE),
 				WAAP.est(d=MAdat$d, v=MAdat$v, long=TRUE)#,
@@ -100,6 +100,6 @@ for (f in simDatFiles) {
 		return(res2)
 	} # of dopar
 	
-	save(res, file=paste0("analysisParts/analysis_", basename(f)), compress="gzip")
+	save(res, file=paste0("analysisPartsRev2/analysis_", basename(f)), compress="gzip")
 } # of "f in simDatFiles"
 

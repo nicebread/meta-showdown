@@ -11,7 +11,7 @@ source("0-start.R")
 
 # register CPU cores for parallel processing
 library(doParallel)
-registerDoParallel(cores=20)
+registerDoParallel(cores=10)
 
 ## ======================================================================
 ## SETTINGS
@@ -66,7 +66,7 @@ for (j in 1:nrow(params)) {
 			log2 <- paste0(Sys.time(), ", batch=", batch, ": computing condition ", j, "/", nrow(params), "; rep = ", i)
 			print(log2)
 			
-			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], empN=TRUE, maxN=500, minN=0, meanN=0, censorFunc=as.character(params[j, "censor"]), qrpEnv=as.character(params[j, "qrpEnv"]))
+			MA1 <- simMA(k=params[j, "k"], delta=params[j, "delta"], tau=params[j, "tau"], censorFunc=as.character(params[j, "censor"]), qrpEnv=as.character(params[j, "qrpEnv"]))
 
 							  
 			# remove rownames (otherwise cbind complains)
@@ -94,7 +94,7 @@ for (j in 1:nrow(params)) {
 	} # of foreach loop
 		
 	sim <- sim %>% mutate(id=1000*(batch*10^(floor(log10(max(replication))+1)) + replication) + condition)	
-	save(sim, file=paste0("simParts/simData_condition_", j, ".RData"), compress="gzip")
+	save(sim, file=paste0("simPartsRev2/simData_condition_", j, ".RData"), compress="gzip")
 	
 } # of j (loop through parameter combinations)
 

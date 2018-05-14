@@ -21,8 +21,24 @@ Q <- quantile(FV.ns0, prob=c(.025, .975))
 Q
 FV.ns <- FV.ns0[FV.ns0 >= Q[1] & FV.ns0 <= Q[2]]
 
+# These are sample sizes for the whole sample - divide by two to approximate per-group sample sizes
 FV.ns.perGroup <- round(FV.ns/2)
 summary(FV.ns.perGroup)
+
+
+## ======================================================================
+## Read Uli Schimmack's data set with PsychScience degrees of freedom
+## 
+## http://www.utstat.toronto.edu/~brunner/data/power/PsychScience.urn3.txt
+# See also https://replicationindex.wordpress.com/2018/05/10/an-even-better-p-curve
+## ======================================================================
+
+US.ns <- read.table("Schimmack-PsychScience.urn3.txt", header=FALSE, sep=" ") %>% unlist() %>% as.vector()
+
+# These are sample sizes for the whole sample - divide by two to approximate per-group sample sizes (as in Fraley and Vazire)
+US.ns.perGroup <- US.ns/2
+
+summary(US)
 
 
 ## ======================================================================
