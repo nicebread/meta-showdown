@@ -1,3 +1,4 @@
+# Load summary data & tidyverse package
 load(file="./dataFiles/summ.RData")
 library(tidyverse)
 
@@ -14,10 +15,12 @@ summ <- summ %>%
 # Get "pcurve.evidence" hyptests, relabel as "pcurve"
 summ.pcurve.evi <- summ %>% 
   filter(method == "pcurve.evidence") %>% 
-  mutate(method = "pcurve") %>% 
+  mutate(method = "pcurve",
+         # use reject.pos.rate as reject.hybrid.rate
+         H0.reject.hybrid.rate = H0.reject.pos.rate) %>% 
   dplyr::select(condition:method, 
-         H0.reject.hybrid.rate = H0.reject.pos.rate, # relabel reject.pos.rate as reject.hybrid.rate
-         n.p.values)
+                H0.reject.pos.rate, H0.reject.hybrid.rate,
+                n.p.values)
 
 # Get "pcurve" estimation
 summ.pcurve.est <- summ %>% 
@@ -36,34 +39,52 @@ summ2 <- filter(summ, !(method %in% c("pcurve", "pcurve.evidence", "pcurve.lack"
 # coerce puniform's H0.reject.pos.rate to H0.reject.hybrid.rate
 summ2[summ2$method == "puniform", "H0.reject.hybrid.rate"] <- summ2[summ2$method == "puniform", "H0.reject.pos.rate"]
 
-# Make results ----
+# Confirm that things have merged appropriately
+summ2 %>% 
+  filter(method %in% c("pcurve")) %>% 
+  dplyr::select(method, ME, H0.reject.rate, H0.reject.pos.rate, H0.reject.hybrid.rate)
+summ2 %>% 
+  filter(method %in% c("puniform")) %>% 
+  dplyr::select(method, ME, H0.reject.rate, H0.reject.pos.rate, H0.reject.hybrid.rate)
+summ2 %>% 
+  filter(method %in% c("reMA")) %>% 
+  dplyr::select(method, ME, H0.reject.rate, H0.reject.pos.rate, H0.reject.hybrid.rate)
 
-output.ME <- master %>% 
-  dplyr::select(delta:censor, ME) %>% 
-  filter(!is.na(ME)) %>% 
+# Make results ----
+output.ME <- summ2 %>% 
+  # Restrict to identifiers and ME
+  dplyr::select(k:method, ME, -ends_with(".label")) %>% 
+  # Put k in separate columns
   unite(method, method, k) %>% 
   spread(key = method, value = ME) %>% 
+  # Arrange by simulation settings
   arrange(censor, qrpEnv, tau, delta)
 
-output.RMSE <- master %>% 
-  dplyr::select(delta:censor, RMSE) %>% 
-  filter(!is.na(RMSE)) %>% 
+output.RMSE <- summ2 %>% 
+  # Restrict to identifiers and RMSE
+  dplyr::select(k:method, RMSE, -ends_with(".label")) %>% 
+  # Put k in separate columns
   unite(method, method, k) %>% 
   spread(key = method, value = RMSE) %>% 
+  # Arrange by simulation settings
   arrange(censor, qrpEnv, tau, delta)
 
-output.pow <- master %>% 
-  dplyr::select(delta:censor, H0.reject.rate) %>% 
-  filter(!is.na(H0.reject.rate)) %>% 
+output.pow <- summ2 %>% 
+  # Restrict to identifiers and H0.reject.hybrid.rate
+  dplyr::select(k:method, H0.reject.hybrid.rate, -ends_with(".label")) %>% 
+  # Put k in separate columns
   unite(method, method, k) %>% 
-  spread(key = method, value = H0.reject.rate) %>% 
+  spread(key = method, value = H0.reject.hybrid.rate) %>% 
+  # Arrange by simulation settings
   arrange(censor, qrpEnv, tau, delta)
 
-output.coverage <- master %>% 
-  dplyr::select(delta:censor, coverage) %>% 
-  filter(!is.na(coverage)) %>% 
+output.coverage <- summ2 %>% 
+  # Restrict to identifiers and coverage
+  dplyr::select(k:method, coverage, -ends_with(".label")) %>% 
+  # Put k in separate columns
   unite(method, method, k) %>% 
   spread(key = method, value = coverage) %>% 
+  # Arrange by simulation settings
   arrange(censor, qrpEnv, tau, delta)
 
 write.csv(output.ME, "tables/ME_table.csv", row.names = F)
@@ -74,22 +95,34 @@ write.csv(output.coverage, "tables/coverage_table.csv", row.names = F)
 # Make smaller, easier tables for writing results section
 output.ME %>%  
   filter(qrpEnv == "none",
-         censor %in% c("none", "high")) %>% 
+         censor %in% c("none", "high"),
+         delta %in% c(0, 0.5),
+         tau %in% c(0, 0.2)) %>% 
+  dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
   write.csv("tables/ME_table_small.csv", row.names = F)
 
 output.RMSE %>%  
   filter(qrpEnv == "none",
-         censor %in% c("none", "high")) %>% 
+         censor %in% c("none", "high"),
+         delta %in% c(0, 0.5),
+         tau %in% c(0, 0.2)) %>% 
+  dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
   write.csv("tables/RMSE_table_small.csv", row.names = F)
 
 output.pow %>%  
   filter(qrpEnv == "none",
-         censor %in% c("none", "high")) %>% 
+         censor %in% c("none", "high"),
+         delta %in% c(0, 0.5),
+         tau %in% c(0, 0.2)) %>% 
+  dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
   write.csv("tables/pow_table_small.csv", row.names = F)
 
 output.coverage %>% 
   filter(qrpEnv == "none",
-         censor %in% c("none", "high")) %>% 
+         censor %in% c("none", "high"),
+         delta %in% c(0, 0.5),
+         tau %in% c(0, 0.2)) %>% 
+  dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
   write.csv("tables/cov_table_small.csv", row.names = F)
 
 #############################
@@ -98,39 +131,32 @@ output.coverage %>%
 
 # Viewing manually ----
 
-# sort by RMSE
-# TODO: How do I sort within these groups?
-output.RMSE %>% 
-  gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
-  separate(key, into = c("method", "k"), sep ="_") %>% 
-  filter(qrpEnv == "none",
-         censor == "high") %>% 
-  select(delta, tau, k, censor, method, value) %>% 
-  arrange(delta, tau, k, censor, value) %>% 
-  View()
+# make a function for filtering and arranging
+forYourEyes <- function(x) {
+  x %>% 
+    # drop k = 30 and k = 100
+    dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
+    # separate method and k
+    gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
+    separate(key, into = c("method", "k"), sep ="_") %>% 
+    # filter for no QRP, zero or high pub bias, delta 0 or 0.5, tau 0 or 0.2
+    filter(qrpEnv == "none",
+           censor %in% c("none", "high"),
+           delta %in% c(0, 0.5),
+           tau %in% c(0, 0.2)) %>% 
+    # within each scenario (delta, tau, k, censor), arrange methods in order of performance
+    select(delta, tau, k, censor, method, value) %>% 
+    arrange(delta, tau, k, censor, value) %>% 
+    # round to 3 decimals for reading's sake
+    mutate(value = round(value, 3))
+}
 
-output.coverage %>% 
-  gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
-  separate(key, into = c("method", "k"), sep ="_") %>% 
-  filter(qrpEnv == "none",
-         censor == "high") %>% 
-  dplyr::select(delta, tau, k, censor, method, value) %>% 
-  arrange(delta, tau, k, censor, value) %>% 
-  View()
+pretty.pow <- forYourEyes(output.pow)
+pretty.ME <- forYourEyes(output.ME)
+pretty.RMSE <- forYourEyes(output.RMSE)
+pretty.coverage <- forYourEyes(output.coverage)
 
-# Plot them with method in columns, just one outcome, for supplementary tables
-# Power
-master %>% 
-  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
-  # kludge p-curve into place
-  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
-  # clean up the mess, dropping H0.reject.pos.rate and removing the missing values
-  dplyr::select(-H0.reject.pos.rate) %>% 
-  filter(!is.na(H0.reject.rate)) %>% 
-  spread(key = method, value = H0.reject.rate) %>% View()
-
-
-# Try to plot some stuff to figure out effects of QRPs.
+# Examine effects of QRPs ----
 MEplot <- function(dat, est) {
   filter(dat, method == est) %>% 
     ggplot(aes(x = interaction(tau, delta), y = ME, color = qrpEnv)) +
@@ -141,29 +167,28 @@ MEplot <- function(dat, est) {
     ggtitle(est)
 }
 # how much bias can QRPs alone cause?
-filter(master, method == "RE", censor == "med", delta == 0, tau == 0)
+filter(summ2, method == "reMA", censor == "med", delta == 0, tau == 0)
 
-MEplot(master, "RE") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
-MEplot(master, "TF") # QRP generally increases ME when h0 true, but less than for RE
-MEplot(master, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
-MEplot(master, "PET-PEESE") # QRP sharply decreases ME across conditions, often strong negative bias
-MEplot(master, "p-curve") # QRP decreases ME across conditions, sometimes negative bias
-MEplot(master, "p-uniform") # QRP decreases ME across conditions, sometimes negative bias
-MEplot(master, "3PSM") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(summ2, "reMA") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
+MEplot(summ2, "TF") # QRP generally increases ME when h0 true, but less than for RE
+MEplot(summ2, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
+MEplot(summ2, "PETPEESE") # QRP sharply decreases ME across conditions, often strong negative bias
+MEplot(summ2, "pcurve") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(summ2, "puniform") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(summ2, "3PSM") # QRP decreases ME across conditions, sometimes negative bias
+MEplot(summ2, "4PSM")
 
 # max diff from QRP
-master %>% 
-  filter(method != "p-curve_H0") %>% 
-  group_by(method, delta, tau, k, censor) %>% 
-  summarize(maxMEdiff = max(ME) - min(ME)) %>% 
+summ2 %>% 
+  group_by(method, delta, tau, k, censor) %>% # group by all factors except QRP
+  summarize(maxMEdiff = max(ME) - min(ME)) %>% # get difference between max bias and min bias
   ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
   facet_wrap(~method)
 # max diff from censoring
-master %>% 
-  filter(method != "p-curve_H0") %>% 
-  group_by(method, delta, tau, k, qrpEnv) %>% 
-  summarize(maxMEdiff = max(ME) - min(ME)) %>% 
+summ2 %>% 
+  group_by(method, delta, tau, k, qrpEnv) %>% # group by all factors except censor
+  summarize(maxMEdiff = max(ME) - min(ME)) %>% # get difference between max bias and min bias
   ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
   facet_wrap(~method)
@@ -176,25 +201,24 @@ RMSEplot <- function(dat, est) {
     facet_grid(k~censor) +
     ggtitle(est)
 }
-RMSEplot(master, "RE") # QRP generally increases RMSE slightly, but more influential under pub bias
-RMSEplot(master, "TF") # same
-RMSEplot(master, "WAAP-WLS") # same
-RMSEplot(master, "PET-PEESE") # QRP generally increases RMSE, can decrease it if bias is strong
-RMSEplot(master, "p-curve") # QRP increases RMSE when null is false, homogeneity; decreases o.w.
-RMSEplot(master, "p-uniform") # same
-RMSEplot(master, "3PSM")
+RMSEplot(summ2, "reMA") # QRP generally increases RMSE slightly, but more influential under pub bias
+RMSEplot(summ2, "TF") # same
+RMSEplot(summ2, "WAAP-WLS") # same
+RMSEplot(summ2, "PETPEESE") # QRP generally increases RMSE, can decrease it if bias is strong
+RMSEplot(summ2, "pcurve") # QRP increases RMSE when null is false, homogeneity; decreases o.w.
+RMSEplot(summ2, "puniform") # same
+RMSEplot(summ2, "3PSM")
+RMSEplot(summ2, "4PSM")
 
 # max diff from QRP
-master %>% 
-  filter(method != "p-curve_H0") %>% 
+summ2 %>% 
   group_by(method, delta, tau, k, censor) %>% 
   summarize(maxRMSEdiff = max(RMSE) - min(RMSE)) %>% 
   ggplot(aes(x = maxRMSEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
   facet_wrap(~method)
 # max diff from censoring
-master %>% 
-  filter(method != "p-curve_H0") %>% 
+summ2 %>% 
   group_by(method, delta, tau, k, qrpEnv) %>% 
   summarize(maxRMSEdiff = max(RMSE) - min(RMSE)) %>% 
   ggplot(aes(x = maxRMSEdiff, fill = as.factor(delta))) +
@@ -203,16 +227,7 @@ master %>%
 
 powplot <- function(dat, est) {
   filter(dat, method == est) %>% 
-    ggplot(aes(x = interaction(tau, delta), y = H0.reject.rate, color = qrpEnv)) +
-    geom_point(size = 2) +
-    scale_y_continuous(limits = c(0, 1)) +
-    geom_hline(yintercept = c(.05, .80), lty = 2) +
-    facet_grid(k~censor) +
-    ggtitle(est)
-}
-powplot.pos <- function(dat, est) {
-  filter(dat, method == est) %>% 
-    ggplot(aes(x = interaction(tau, delta), y = H0.reject.pos.rate, color = qrpEnv)) +
+    ggplot(aes(x = interaction(tau, delta), y = H0.reject.hybrid.rate, color = qrpEnv)) +
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0, 1)) +
     geom_hline(yintercept = c(.05, .80), lty = 2) +
@@ -220,22 +235,19 @@ powplot.pos <- function(dat, est) {
     ggtitle(est)
 }
 # increase in Type I error given true null and no pub bias
-filter(master, method == "RE", censor == "none", delta == 0)
+filter(summ2, method == "RE", censor == "none", delta == 0)
 
-powplot(master, "RE") # increase in Type I is considerable but small compared to pub bias
-powplot(master, "TF") # QRP still increases Type I given pub bias
-powplot(master, "WAAP-WLS") # QRP has small effect on power, complex effect on pub bias
-powplot(master, "PET-PEESE") # QRP increases Type I and Type II error both.  Wrong sign?
-#powplot(master, "p-curve")
-powplot.pos(master, "p-curve")
-#powplot(master, "p-uniform")
-powplot.pos(master, "p-uniform")
-powplot(master, "3PSM")
-
-powplot.pos(master, "PET-PEESE")
+powplot(summ2, "reMA") # increase in Type I is considerable but small compared to pub bias
+powplot(summ2, "TF") # QRP still increases Type I given pub bias
+powplot(summ2, "WAAP-WLS") # QRP has small effect on power, complex effect on pub bias
+powplot(summ2, "PETPEESE") # QRP increases Type I and Type II error both.  Wrong sign?
+powplot(summ2, "pcurve")
+powplot(summ2, "puniform")
+powplot(summ2, "3PSM")
+powplot(summ2, "4PSM")
 
 # trying to see how bad the drop is in points
-filter(master, method %in% c("p-curve", "p-uniform"), 
+filter(summ2, method %in% c("p-curve", "p-uniform"), 
        delta == 0.5,
        censor %in% c("med", "high"), 
        k == 10, 
@@ -243,14 +255,14 @@ filter(master, method %in% c("p-curve", "p-uniform"),
   arrange(method, delta, censor) %>% 
   View()
 
-filter(master, method == "3PSM",
+filter(summ2, method == "3PSM",
        delta == 0.5,
        censor %in% c('med', 'high'),
        k == 10) %>% 
   arrange(method, delta, censor) %>% 
   View()
 
-filter(master, method == "PET-PEESE",
+filter(summ2, method == "PET-PEESE",
        delta == 0.5,
        censor %in% c('none', 'med', 'high'),
        k == 10) %>% 
@@ -259,7 +271,7 @@ filter(master, method == "PET-PEESE",
 
 
 # is it wrong sign in PET-PEESE?
-filter(master, method == "PET-PEESE") %>% 
+filter(summ2, method == "PET-PEESE") %>% 
   ggplot(aes(x = interaction(tau, delta), y = H0.reject.pos.rate, color = qrpEnv)) +
   geom_point(size = 2) +
   scale_y_continuous(limits = c(0, 1)) +
@@ -275,13 +287,24 @@ ciplot <- function(dat, est) {
     facet_grid(k~censor) +
     ggtitle(est)
 }
-ciplot(master, "RE") # generally speaking, a loss of coverage
-ciplot(master, "TF") # complex
-ciplot(master, "WAAP-WLS") # complex
-ciplot(master, "PET-PEESE") # some complexity; generally a loss of coverage
-ciplot(master, "p-uniform") # better coverage when h0 true or tau = 0.2
-ciplot(master, "3PSM") # better coverage, sometimes, when there's pub bias
+ciplot(summ2, "reMA") # generally speaking, a loss of coverage
+ciplot(summ2, "TF") # complex
+ciplot(summ2, "WAAP-WLS") # complex
+ciplot(summ2, "PETPEESE") # some complexity; generally a loss of coverage
+ciplot(summ2, "puniform") # better coverage when h0 true or tau = 0.2
+ciplot(summ2, "3PSM") # better coverage, sometimes, when there's pub bias
 
+# Write to table for supplement ----
+# Write them with method in columns, just one outcome, for supplementary tables
+# Power
+summ2 %>% 
+  dplyr::select(k, delta, qrpEnv, censor, tau, method, H0.reject.rate, H0.reject.pos.rate) %>% 
+  # kludge p-curve into place
+  mutate(H0.reject.rate = ifelse(is.na(H0.reject.rate), H0.reject.pos.rate, H0.reject.rate)) %>% 
+  # clean up the mess, dropping H0.reject.pos.rate and removing the missing values
+  dplyr::select(-H0.reject.pos.rate) %>% 
+  filter(!is.na(H0.reject.rate)) %>% 
+  spread(key = method, value = H0.reject.rate) %>% View()
 
 # No pub bias ----
 # ME.pos
