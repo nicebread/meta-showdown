@@ -143,10 +143,10 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 
 # # test: biased set of studies
 # dat <- data.frame(dataMA(k = 40, delta = 0.15, tau = 0.05, empN = TRUE, maxN=500, minN=0, meanN=0, selProp = 0.9, qrpEnv = "low"))
-# 	pcurveEst(dat$t, dat$N-2, CI=FALSE)
-#	pc_skew(dat$t, dat$N-2)
+# 	pcurveEst(dat$t, dat$n1 + dat$n2 - 2, CI=FALSE)
+#	pc_skew(dat$t, dat$n1 + dat$n2 - 2)
 
 # Compare with p-curve.com
-# cat(paste(paste0("t(", dat$N-2, ")=", round(dat$t, 4)), collapse="\n"))
+# cat(paste(paste0("t(", dat$n1 + dat$n2 - 2-2, ")=", round(dat$t, 4)), collapse="\n"))
 
 #TPSM.est(dat$t, dat$n1, dat$n2)

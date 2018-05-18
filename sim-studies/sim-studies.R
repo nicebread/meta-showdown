@@ -84,7 +84,7 @@ simData.noQRP <- function(delta, tau, shape=1.51, scale=0.034){
   pwr = pow$power 
   
   #output 
-  out = c(d, p, t, n, d_v, d_se, pwr, n1, n2, delta_i)  
+  out = c(d, p, t, n1+n2, d_v, d_se, pwr, n1, n2, delta_i)  
 }
 
 
@@ -493,10 +493,10 @@ simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), cen
 			publish <- 1
 		} else if (is.character(censorFunc) && censorFunc == "medium") {
 			# predefined censor function for "medium publication bias"
-			publish <- rbinom(n=1, size=1, prob=censorMedium(res[2], direction = sign(res[1])))
+			publish <- rbinom(n=1, size=1, prob=censorMedium(pObs = res[2], direction = sign(res[1])))
 		} else if (is.character(censorFunc) && censorFunc == "high") {
 			# predefined censor function for "strong publication bias"
-			publish <- rbinom(n=1, size=1, prob=censorHigh(res[2], direction = sign(res[1])))
+			publish <- rbinom(n=1, size=1, prob=censorHigh(pObs = res[2], direction = sign(res[1])))
 		} else if (is.vector(censorFunc) && length(censorFunc)==3) {
 			publish <- rbinom(n=1, size=1, prob=censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = censorFunc[1], negSign_NS_baseRate = censorFunc[2], counterSig_rate = censorFunc[3]))
 		} else {
@@ -539,3 +539,16 @@ simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), cen
 
 #s1 <- simMA(100, delta=0, tau=0, qrpEnv= "medium", censorFunc = "none", verbose=FALSE)
 #s2 <- simMA(100, delta=0, tau=0, qrpEnv= "high", censorFunc = "none", verbose=FALSE)
+
+# sanity check: does n1 and n2 add up to N?
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "none", censorFunc = "none", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "medium", censorFunc = "none", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "high", censorFunc = "none", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+#
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "none", censorFunc = "medium", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "medium", censorFunc = "medium", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "high", censorFunc = "medium", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+#
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "none", censorFunc = "high", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "medium", censorFunc = "high", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)
+# s1 <- simMA(10, delta=0, tau=0, qrpEnv= "high", censorFunc = "high", verbose=FALSE); s1; all(s1$N == s1$n1 + s1$n2)

@@ -16,7 +16,7 @@ summary(dat)
 FV.ns0 <- round(dat$Avg_Coder_N[!is.na(dat$Avg_Coder_N)])
 summary(FV.ns)
 
-# remove most extreme outlier (1% quantiles)
+# remove most extreme outlier (2.5% quantiles)
 Q <- quantile(FV.ns0, prob=c(.025, .975))
 Q
 FV.ns <- FV.ns0[FV.ns0 >= Q[1] & FV.ns0 <= Q[2]]

@@ -210,7 +210,7 @@ TPSM.McShane.est <- function(t, n1, n2, long=TRUE) {
 # TPSM.McShane.est(t=dat$t, n1=dat$n1, n2=dat$n2)
 # threePSM.est(d=dat$d, v=dat$v)
 # fourPSM.est(d=dat$d, v=dat$v)
-# pcurveEst(t=dat$t, df=dat$N-2, progress=FALSE, long=TRUE, CI=FALSE)
+# pcurveEst(t=dat$t, df=dat$n1 + dat$n2 - 2, progress=FALSE, long=TRUE, CI=FALSE)
 # puniformEst(t.value=dat$t, n1=dat$n1, n2=dat$n2, skipBarelySignificant=TRUE)
 # onePSM.McShane.est(t.obs=dat$t, n1=dat$n1, n2=dat$n2)
 

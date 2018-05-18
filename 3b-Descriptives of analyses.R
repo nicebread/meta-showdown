@@ -1,4 +1,5 @@
 library(tidyr)
+library(dplyr)
 load(file="dataFiles/res.wide.red.RData")
 
 # ---------------------------------------------------------------------

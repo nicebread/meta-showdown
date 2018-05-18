@@ -79,11 +79,13 @@ censor.1t.0 <- function(pObs, posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0
 
 
 # some predefined settings: medium publication bias
-censorMedium <- function(pObs, direction) {
-	Vectorize(censor(pObs, direction, posSign_NS_baseRate = 0.20, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50))
+censorMedium0 <- function(pObs, direction) {
+	censor(pObs, direction, posSign_NS_baseRate = 0.20, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50)
 }
+censorMedium <- Vectorize(censorMedium0)
 
 # some predefined settings: strong publication bias
-censorHigh <- function(pObs, direction) {
-	Vectorize(censor(pObs, direction, posSign_NS_baseRate = 0.05, negSign_NS_baseRate = 0.00, counterSig_rate = 0.20))
+censorHigh0 <- function(pObs, direction) {
+	censor(pObs, direction, posSign_NS_baseRate = 0.05, negSign_NS_baseRate = 0.00, counterSig_rate = 0.20)
 }
+censorHigh <- Vectorize(censorHigh0)
