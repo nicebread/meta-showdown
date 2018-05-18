@@ -9,8 +9,7 @@ getCor <- function(x) {
 	x2 <- x %>% select(id, method, b0_estimate) %>% spread(method, b0_estimate) %>% select(-id)
 	x3 <- cor(x2, use="p") %>% as.data.frame()
 	x3$method1 <- rownames(x3)
-	x4 <- gather(x3, method1)
-	colnames(x4) <- c("method1", "method2", "COR")
+	x4 <- gather(x3, method2, COR, -method1)
 	return(x4)
 }
 
@@ -91,27 +90,6 @@ puniform_comments <- res.wide.red %>%
 	)
 
 print(puniform_comments, n=432)
-
-print(estimator_types_desc %>% arrange(WAAP_perc), n=432)
-
-mean(estimator_types_desc$WAAP_perc)
-mean(estimator_types_desc$WLS_perc)
-
-# plot WAAP-WLS percentages as small multiples
-
-# reshape to long format
-WAAP_desc.long <- melt(estimator_types_desc %>% select(-PET_perc, -PEESE_perc), 
-	id.vars=c("condition", "k", "k.label", "delta", "delta.label", "qrpEnv", "qrp.label", "censor", "censor.label", "tau", "tau.label"),
-	variable.name = "estimator_type", value.name = "percentage")
-	
-library(ggplot2)	
-ggplot(WAAP_desc.long, aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(qrp.label~censor.label~tau.label~delta.label)
-
-
-# zoom into the mixed delta=0.2 conditions:
-
-ggplot(WAAP_desc.long %>% filter(delta == 0.2), aes(x=k.label, y=percentage, fill=estimator_type)) + geom_bar(stat="identity") + facet_grid(tau.label~qrp.label~censor.label)
-
 
 
 
@@ -194,6 +172,7 @@ I2b <- res.wide.red %>%
 		I2.SD = sd(I2_estimate, na.rm=TRUE)
 	) %>% arrange(tau, delta)
 	
+I2b
 	
 # even stronger aggregation: aggregate over k and delta
 I2c <- res.wide.red %>% 
@@ -222,7 +201,7 @@ estNeg <- res.wide.red %>%
 
 table(estNeg$estNegPerc)
 
-# --> all pcurve and puniform estimates are truncated at zero.
+# --> virtually all pcurve and puniform estimates are truncated at zero.
 
 
 ## ======================================================================

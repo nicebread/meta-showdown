@@ -54,18 +54,6 @@ tab <- res.wide %>% group_by(k, delta, qrpEnv, censor, tau) %>% dplyr::select(id
 print(tab, n=50)
 
 
-# how many simulations do we have in each condition, after we removed all k<4 for p-curve etc.?
-tab2 <- res.wide %>% 
-	group_by(k, delta, qrpEnv, censor, tau) %>% 
-	select(id, method, kSig_estimate) %>% 
-	filter(method=="pcurve") %>% 
-	dplyr::summarise(
-		nMA.with.kSig.larger.3 = sum(!is.na(kSig_estimate) & kSig_estimate >= 4)
-	)
-print(tab2, n=54)
-
-res.wide <- inner_join(res.wide, tab2)
-
 save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
 #load(file="dataFiles/res.wide.RData")
 
