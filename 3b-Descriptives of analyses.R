@@ -7,7 +7,7 @@ load(file="dataFiles/res.wide.red.RData")
 
 getCor <- function(x) {
 	x2 <- x %>% select(id, method, b0_estimate) %>% spread(method, b0_estimate) %>% select(-id)
-	x3 <- cor(x2, use="p") %>% as.data.frame()
+	x3 <- cor(x2, use="p", method="spearman") %>% as.data.frame()
 	x3$method1 <- rownames(x3)
 	x4 <- gather(x3, method2, COR, -method1)
 	return(x4)
@@ -25,10 +25,17 @@ for (cond in 1:432) {
 	))
 }
 
+res2 <- res %>% filter(method1=="pcurve", method2=="puniform")
+summary(res2$COR)
+
+x2 <- res.wide.red %>% filter(condition==84) %>% select(id, method, b0_estimate) %>% spread(method, b0_estimate) %>% select(-id)
+plot(x2$pcurve, x2$puniform)
+
 # get correlation of estimators across all conditions
 C2 <- getCor(res.wide.red)
 C2
 
+C2 %>% filter(method1=="pcurve", method2=="puniform")
 
 
 ## ======================================================================

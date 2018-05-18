@@ -147,6 +147,6 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
 #	pc_skew(dat$t, dat$n1 + dat$n2 - 2)
 
 # Compare with p-curve.com
-# cat(paste(paste0("t(", dat$n1 + dat$n2 - 2-2, ")=", round(dat$t, 4)), collapse="\n"))
+# cat(paste(paste0("t(", dat$n1 + dat$n2 - 2, ")=", round(dat$t, 4)), collapse="\n"))
 
 #TPSM.est(dat$t, dat$n1, dat$n2)
