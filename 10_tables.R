@@ -140,8 +140,10 @@ forYourEyes <- function(x) {
     gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
     separate(key, into = c("method", "k"), sep ="_") %>% 
     # filter for no QRP, zero or high pub bias, delta 0 or 0.5, tau 0 or 0.2
+    # also drop methods PET PEESE and 4PSM
     filter(qrpEnv == "none",
            censor %in% c("none", "high"),
+           !(method %in% c("PET", "PEESE", "4PSM")),
            delta %in% c(0, 0.5),
            tau %in% c(0, 0.2)) %>% 
     # within each scenario (delta, tau, k, censor), arrange methods in order of performance
@@ -155,6 +157,12 @@ pretty.pow <- forYourEyes(output.pow)
 pretty.ME <- forYourEyes(output.ME)
 pretty.RMSE <- forYourEyes(output.RMSE)
 pretty.coverage <- forYourEyes(output.coverage)
+# View(pretty.pow)
+# View(pretty.ME)
+# View(pretty.RMSE)
+# View(pretty.coverage)
+
+
 
 # Examine effects of QRPs ----
 MEplot <- function(dat, est) {
@@ -247,11 +255,10 @@ powplot(summ2, "3PSM")
 powplot(summ2, "4PSM")
 
 # trying to see how bad the drop is in points
-filter(summ2, method %in% c("p-curve", "p-uniform"), 
+filter(summ2, method %in% c("pcurve", "puniform"), 
        delta == 0.5,
        censor %in% c("med", "high"), 
-       k == 10, 
-       !is.na(H0.reject.pos.rate)) %>% 
+       k == 10) %>% 
   arrange(method, delta, censor) %>% 
   View()
 
