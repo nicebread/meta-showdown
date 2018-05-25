@@ -76,12 +76,12 @@ getTable <- function(df, cbGetClass = NULL) {
 relabelMethod <- function(x) {
 	x <- factor(x)
 	levels(x)[levels(x)=="reMA"] <- "RE"
-	levels(x)[levels(x)=="PET.lm"] <- "PET"
-	levels(x)[levels(x)=="PET.rma"] <- "PET"
-	levels(x)[levels(x)=="PEESE.lm"] <- "PEESE"
-	levels(x)[levels(x)=="PEESE.rma"] <- "PEESE"
-	levels(x)[levels(x)=="PETPEESE.lm"] <- "PET-PEESE"
-	levels(x)[levels(x)=="PETPEESE.rma"] <- "PET-PEESE"
+	levels(x)[levels(x)=="PET"] <- "PET"
+	#levels(x)[levels(x)=="PET.rma"] <- "PET"
+	levels(x)[levels(x)=="PEESE"] <- "PEESE"
+	#levels(x)[levels(x)=="PEESE.rma"] <- "PEESE"
+	levels(x)[levels(x)=="PETPEESE"] <- "PET-PEESE"
+	#levels(x)[levels(x)=="PETPEESE.rma"] <- "PET-PEESE"
 	levels(x)[levels(x)=="pcurve"] <- "p-curve"
 	levels(x)[levels(x)=="pcurve.evidence"] <- "p-curve"
 	levels(x)[levels(x)=="puniform"] <- "p-uniform"	
@@ -89,21 +89,30 @@ relabelMethod <- function(x) {
 	return(x)
 }
 
-selectPETPEESEmodel <- function(x, model) {
-	if (model == "lm") {
+# selectPETPEESEmodel <- function(x, model) {
+# 	if (model == "lm") {
+# 		x <- x %>%
+# 			filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma")) %>%
+# 			mutate(method = relabelMethod(method)) %>%
+# 			filter(method %in% methodOrder)
+#
+# 	} else if (model == "rma") {
+# 		x <- x %>%
+# 			filter(!method %in% c("PET.lm", "PEESE.lm", "PETPEESE.lm")) %>%
+# 			mutate(method = relabelMethod(method)) %>%
+# 			filter(method %in% methodOrder)
+# 	}
+# 	return(x)
+# }
+
+selectModels <- function(x) {
 		x <- x %>% 
-			filter(!method %in% c("PET.rma", "PEESE.rma", "PETPEESE.rma")) %>% 
 			mutate(method = relabelMethod(method)) %>% 
 			filter(method %in% methodOrder)
-			
-	} else if (model == "rma") {
-		x <- x %>% 
-			filter(!method %in% c("PET.lm", "PEESE.lm", "PETPEESE.lm")) %>% 
-			mutate(method = relabelMethod(method)) %>% 
-			filter(method %in% methodOrder)
-	}
 	return(x)
 }
+
+
 
 load("summ.RData")
 load("hyp.wide.RData")
@@ -134,7 +143,7 @@ summ$stroke <- ifelse(summ$delta == 0, H0.stroke, H1.stroke)
 summ$fill <- ifelse(summ$delta == 0, H0.fill, H1.fill)
 
 summ2 <- summ %>% 
-		filter(method %in% c("reMA", "TF", "WAAP-WLS", "PET.lm", "PEESE.lm", "PET.rma", "PEESE.rma", "PETPEESE.lm", "PETPEESE.rma", "3PSM", "pcurve", "puniform")) %>% 
+		filter(method %in% c("reMA", "TF", "WAAP-WLS", "PET", "PEESE", "PETPEESE", "3PSM", "4PSM", "pcurve", "puniform")) %>% 
 		ungroup()
 
 # store estimation quantiles in long format		
@@ -144,4 +153,4 @@ summLong <- summ2  %>%
 
 
 #methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM")
-methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET", "PEESE", "PET-PEESE", "3PSM")
+methodOrder <- c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET", "PEESE", "PET-PEESE", "3PSM", "4PSM")

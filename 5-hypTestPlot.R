@@ -82,9 +82,9 @@ buildFacet <- function(dat, title) {
   return(PLOT)	
 }
 
-plotA <- buildFacet(dat = hyp.wide %>% filter(censor=="none"), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = hyp.wide %>% filter(censor=="med"), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = hyp.wide %>% filter(censor=="high"), bquote("(C) strong publication bias"))
+plotA <- buildFacet(dat = hyp.wide %>% filter(censor=="none", method != "4PSM"), bquote("(A) no publication bias"))
+plotB <- buildFacet(dat = hyp.wide %>% filter(censor=="med", method != "4PSM"), bquote("(B) medium publication bias"))
+plotC <- buildFacet(dat = hyp.wide %>% filter(censor=="high", method != "4PSM"), bquote("(C) strong publication bias"))
 
 
 # ---------------------------------------------------------------------

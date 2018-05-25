@@ -85,11 +85,11 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				checkboxGroupInput("qrpEnv_perf", "QRP environment:",
 				             choices = c("none", "med", "high"), 
 										 selected = c("none", "med", "high"), inline=TRUE),
-				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "pcurve", "puniform")),
+				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "4PSM", "pcurve", "puniform")),
 
 				
 				h2("Good performance is defined as ..."),
-				helpText("Fields without a value are not evaluated; all other fields combined with a logical AND (i.e., all entered conditions must be true to result in a good performance).
+				helpText("Fields without a value are not evaluated; all other fields are combined with a logical AND (i.e., all entered conditions must be true to result in a good performance).
 				As p-curve does not have a coverage metric, it is not positively evaluated if you enter a number there."),
 				textInput("ME_tolerance", "... a maximum deviation of the average estimate from true delta (i.e. |ME|): ", value = ""),
 				textInput("MAD_upperbound", "... a maximum mean absolute error (MAE) of: ", value = ""),
@@ -103,8 +103,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			# Advanced options
 		 conditionalPanel("input.tabs1 != 'Funnel plots'",
 				h2("Advanced options"),			
-				radioButtons("PETPEESEmodel", "Model PET/PEESE as:",
-			             c("lm (default)" = "lm", "rma" = "rma"), inline=TRUE),
+				#radioButtons("PETPEESEmodel", "Model PET/PEESE as:",
+			             #c("lm (default)" = "lm", "rma" = "rma"), inline=TRUE),
 								 
 				conditionalPanel("input.tabs1 == 'Estimation'",
 					selectInput("dropNegatives", "Set negative estimates to zero:",
@@ -177,7 +177,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						uiOutput("hypTable")
 					),
 					
-					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator")
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, 4PSM = four parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator")
 				),
 				
 				# ---------------------------------------------------------------------
@@ -200,7 +200,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						uiOutput("estTable")
 					),
 					
-					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator"),
+					helpText("RE = random effects meta-analysis, TF = trim-and-fill, PET = precision effect test, PEESE = precision effect estimate with standard errors, PET-PEESE = conditional estimator, 3PSM = three parameter selection model, 4PSM = four parameter selection model, WAAP = weighted average of adequately powered studies, WLS = Weigthed least squares estimator, WAAP-WLS = conditional estimator"),
 					
 					conditionalPanel(condition="input.plotOrTable != 'Table'",					
 						helpText("Horizontal error bars are 95% quantiles (i.e., 95% of simulated replications were in that range).")

@@ -37,8 +37,8 @@ theme_metashowdown <- theme(
 #  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve", "puniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "1PSM", "3PSM", "4PSM", "WAAP-WLS")))
 
 # reduced set for revision
-	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve", "puniform", "3PSM", "4PSM", "WAAP-WLS")) %>% 
-	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE", "3PSM", "4PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM", "4PSM")))
+	summ2 <- summ %>% filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve", "puniform", "3PSM", "WAAP-WLS")) %>% 
+	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM")))
 
 
 

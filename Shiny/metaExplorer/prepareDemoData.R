@@ -3,7 +3,7 @@ library(dplyr)
 
 # load all simulation files, grab the first ten replications from each condition, and save them as a reduced data set
 # TODO: This should be computed once and saved as intermediate result.
-simDatFiles <- list.files("../../simParts", pattern=".*\\.RData", full.name=TRUE)
+simDatFiles <- list.files("../../simPartsRev2", pattern=".*\\.RData", full.name=TRUE)
 simDatFiles <- mixedsort(simDatFiles)
 
 for (f in simDatFiles) {
@@ -17,7 +17,7 @@ for (f in simDatFiles) {
 	
 	sim <- sim0 %>% 
 		filter(unique <= 10) %>% 
-		select(-condition, -p, -t, -N, -se, pow, -n1, -n2, -D) %>% 
+		select(-condition, -p, -t, -N, -se, pow, -n1, -n2) %>% 
 		mutate(tau.label = factor(tau, levels=unique(tau), labels=paste0("tau = ", unique(tau))))
 	
 	save(sim, file=paste0("demoDat/", basename(f)), compress="gzip")	

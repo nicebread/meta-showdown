@@ -4,14 +4,33 @@ RMA.est <- function(d, v, long=TRUE) {
   #analyzes MA data set using standard RE model estimators
   #produces estimate of true effect, CI around estimate,
   #and estimate of tau (could get CIs if wanted)
-
+	
 	# adjust stepadj (make it smaller by x0.5) and increase maxiter from 100 to 500 to prevent convergence problems
 	#reMA <- rma(d, v, method="REML")
 	
 	reMA <- tryCatch(
 		rma(d, v, method="REML", control = list(stepadj = .5, maxiter=500)),
-		error = function(e) rma(d, v, method="DL")
+		error = function(e) {
+			NULL
+		}
 	)
+	 
+	# if it fails: return empty
+	if (is.null(reMA)) {
+		warning("RMA did not converge.")
+		# initialize empty results object
+		res <- data.frame(
+			method = "reMA",
+			term = "b0",
+			estimate = NA,
+			std.error = NA,
+			statistic = NA,
+			p.value = NA,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect
+			conf.low = NA,
+			conf.high = NA
+		)
+		return(returnRes(res, long))
+	}
 	  
   # assign NULL to tfMA if an error is raised
 	tfMA <- NULL

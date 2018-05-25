@@ -47,7 +47,7 @@ B <- 1000	# number of simulation replications per condition (should be dividable
 
 print(start <- Sys.time())
 
-for (j in 120:nrow(params)) {
+for (j in 1:nrow(params)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
 

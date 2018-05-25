@@ -16,8 +16,8 @@ shinyServer(function(input, output, session) {
 		}
 		
 		selectedMethod <- input$evaluatedMethod
-		if (input$PETPEESEmodel == "lm" & input$evaluatedMethod == "PETPEESE") selectedMethod <- "PETPEESE.lm"
-		if (input$PETPEESEmodel == "rma" & input$evaluatedMethod == "PETPEESE") selectedMethod <- "PETPEESE.rma"
+		# if (input$PETPEESEmodel == "lm" & input$evaluatedMethod == "PETPEESE") selectedMethod <- "PETPEESE.lm"
+		# if (input$PETPEESEmodel == "rma" & input$evaluatedMethod == "PETPEESE") selectedMethod <- "PETPEESE.rma"
 		
 		perf.dat <- summ2 %>% filter(
 			method == selectedMethod,
@@ -96,14 +96,14 @@ shinyServer(function(input, output, session) {
 		RR.H0 %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv) %>% 
 			select(qrp.label, method, TypeI) %>% 
-			selectPETPEESEmodel(model=input$PETPEESEmodel)
+			selectModels()
 	})
 	
 	
 	ggDat.H1 <- reactive({
 		RR.H1 %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta==input$delta) %>% 
-			select(qrp.label, method, Power) %>% selectPETPEESEmodel(model=input$PETPEESEmodel)
+			select(qrp.label, method, Power) %>% selectModels()
 	})
 	
 	
@@ -112,7 +112,7 @@ shinyServer(function(input, output, session) {
 	# ---------------------------------------------------------------------
 	# Type I error plot
 	
-	verticalLineDataTypeI <- data.frame(value=c(.05, .05), method=rep(c("RE", "3PSM"), 1))	
+	verticalLineDataTypeI <- data.frame(value=c(.05, .05), method=rep(c("RE", "4PSM"), 1))	
 	
 	ggvis(ggDat.H0, y=~method, x=~TypeI, stroke:=H0.stroke, fill := H0.fill) %>% 
 		layer_points()  %>% 		
@@ -134,7 +134,7 @@ shinyServer(function(input, output, session) {
 	# ---------------------------------------------------------------------
 	# Power plot
 	
-	verticalLineDataPow <- data.frame(value=c(.50, .50, .8, .8, 1, 1), method=rep(c("RE", "3PSM"), 3))	
+	verticalLineDataPow <- data.frame(value=c(.50, .50, .8, .8, 1, 1), method=rep(c("RE", "4PSM"), 3))	
 	
 	ggvis(ggDat.H1, y=~method, x=~Power, stroke:=H1.stroke, fill := H1.fill) %>% 
 		layer_points()  %>% 
@@ -172,28 +172,28 @@ shinyServer(function(input, output, session) {
 		summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
-			selectPETPEESEmodel(model=input$PETPEESEmodel)
+			selectModels()
 	})
 	
 	ggQ0 <- reactive({
 		summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
-			selectPETPEESEmodel(model=input$PETPEESEmodel)
+			selectModels()
 	})
 	
 	ggSumm1 <- reactive({
 		summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == input$delta) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
-			selectPETPEESEmodel(model=input$PETPEESEmodel)
+			selectModels()
 	})
 	
 	ggQ1 <- reactive({
 		summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == input$delta)  %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
-			selectPETPEESEmodel(model=input$PETPEESEmodel)
+			selectModels()
 	})
 	
 	# ggH1 <- reactive({
@@ -212,7 +212,7 @@ shinyServer(function(input, output, session) {
 	
 	
 	
-	verticalLineDataH0 <- data.frame(value=c(0, 0), method=c("RE", "3PSM"))
+	verticalLineDataH0 <- data.frame(value=c(0, 0), method=c("RE", "4PSM"))
 	ggvis(ggSumm0, y=~method) %>% 
 		layer_points(x=~value, y= ~factor(method), stroke := ~stroke, fill := ~fill) %>% 
 		layer_paths(x= ~value, stroke := ~stroke, fill := ~fill, data=ggQ0 %>% group_by(method)) %>%
@@ -254,7 +254,7 @@ shinyServer(function(input, output, session) {
 # 	  bind_shiny("ggvis_Estimation_H1", "ggvis_ui_Estimation_H1")
 # 	})
 	
-		verticalLineDataH1 <- data.frame(value=c(.2, .2, .5, .5, .8, .8), method=rep(c("RE", "3PSM"), 3))
+		verticalLineDataH1 <- data.frame(value=c(.2, .2, .5, .5, .8, .8), method=rep(c("RE", "4PSM"), 3))
 		observe({
 			ggvis(data=ggSumm1, y=~method) %>% 
 			layer_points(x=~value, y= ~factor(method), stroke := ~stroke, fill := ~fill) %>% 
@@ -285,12 +285,12 @@ hypTab <- reactive({
 		filter(delta == input$delta)  %>% 
 		filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv) %>% 
 		select(-delta, -censor) %>% 
-		selectPETPEESEmodel(model=input$PETPEESEmodel)
+		selectModels(selectModels)
 
 	RR.H0.specific <- RR.H0 %>% 
 		filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv) %>% 
 		select(-delta, -censor) %>% 
-		selectPETPEESEmodel(model=input$PETPEESEmodel)
+		selectModels()
 				
 	RR.wide <- inner_join(RR.H0.specific, RR.H1.specific, by = c("k", "qrp.label", "qrpEnv", "censor.label", "tau", "method")) %>% 
 		select(method, TypeI, Power)
@@ -313,7 +313,7 @@ estTab <- reactive({
 		filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta %in% c(0, input$delta)) %>% 
 		select(-k, -qrp.label, -censor.label, -tau.label, -consisZero.rate, -consisZero.rate.pos, -n.ci, -H0.reject.rate,  -H0.reject.pos.rate, -H0.reject.wrongSign.rate, -n.p.values) %>% 
 		select(-censor, -qrpEnv, -stroke, -fill, -condition, -k.label, -delta.label, -tau, -MAD) %>% 
-		selectPETPEESEmodel(model=input$PETPEESEmodel)
+		selectModels()
 	
 	if (input$dropNegatives == TRUE) {
 		summ0 <- summ0 %>% select(-meanEst, -perc2.5, -perc97.5, -ME, -RMSE, -coverage)
