@@ -11,7 +11,7 @@ source("0-start.R")
 
 # register CPU cores for parallel processing
 library(doParallel)
-registerDoParallel(cores=10)
+registerDoParallel(cores=20)
 
 ## ======================================================================
 ## SETTINGS
@@ -47,7 +47,7 @@ B <- 1000	# number of simulation replications per condition (should be dividable
 
 print(start <- Sys.time())
 
-for (j in 1:nrow(params)) {
+for (j in 120:nrow(params)) {
 	log1 <- paste0(Sys.time(), ", NEW CONDITION: computing condition ", j, "/", nrow(params))
 	print(log1)
 

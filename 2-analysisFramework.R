@@ -72,7 +72,7 @@ for (f in simDatFiles) {
 				#betaSM.est(d=MAdat$d, v=MAdat$v, long=TRUE)
 			)
 			
-			## add some extra informations:			
+			## add some extra informations:
 			
 			# the average true delta of all positive significant studies (=estimand of pcurve)
 			delta.included.M <- mean(MAdat$D[MAdat$p < .05 & MAdat$D >= 0])

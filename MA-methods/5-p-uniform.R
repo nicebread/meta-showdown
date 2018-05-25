@@ -2,6 +2,7 @@
 # 0 = regular converged estimate
 # 1 = "No significant studies on the specified side"
 # 2 = "set to zero if avg. p-value > .025"
+# 3 = "Not converged for other reasons"
 
 puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) {
 	
@@ -18,7 +19,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 		p.value = NA,	# one-tailed p-value of p-uniform's test of null-hypothesis of no effect
 		conf.low = NA,
 		conf.high = NA,
-		comment = comment
+		comment = NA
 	)
 	
 	# catch two boundary cases
@@ -29,7 +30,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 	if (kSig < 1) {
 		returnSpecial <- TRUE
 		res$estimate <- NA
-		comment <- 1
+		res$comment <- 1
 	}
 	
 	# 2. "Set the effect-size estimate of p-uniform or p-curve equal to zero if the average p value of the statistically significant studies is larger than .025"
@@ -37,7 +38,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 	if (skipBarelySignificant == TRUE & kSig >= 1 & mean(p.values[p.values < .05]) > .025) {
 		returnSpecial <- TRUE
 		res$estimate <- 0
-		comment <- 2
+		res$comment <- 2
 	}
 	
 	if (returnSpecial == TRUE) {
@@ -58,6 +59,7 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 		puniform(tobs=t.value, n1i=n1, n2i=n2, alpha = 0.05, side="right", method="P", plot = FALSE), 
 		error = function(e) {
 			warning("P-uniform method 'P' failed.")
+			res$comment <- 3
 			return(return(returnRes(res, long)))
 		}
 	)

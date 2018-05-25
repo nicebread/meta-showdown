@@ -114,7 +114,8 @@ convRate0 <- summ2 %>%
 	ungroup() %>% 
 	select(k, delta, qrpEnv, censor, tau, method, n.validEstimates) %>% 
 	spread(method, n.validEstimates)
-	
+
+# overall convergence rate (across all conditions)	
 convRate0 %>% 
 	select(RE, TF, 'WAAP-WLS', 'p-curve', 'p-uniform', 'PET-PEESE', '3PSM') %>% 
 	summarise_all(mean, na.rm=TRUE)

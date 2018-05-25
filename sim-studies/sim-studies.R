@@ -9,10 +9,10 @@ source("censorFunc.R")
 # get a simulated per-group sample size that follows the distribution of empirical sample sizes 
 # (see folder "Empirical sample size distributions")
 # min = minimum sample size, max = maximum sample size
-# max = 1300 corresponds to the largest observed per-group sample size in Marszalek et al.
-getN <- function(n=1, min.n = 5, max.n = 1300, shape=1.51, scale=0.034) {
+# max = 1905 corresponds to the largest observed per-group sample size in Marszalek et al.
+getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.04622745) {
 	library(invgamma)
-	ns <- round(rtrunc(n=n, spec="invgamma", a=min.n, b=max.n, shape=shape, scale=scale))
+	ns <- round(rtrunc(n=k, spec="invgamma", a=min.n, b=max.n, shape=shape, scale=scale))
 }
 
 #==============
@@ -40,10 +40,10 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-simData.noQRP <- function(delta, tau, shape=1.51, scale=0.034){
+simData.noQRP <- function(delta, tau){
   
   #get the per-group sample size 
-  n <- getN(n=1, shape=shape, scale=scale)
+  n <- getN(k=1)
   
   #calculate the treatement effect as a function of the 
   #true effect, delta, and tau
@@ -325,7 +325,7 @@ analyB <- function(g1, g2, g3, g4, D, multDV, out, mod){
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034, maxN = 3000){
+simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000){
   
   #correlation between multiple DVs is set to 0.20 as default
   cbdv = 0.2
@@ -342,7 +342,7 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034, maxN 
     G <- expDataB(delta, tau, cbdv)
     
     #determine the starting per-group sample size
-    s <- getN(n=1, shape=shape, scale=scale)
+    s <- getN(k=1)
     
 		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)
@@ -385,7 +385,7 @@ simData.QRP <- function(delta, tau, QRP.strategy, shape=1.51, scale=0.034, maxN 
     G = expDataB(delta,tau,cbdv,maxN)
     
     #determine the starting per-group sample size
-    s <- getN(n=1, shape=shape, scale=scale)
+    s <- getN(k=1)
     
 		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)

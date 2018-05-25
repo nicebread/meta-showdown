@@ -16,7 +16,7 @@ registerDoParallel(cores=1)
 (ncores <- getDoParWorkers())	# number of parallel processes
 
 # simDatFiles stores the names of all simulated data files in the folder "simParts"
-simDatFiles <- list.files("simParts", pattern=".*\\.RData", full.names=TRUE)
+simDatFiles <- list.files("simPartsRev2", pattern=".*\\.RData", full.names=TRUE)
 
 library(gtools)
 simDatFiles <- mixedsort(simDatFiles)
@@ -36,7 +36,10 @@ for (f in simDatFiles) {
 	print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs from file ", f))
 	
 	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau) %>% summarise(
-		perc.sig = sum(p <= .05) / n()
+		perc.sig = sum(p <= .05) / n(),
+		n1.q25 = quantile(n1, prob=.25),
+		n1.q50 = quantile(n1, prob=.50),
+		n1.q75 = quantile(n1, prob=.75),
 	) %>% ungroup() %>% as.data.frame()
 	
 	res <- rbind(res, desc)
