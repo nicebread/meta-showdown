@@ -125,10 +125,6 @@ output.coverage %>%
   dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
   write.csv("tables/cov_table_small.csv", row.names = F)
 
-#############################
-# Stuff gets messy after here
-#############################
-
 # Viewing manually ----
 
 # make a function for filtering and arranging
@@ -162,7 +158,86 @@ pretty.coverage <- forYourEyes(output.coverage)
 # View(pretty.RMSE)
 # View(pretty.coverage)
 
+pretty.RMSE %>% 
+  filter(censor == "none") %>% 
+  group_by(delta, k, method) %>% 
+  summarize(d = mad(value, constant = 1))
 
+# Examine absolute changes caused by heterogeneity
+makeTauDiff <- function(x) {
+  x %>% 
+    group_by(delta, k, method) %>% 
+    summarize(d = value[tau == .2] - value[tau == 0])  
+}
+
+# without pub bias
+pretty.pow %>% 
+  filter(censor == "none") %>% 
+  makeTauDiff()
+pretty.ME %>% 
+  filter(censor == "none") %>% 
+  makeTauDiff()
+pretty.RMSE %>% 
+  filter(censor == "none") %>% 
+  makeTauDiff()
+pretty.coverage %>% 
+  filter(censor == "none") %>% 
+  makeTauDiff()
+# with pub bias
+pretty.pow %>% 
+  filter(censor == "high") %>% 
+  makeTauDiff()
+pretty.ME %>% 
+  filter(censor == "high") %>% 
+  makeTauDiff()
+pretty.RMSE %>% 
+  filter(censor == "high") %>% 
+  makeTauDiff()
+pretty.coverage %>% 
+  filter(censor == "high") %>% 
+  makeTauDiff()
+
+
+# Inspect influencec of QRPs ----
+makeQRPDiff <- function(x) {
+  x %>% 
+    # drop k = 30 and k = 100
+    dplyr::select(-ends_with("_30"), -ends_with("_100")) %>% 
+    # separate method and k
+    gather(key, value, `3PSM_10`:`WAAP-WLS_60`) %>% 
+    separate(key, into = c("method", "k"), sep ="_") %>% 
+    # filter for no QRP, zero or high pub bias, delta 0 or 0.5, tau 0 or 0.2
+    # also drop methods PET PEESE and 4PSM
+    filter(#qrpEnv == "none",
+           censor %in% c("none", "high"),
+           !(method %in% c("PET", "PEESE", "4PSM")),
+           delta %in% c(0, 0.5),
+           tau %in% c(0, 0.2)) %>% 
+    # within each scenario (delta, tau, k, censor), arrange methods in order of performance
+    select(delta, tau, k, censor, qrpEnv, method, value) %>% 
+    arrange(delta, tau, k, censor, qrpEnv, value) %>% 
+    # round to 3 decimals for reading's sake
+    mutate(value = round(value, 3)) %>% 
+    group_by(delta, k, tau, censor, method) %>%
+    summarize(low.med = value[qrpEnv == "med"] - value[qrpEnv == "none"],
+              low.hi = value[qrpEnv == "high"] - value[qrpEnv == "none"],
+              med.hi = value[qrpEnv == "high"] - value[qrpEnv == "med"])
+}
+
+output.pow %>% 
+  makeQRPDiff
+output.ME %>% 
+  makeQRPDiff
+output.RMSE %>% 
+  makeQRPDiff
+output.coverage %>% 
+  makeQRPDiff
+
+
+
+#############################
+# Stuff gets messy after here
+#############################
 
 # Examine effects of QRPs ----
 MEplot <- function(dat, est) {
@@ -192,6 +267,7 @@ summ2 %>%
   summarize(maxMEdiff = max(ME) - min(ME)) %>% # get difference between max bias and min bias
   ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
+  scale_x_continuous(limits = c(0, 0.4)) + # scale b/c p-curve goes nuts somewhere
   facet_wrap(~method)
 # max diff from censoring
 summ2 %>% 
@@ -199,6 +275,7 @@ summ2 %>%
   summarize(maxMEdiff = max(ME) - min(ME)) %>% # get difference between max bias and min bias
   ggplot(aes(x = maxMEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
+  scale_x_continuous(limits = c(0, 0.4)) + 
   facet_wrap(~method)
 
 RMSEplot <- function(dat, est) {
