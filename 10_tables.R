@@ -25,7 +25,7 @@ summ.pcurve.evi <- summ %>%
 # Get "pcurve" estimation
 summ.pcurve.est <- summ %>% 
   filter(method == "pcurve") %>% 
-  dplyr::select(condition:method, ME, RMSE, ME.pos, RMSE.pos)
+  dplyr::select(condition:method, ME, RMSE, ME.pos, RMSE.pos, n.validEstimates)
 
 # Join them -- they will form one row
 summ.pcurve <- full_join(summ.pcurve.est, summ.pcurve.evi)
