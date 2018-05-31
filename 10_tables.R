@@ -223,7 +223,7 @@ makeQRPDiff <- function(x) {
     # filter for no QRP, zero or high pub bias, delta 0 or 0.5, tau 0 or 0.2
     # also drop methods PET PEESE and 4PSM
     filter(#qrpEnv == "none",
-           censor %in% c("none", "high"),
+           #censor %in% c("none", "high"),
            !(method %in% c("PET", "PEESE", "4PSM")),
            delta %in% c(0, 0.5),
            tau %in% c(0, 0.2)) %>% 
@@ -233,7 +233,8 @@ makeQRPDiff <- function(x) {
     # round to 3 decimals for reading's sake
     mutate(value = round(value, 3)) %>% 
     group_by(delta, k, tau, censor, method) %>%
-    summarize(low.med = value[qrpEnv == "med"] - value[qrpEnv == "none"],
+    summarize(none = value[qrpEnv == "none"],
+              low.med = value[qrpEnv == "med"] - value[qrpEnv == "none"],
               low.hi = value[qrpEnv == "high"] - value[qrpEnv == "none"],
               med.hi = value[qrpEnv == "high"] - value[qrpEnv == "med"])
 }
@@ -241,20 +242,20 @@ makeQRPDiff <- function(x) {
 output.pow %>% 
   makeQRPDiff #%>% View()
 output.ME %>% 
-  makeQRPDiff
+  makeQRPDiff #%>% View()
 output.RMSE %>% 
-  makeQRPDiff
+  makeQRPDiff #%>% View()
 output.coverage %>% 
   makeQRPDiff %>% 
-  filter(!is.na(low.med))
+  filter(!is.na(low.med)) #%>% View()
 
 # Examine effects of QRPs ----
 MEplot <- function(dat, est) {
   filter(dat, method == est) %>% 
-    ggplot(aes(x = interaction(tau, delta), y = ME, color = qrpEnv)) +
+    ggplot(aes(x = interaction(delta, tau), y = ME, color = qrpEnv)) +
     geom_point(size = 2) +
     geom_hline(yintercept = 0) +
-    scale_y_continuous(limits = c(-.3, .5)) +
+    #scale_y_continuous(limits = c(-.3, .5)) +
     facet_grid(k~censor) +
     ggtitle(est)
 }
@@ -262,11 +263,15 @@ MEplot <- function(dat, est) {
 filter(summ2, method == "reMA", censor == "med", delta == 0, tau == 0)
 
 MEplot(summ2, "reMA") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
-MEplot(summ2, "TF") # QRP generally increases ME when h0 true, but less than for RE
+MEplot(summ2, "TF") # QRP generally increases ME when h0 true, but less than for RE; slight decrease under h1
 MEplot(summ2, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
 MEplot(summ2, "PETPEESE") # QRP sharply decreases ME across conditions, often strong negative bias
+# vvv This looks weird. why? 
 MEplot(summ2, "pcurve") # QRP decreases ME across conditions, sometimes negative bias
-MEplot(summ2, "puniform") # QRP decreases ME across conditions, sometimes negative bias
+# See pop-up of qrpEnv=="med", delta == 0.5, tau == 0, censor == "none", k == 30
+# See also pop-up of qrpEnv == "high", delta == 0, tau == 0, censor == "med", k == 100
+# Why is "n.validEstimates" NA?
+MEplot(summ2, "puniform") # Ok this looks like it but less weird... # QRP decreases ME across conditions, sometimes negative bias
 MEplot(summ2, "3PSM") # QRP decreases ME across conditions, sometimes negative bias
 MEplot(summ2, "4PSM")
 
