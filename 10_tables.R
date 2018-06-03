@@ -253,7 +253,7 @@ output.coverage %>%
 MEplot <- function(dat, est) {
   filter(dat, method == est) %>% 
     ggplot(aes(x = interaction(delta, tau), y = ME, color = qrpEnv)) +
-    geom_point(size = 2) +
+    geom_point(size = 3) +
     geom_hline(yintercept = 0) +
     #scale_y_continuous(limits = c(-.3, .5)) +
     facet_grid(k~censor) +
@@ -265,7 +265,7 @@ filter(summ2, method == "reMA", censor == "med", delta == 0, tau == 0)
 MEplot(summ2, "reMA") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
 MEplot(summ2, "TF") # QRP generally increases ME when h0 true, but less than for RE; slight decrease under h1
 MEplot(summ2, "WAAP-WLS") # QRP increase ME when h0 true; slight decrease when h1 true
-MEplot(summ2, "PETPEESE") # QRP sharply decreases ME across conditions, often strong negative bias
+MEplot(summ2, "PETPEESE") # QRP decreases ME across conditions, sometimes yielding negative bias
 # vvv This looks weird. why? 
 MEplot(summ2, "pcurve") # QRP decreases ME across conditions, sometimes negative bias
 # See pop-up of qrpEnv=="med", delta == 0.5, tau == 0, censor == "none", k == 30
