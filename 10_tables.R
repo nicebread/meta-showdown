@@ -240,14 +240,14 @@ makeQRPDiff <- function(x) {
 }
 
 output.pow %>% 
-  makeQRPDiff #%>% View()
+  makeQRPDiff #%>% View("QRPdiff.pow")
 output.ME %>% 
-  makeQRPDiff #%>% View()
+  makeQRPDiff #%>% View("QRPdiff.ME")
 output.RMSE %>% 
-  makeQRPDiff #%>% View()
+  makeQRPDiff #%>% View("QRPdiff.RMSE")
 output.coverage %>% 
   makeQRPDiff %>% 
-  filter(!is.na(low.med)) #%>% View()
+  filter(!is.na(low.med)) #%>% View("QRPdiff.cov")
 
 # Examine effects of QRPs ----
 MEplot <- function(dat, est) {
@@ -261,6 +261,10 @@ MEplot <- function(dat, est) {
 }
 # how much bias can QRPs alone cause?
 filter(summ2, method == "reMA", censor == "med", delta == 0, tau == 0)
+# how bad can type 1 error in wrong direction get?
+select(summ2, condition, k, delta, qrpEnv, censor, tau, method, H0.reject.wrongSign.rate) %>% 
+  filter(!(method %in% c("PET", "PEESE"))) %>% 
+  arrange(desc(H0.reject.wrongSign.rate))
 
 MEplot(summ2, "reMA") # QRP generally increases ME when h0 true; decreases when h1 true are minimal
 MEplot(summ2, "TF") # QRP generally increases ME when h0 true, but less than for RE; slight decrease under h1
@@ -294,16 +298,18 @@ summ2 %>%
 
 RMSEplot <- function(dat, est) {
   filter(dat, method == est) %>% 
-    ggplot(aes(x = interaction(tau, delta), y = RMSE, color = qrpEnv)) +
+    ggplot(aes(x = delta, y = RMSE, color = qrpEnv)) +
     geom_point(size = 2) +
-    scale_y_continuous(limits = c(0, 0.575)) +
-    facet_grid(k~censor) +
+    #scale_y_continuous(limits = c(0, 2)) +
+    facet_grid(k~censor+tau) +
     ggtitle(est)
 }
 RMSEplot(summ2, "reMA") # QRP generally increases RMSE slightly, but more influential under pub bias
 RMSEplot(summ2, "TF") # same
 RMSEplot(summ2, "WAAP-WLS") # same
-RMSEplot(summ2, "PETPEESE") # QRP generally increases RMSE, can decrease it if bias is strong
+RMSEplot(summ2, "PETPEESE") # QRP generally increases RMSE. Can decrease very slightly in rare circumstances
+# p-curve freaks out under some conditions...
+# p-curve's whole RMSE plot looks kinda insane
 RMSEplot(summ2, "pcurve") # QRP increases RMSE when null is false, homogeneity; decreases o.w.
 RMSEplot(summ2, "puniform") # same
 RMSEplot(summ2, "3PSM")
@@ -322,7 +328,7 @@ summ2 %>%
   summarize(maxRMSEdiff = max(RMSE) - min(RMSE)) %>% 
   ggplot(aes(x = maxRMSEdiff, fill = as.factor(delta))) +
   geom_histogram() + 
-  facet_wrap(~method)
+  facet_wrap(~method, scales = "free_x")
 
 powplot <- function(dat, est) {
   filter(dat, method == est) %>% 
@@ -347,11 +353,13 @@ powplot(summ2, "4PSM")
 
 # trying to see how bad the drop is in points
 # TODO: Add dplyr::select so this is legible
+idcols <- c("k", "delta", "qrpEnv", "censor", "tau", "method")
 filter(summ2, method %in% c("pcurve", "puniform"), 
        delta == 0.5,
        censor %in% c("med", "high"), 
        k == 10) %>% 
   arrange(method, delta, censor) %>% 
+  select(idcols, ME, RMSE, H0.reject.hybrid.rate, coverage) %>% 
   View()
 
 filter(summ2, method == "3PSM",
