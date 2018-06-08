@@ -15,7 +15,7 @@ vignettes/*.pdf
 simPartsRev1/
 #simPartsRev2/
 analysisPartsRev1/
-analysisPartsRev2/
+#analysisPartsRev2/
 
 
 # for the moment: do not upload simParts (1.2GB overall) and analysisParts
