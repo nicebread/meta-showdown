@@ -13,7 +13,7 @@ vignettes/*.html
 vignettes/*.pdf
 
 simPartsRev1/
-simPartsRev2/
+#simPartsRev2/
 analysisPartsRev1/
 analysisPartsRev2/
 
