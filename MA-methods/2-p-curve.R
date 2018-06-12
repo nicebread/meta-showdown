@@ -62,7 +62,7 @@ pcurveEst <- function(t, df, CI=TRUE, level=.95, B=1000, progress=TRUE, long=TRU
   #out[1, 1] <- optim(par=0, fn=pcurve_loss, pc_data = pc_data, method="BFGS")$par
 	
 	# Update from ARawles - limits to positive results (which is intended by pcurve anyway)
-	out[1,1] <- optimize(pcurve_loss,interval = c(0, max(pc_data$d_vals)), pc_data = pc_data)$minimum
+	out[1,1] <- optimize(pcurve_loss, interval = c(0, 4), pc_data = pc_data)$minimum
   
   if (CI==TRUE) {
 	  warning("CI not properly implemented.")
