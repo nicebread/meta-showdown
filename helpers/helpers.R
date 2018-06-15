@@ -38,3 +38,16 @@ returnRes <- function(res, long=TRUE, reduce=TRUE) {
 	  return(longRes)
 	}
 }
+
+
+# simple wrapper: formats a number in f.2 format
+f2 <- function(x, digits=2, prepoint=0, skipZero=FALSE) {
+	
+	if (skipZero == TRUE) {zero <- "."} else {zero <- "0."}
+	
+	if (length(dim(x)) == 2) {
+		apply(x, 2, function(x2) {gsub("0.", zero, sprintf(paste("%",prepoint,".",digits,"f",sep=""), x2) , fixed=TRUE)})
+	} else {
+		gsub("0.", zero, sprintf(paste("%",prepoint,".",digits,"f",sep=""), x) , fixed=TRUE)
+	}
+}

@@ -47,3 +47,42 @@ for (f in simDatFiles) {
 } # of "f in simDatFiles"
 
 print(res)
+
+
+## ======================================================================
+## Which QRPs "survive" publication bias?
+## We simulate research environments with certain proportions of pure/moderate/aggressive QRP strategies.
+## But this is done *before* publication bias takes place. What are the proportions *after* publication bias?
+
+## Encoded in variable qrp of the simDat files: 0 = none, 1 = moderate, 2 = aggressive
+## ======================================================================
+
+res <- data.frame()
+
+# loop through all simParts files
+for (f in simDatFiles) {
+	load(f)	# the simulation data frame always is called "sim"
+	
+	n.MA <- length(unique(sim$id))		# overall number of MAs
+	print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs from file ", f))
+	
+	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau) %>% summarise(
+		qrp.none = sum(qrp==0)/n(),
+		qrp.moderate = sum(qrp==1)/n(),
+		qrp.aggressive = sum(qrp==2)/n()
+	) %>% ungroup() %>% as.data.frame()
+	
+	res <- rbind(res, desc)
+} # of "f in simDatFiles"
+
+res[, 7:9] <- round(res[, 7:9], 2)
+
+# proportions are independent of k and delta; influence of tau is also minor
+# --> aggregate across these factors; show mean of each proportion and the range
+res.aggregate <- res %>% group_by(qrpEnv, censor) %>% summarise(
+	qrp.none.range = paste0(f2(mean(qrp.none)), " (", f2(min(qrp.none)), " - ", f2(max(qrp.none)), ")"),
+	qrp.moderate.range = paste0(f2(mean(qrp.moderate)), " (", f2(min(qrp.moderate)), " - ", f2(max(qrp.moderate)), ")"),
+	qrp.aggressive.range = paste0(f2(mean(qrp.aggressive)), " (", f2(min(qrp.aggressive)), " - ", f2(max(qrp.aggressive)), ")")
+)
+
+print(res.aggregate, n=9)
