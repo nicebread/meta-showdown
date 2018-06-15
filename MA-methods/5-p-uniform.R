@@ -1,8 +1,8 @@
 # comment codes:
 # 0 = regular converged estimate
-# 1 = "No significant studies on the specified side"
-# 2 = "set to zero if avg. p-value > .025"
-# 3 = "Not converged for other reasons"
+# 1 = "No significant studies on the specified side": return NA
+# 2 = "set to zero if avg. p-value > .025": return 0
+# 3 = "Not converged for other reasons": return NA
 
 puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) {
 	

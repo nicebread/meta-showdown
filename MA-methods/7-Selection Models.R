@@ -52,10 +52,10 @@ onePSM.McShane.est <- function(t.obs, n1, n2, long=TRUE) {
 
 #' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
 
-threePSM.est <- function(d, v, min.pvalues=1, long=TRUE) {	
+threePSM.est <- function(d, v, min.pvalues=0, long=TRUE) {	
 	
 	w1 <- tryCatch(
-		weightfunct(d, v, steps = c(0.025, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE),
+		weightfunct(d, v, steps = c(0.025, 1), mods = NULL, weights = NULL, fe = FALSE),
 		error = function(e) NULL
 	)
 	
@@ -108,7 +108,7 @@ threePSM.est <- function(d, v, min.pvalues=1, long=TRUE) {
 #' @param min.pvalues How many p-values must be present in each bin that the function returns an estimate?
 #' @param fallback If 4PSM has not enough p-values: Should the function try to estimate a 3PSM instead?
 
-fourPSM.est <- function(d, v, min.pvalues=1, long=TRUE, fallback = FALSE) {	
+fourPSM.est <- function(d, v, min.pvalues=0, long=TRUE, fallback = FALSE) {	
 	w1 <- tryCatch(
 		weightfunct(d, v, steps = c(0.025, 0.5, 1), mods = NULL, weights = NULL, fe = FALSE, table = TRUE),
 		error = function(e) NULL
@@ -127,7 +127,7 @@ fourPSM.est <- function(d, v, min.pvalues=1, long=TRUE, fallback = FALSE) {
 	
 	if (is.null(w1)) return(returnRes(res.NA))
 	
-	# if <= 3 p-values in an interval: return NA
+	# if <= min.pvalues p-values in an interval: return NA
 	p.table <- table(cut(w1$p, breaks=c(0, .025, 0.5, 1)))
 	if (any(p.table < min.pvalues)) {
 		if (fallback==TRUE) {
