@@ -1,3 +1,8 @@
+## ======================================================================
+## This code checks the alternative interpretation of p-curve (a la Simonsohn)
+## which states that p-curve is supposed to recover the "average true effect of studies submitted to p-curve"
+## =====================================================================
+
 library(dplyr)
 library(ggplot2)
 load("dataFiles/res.wide.RData")

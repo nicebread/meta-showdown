@@ -59,20 +59,9 @@ save(res.wide, file="dataFiles/res.wide.RData", compress="gzip")
 
 # ---------------------------------------------------------------------
 #  save a reduced version that applies some filters
+# this is legacy code, we do not apply any filters any more. So res.wide.red is simply a copy of res.wide
 
 res.wide.red <- res.wide
-
-## RULE 1: set estimate of p-curve and p-uniform with < 4 significant studies to NA
-## --> We don't do that any more in the revision
-#res.wide.red[res.wide.red$method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "pcurve", "puniform") & !is.na(res.wide.red$kSig_estimate) & res.wide.red$kSig_estimate < 4, c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value", "skewtest_p.value")] <- NA
-
-## RULE 2: Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
-## --> We don't do that any more in the revision, thanks to the skipBarelySignificant parameter
-
-# PUNI <- res.wide[res.wide$method == "puniform" & !is.na(res.wide$b0_conf.high), ]
-# table(is.na(PUNI$b0_conf.low))
-# res.wide.red[res.wide.red$method == "puniform" & is.na(res.wide.red$b0_conf.low), c("b0_estimate", "b0_conf.low", "b0_conf.high", "b0_p.value")] <- NA
-
 				 
 # ---------------------------------------------------------------------
 # For hypothesis test: Add H0.rejection rule & whether the CI is consistent with zero (i.e., includes zero)

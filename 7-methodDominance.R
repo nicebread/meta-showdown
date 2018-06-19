@@ -1,5 +1,12 @@
+## ======================================================================
+## This analysis tries to find a single best method by comparing all methods pairwise:
+## How often does a method dominate another method?
+## --> we dismissed this analysis in favor of a sensitivity analysis
+## ======================================================================
+
 library(ggplot2)
 library(dplyr)
+library(reshape2)
 library(grid)
 library(gridExtra)
 
@@ -9,10 +16,10 @@ head(summ)
 s2  <- summ %>% 
 	ungroup() %>% 
 	select(condition, method, ME.pos, RMSE.pos) %>% 
-	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "PET.rma", "PEESE.rma", "PETPEESE.rma"))
+	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack"))
 
 # get experimental factors
-conditions <- s2 %>% filter(method=="reMA") %>% select(1:6)
+conditions <- summ %>% filter(method=="reMA") %>% select(1:11) %>% arrange(condition)
 
 
 # ---------------------------------------------------------------------
@@ -65,24 +72,12 @@ res2$draw1[draw] <- as.character(res2$method1[draw])
 res2$draw2[draw] <- as.character(res2$method2[draw])
 
 
-## give 1 point for "draw"
-# scores <- res2 %>% group_by(condition) %>% summarise(
-# 	RE = sum(winner=="reMA")*2 + sum(draw1=="reMA") + sum(draw2=="reMA"),
-# 	TF = sum(winner=="TF")*2 + sum(draw1=="TF") + sum(draw2=="TF"),
-# 	PET = sum(winner=="PET.lm")*2 + sum(draw1=="PET.lm") + sum(draw2=="PET.lm"),
-# 	PEESE = sum(winner=="PEESE.lm")*2 + sum(draw1=="PEESE.lm") + sum(draw2=="PEESE.lm"),
-# 	PETPEESE = sum(winner=="PETPEESE.lm")*2 + sum(draw1=="PETPEESE.lm") + sum(draw2=="PETPEESE.lm"),
-# 	pcurve = sum(winner=="pcurve")*2 + sum(draw1=="pcurve") + sum(draw2=="pcurve"),
-# 	puniform = sum(winner=="puniform")*2 + sum(draw1=="puniform") + sum(draw2=="puniform"),
-# 	TPSM = sum(winner=="3PSM")*2 + sum(draw1=="3PSM") + sum(draw2=="3PSM")
-# )
-
 scores <- res2 %>% group_by(condition) %>% summarise(
 	RE = sum(winner=="reMA")*2 ,
 	TF = sum(winner=="TF")*2 ,
-	PET = sum(winner=="PET.lm")*2,
-	PEESE = sum(winner=="PEESE.lm")*2,
-	PETPEESE = sum(winner=="PETPEESE.lm")*2,
+	PET = sum(winner=="PET")*2,
+	PEESE = sum(winner=="PEESE")*2,
+	PETPEESE = sum(winner=="PETPEESE")*2,
 	pcurve = sum(winner=="pcurve")*2 ,
 	puniform = sum(winner=="puniform")*2 ,
 	TPSM = sum(winner=="3PSM")*2
@@ -102,19 +97,19 @@ scores$winner <- factor(scores$winner, levels=names(sort(table(scores$winner), d
 
 sort(table(scores$winner), decreasing=TRUE)
 
-ggplot(scores, aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
+ggplot(scores, aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(censor.label~k+tau)
 
 # That looks ugly ...
 scores.long$loop <- paste0(scores.long$delta, ":", scores.long$qrpEnv, ":", scores.long$tau)
-ggplot(scores.long, aes(y=value, x=loop, color=factor(variable), group=factor(variable))) + geom_line() + facet_grid(k~selProp)
+ggplot(scores.long, aes(y=value, x=loop, color=factor(variable), group=factor(variable))) + geom_line() + facet_grid(k~censor.label)
 
 # ---------------------------------------------------------------------
 # strong (absolute) dominance
 
 s2  <- summ %>% 
 	ungroup() %>% 
-	select(condition, k, delta, qrpEnv, selProp, tau, method, ME.pos, RMSE.pos) %>% 
-	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack", "PET.rma", "PEESE.rma", "PETPEESE.rma"))
+	select(condition, k, delta, qrpEnv, censor, tau, method, ME.pos, RMSE.pos) %>% 
+	filter(!method %in% c("pcurve.evidence", "pcurve.hack", "pcurve.lack"))
 	
 # which method is best in ME?
 ME.matrix <- dcast(s2, condition ~ method, value.var="ME.pos")
@@ -133,7 +128,5 @@ sort(table(fullDominance$winner[fullDominance$winner != ""]), decreasing = TRUE)
 s3 <- merge(fullDominance, conditions, by="condition")
 
 
-ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
-
-
-ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(selProp~k+tau)
+ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(censor.label~k+tau)
+ggplot(s3 %>% filter(winner != ""), aes(y=qrpEnv, x=factor(delta), shape=factor(winner))) + geom_point(size=6) + facet_grid(censor.label~k+tau)

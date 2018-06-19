@@ -1,7 +1,9 @@
 source("../0-start.R", chdir=TRUE)
 
 # ---------------------------------------------------------------------
-#  Inverstigating Joe's "weird p-curve" issue
+#  Investigating Joe's "weird p-curve" issue
+## --> this has been resolved by setting the upper boundary of the effect size search space to 4.
+## --> It was a weird numerical instability/ bug, where optimize() did not converge on the minimum of the loss function.
 
 load("../dataFiles/summ.RData")
 filter(summ, delta == 0, tau == 0, censor == "med", k == 100, method == "pcurve")

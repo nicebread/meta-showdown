@@ -133,7 +133,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		
 		column(width=8, 
 			
-			alert.create("Please note: All results covered in this app are based on two-group t-tests."),
+			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies."),
+			alert.create("This is the updated app based on the current revision of our paper (submitted to AMPPS).", style="info"),
 			
 			tabsetPanel(id ="tabs1",	
 			

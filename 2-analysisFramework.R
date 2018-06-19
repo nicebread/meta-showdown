@@ -75,7 +75,7 @@ for (f in simDatFiles) {
 			## add some extra informations:
 			
 			# the average true delta of all positive significant studies (=estimand of pcurve)
-			delta.included.M <- mean(MAdat$D[MAdat$p < .05 & MAdat$D >= 0])
+			delta.included.M <- mean(MAdat$delta_i[MAdat$p < .05 & MAdat$delta_i >= 0])
 			if (is.nan(delta.included.M)) delta.included.M <- NA
 			
 			res0 <- rbind(res0,

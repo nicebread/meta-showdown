@@ -2,7 +2,7 @@
 #install.packages(c("devtools", "MASS", "pwr", "truncnorm", "truncdist", "dplyr", "data.table", "foreach", "doMC", "meta", "progress", "doMC", "reshape2", "metafor", "notifyR", "broom", "weightr", "doParallel", "gtools", "weightr", "rio", "gridExtra", "invgamma")) 
 
 # devtools::install_github("RobbievanAert/puniform")
-# installed version 0.0.3 on 2017/06/28
+# installed version 0.1.0 on 2018/06/08
 
 # We need R >= 3.3.3 and weightr version >= 1.1.2!
 if(packageVersion("weightr") < "1.1.2") stop("you need to update 'weightr'!")
@@ -35,6 +35,6 @@ source("MA-methods/5-p-uniform.R")
 source("MA-methods/6-WAAP.R")
 source("MA-methods/7b-selection.meta.functions.R")
 source("MA-methods/7-Selection Models.R")
-source("MA-methods/10-ensemble.R")
+#source("MA-methods/10-ensemble.R")
 #source("MA-methods/8-betaSM.R", chdir=TRUE)	# must chdir=TRUE to load the helper functions in /betaSM_functions
 

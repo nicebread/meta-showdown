@@ -7,38 +7,42 @@ Carter, E. C., Schönbrodt, F. D., Hilgard, J., & Gervais, W. (2018). Correcting
 More material can be found in the associated [OSF project](https://osf.io/rf3ys/).
 
 An [interactive Shiny app](http://shinyapps.org/apps/metaExplorer/) visualizes all results:
-![metaExplorer Shiny App](Shiny/metaExplorer/teaserpic.png)
+![metaExplorer Shiny App](Shiny/metaExplorer/teaserpic.png). The code for the Shiny app is also part of this repository: [Shiny/metaExplorer](Shiny/metaExplorer)
 
 ## General workflow for reproducing the analyses
 
 - [0-start.R](0-start.R) loads all necessary packages and sources several files. This file should always be loaded first.
-- [1-simFramework.R](1-simFramework.R) simulates all raw data files and stores them in /simParts. Each of the 432 conditions gets its own file with 1000 simulated meta-analyses.
-- [2-analysisFramework.R](2-analysisFramework.R) grabs all simulated files from /simParts, runs all meta-analytical techniques on them, and stores the results as separate files under /analysisParts
-- [3-resultsFramework.R](3-resultsFramework.R) loads the results of the meta-analyses from /analysisParts, aggregates them in a single file (see below: Documentation about the most relevant result files), adds some variables, and applies some filters, and computes summaries of the results (such as mean error, MSE, coverage, etc.). 
+- [1-simFramework.R](1-simFramework.R) simulates all raw data files /(i.e., the simulated primary studies) and stores them in /simParts. Each of the 432 conditions gets its own file with 1000 simulated meta-analyses. The most recent revision is stored in [simPartsRev2](simPartsRev2)
+- [2-analysisFramework.R](2-analysisFramework.R) grabs all simulated files from /simParts, runs all meta-analytical techniques on them, and stores the results as separate files under /analysisParts. The most recent revision is stored in [analysisPartsRev2](analysisPartsRev2)
+- [3-resultsFramework.R](3-resultsFramework.R) loads the results of the meta-analyses from /analysisPartsRev2, aggregates them in a single file (see below: Documentation about the most relevant result files), adds some variables, and applies some filters, and computes summaries of the results (such as mean error, MSE, coverage, etc.). 
+- All following files starting with 4-, 5-, 6-, etc. generate the result plots, tables, and additional analyses
 
 Additional folders:
 
+- [dataFiles](dataFiles) stores intermediate/preprocessed data files. For more details about the most relevant data files, see below "Documentation about the most relevant result files")
 - [helpers](helpers) contains some helper functions as well as some mostly unstructured supplementary analyses. These are not well documented.
 - [Appendices](Appendices) contains the two appendices
 - [MA-methods](MA-methods) contains all meta-analytical methods. All return their results in the same structured way. Please note that they have been implemented for two-group t-tests, and might or might not work for other types of tests.
-- [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, etc.
+- [sim-studies](sim-studies) contains the code for simulating the raw meta-analytical data with different true underlying effects, levels of QRP, levels of publication bias, etc. The single most important function is called `simMA`, which generates `k` primary studies with certain settings of QRPs, publication bias, true effect size, heterogeneity, etc.
 - [oldStuff](oldStuff) The file [oldStuff/hilgard_result_table.R](oldStuff/hilgard_result_table.R) is helpful for breaking down the results into more readable parcels. Other old analyses are stored in this folder.
+- [Plots](Plots) contains the plots of the publication
 
 ## Documentation about the most relevant result files
 
 ### Unaggregated data files (in /dataFiles)
 - res.final.RData: This file contains the most fine-grained results of all meta-analytic (MA) techniques in long format; each row is one result of one MA technique for one simulated data set. No filters have been applied.
-- res.wide.RData: This file contains the most fine-grained results of all meta-analytic (MA) techniques; each row is one MA technique for one simulated data set. No filters have been applied.
-- res.wide.red.RData: A reduced version of res.wide. All further summaries have been computed based on this data set. One filter has been applied:
-	- Ignore p-uniform when it doesn't provide a lower CI (very rare cases)
+- res.wide.RData: This file contains the most fine-grained results of all meta-analytic (MA) techniques in wide format; each row is one MA technique for one simulated data set. No filters have been applied.
+- res.wide.red.RData: A copy of res.wide (in a previous version, we applied some filters to res.wide, but this is not necessary any more). All further summaries have been computed based on this data set. 
+- hyp.wide.RData: This is generate as a summary file for the hypothesis test plot (see [5-hypTestPlot.R](5-hypTestPlot.R)) and also used in the Shiny app.
 	
-These files are too large for Github. You can generate them yourself by running [3-resultsFramework.R](3-resultsFramework.R). Be aware that doing so requires a lot of RAM!
+These files are too large for Github. You can generate them yourself by running [3-resultsFramework.R](3-resultsFramework.R). Be aware that doing so requires a lot of RAM (it works with 16GB)!
 
 ### Aggregated data files (in /dataFiles)
-- [summ.RData](dataFiles/summ.RData) / [summ.csv](dataFiles/summ.csv): This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition.
+
+- [summ.RData](dataFiles/summ.RData) / [summ.csv](dataFiles/summ.csv): This is the summary file which contains ME, RMSE, coverage, etc. for each method and each condition. Most result plots and tables are based on this file.
 
 
-## Extending the analyses
+## Extending the analyses, reusing the simulated meta-analyses
 
 We took a lot of care to simulate the meta-analyses in a way that they are plausible concerning QRPs, publication bias, samples sizes, etc. When new meta-analytical methods are developed, we encourage researchers to use these simulated files and conditions as sort of benchmark data to test their methods. This allows an easy comparison of the results.
 

@@ -132,7 +132,7 @@ convRate0 %>% filter(`p-curve` < 900) %>% print(n=100)
 convRate0 %>% filter(`p-uniform` < 500) %>% print(n=100)
 	
 ## 3PSM
-convRate0 %>% filter(`3PSM` < 300) %>% print(n=100)	
+convRate0 %>% filter(`3PSM` < 500) %>% print(n=100)	
 	
 # prepare the full table
 convRate <- summ2 %>% ungroup() %>% 
