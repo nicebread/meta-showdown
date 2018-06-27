@@ -8,6 +8,15 @@ library(ggplot2)
 library(stringr)
 
 
+alert.create <- function(content, style="info") {
+  HTML(paste0('<div class="alert alert-', style, ' alert-dismissible" role="alert">'),
+    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+    content, 
+    '</div>'
+  )
+}
+
+
 # simple wrapper: formats a number in f.2 format
 f2 <- function(x, digits=2, prepoint=0, skipZero=FALSE) {	
 	if (skipZero == TRUE) {zero <- "."} else {zero <- "0."}
@@ -137,7 +146,8 @@ RR.H0b <- RR.H0
 RR.H0b$method[RR.H0b$method == "pcurve.evidence"] <- "pcurve"
 summ <- inner_join(summ, RR.H0b %>% select(-delta))
 
-# Prepare data for estimation plot
+# ---------------------------------------------------------------------
+#  Prepare data for estimation plot
 
 summ$stroke <- ifelse(summ$delta == 0, H0.stroke, H1.stroke)
 summ$fill <- ifelse(summ$delta == 0, H0.fill, H1.fill)

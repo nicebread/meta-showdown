@@ -12,15 +12,6 @@ loadHTML <- function(filename) {
   HTML(text)
 }
 
-
-alert.create <- function(content, style="info") {
-  HTML(paste0('<div class="alert alert-', style, ' alert-dismissible" role="alert">'),
-    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-    content, 
-    '</div>'
-  )
-}
-
 shinyUI(fluidPage(theme = shinytheme("spacelab"),
 	tags$head(tags$link(rel="stylesheet", type="text/css", href="accordion.css")),	
 	
@@ -85,7 +76,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				checkboxGroupInput("qrpEnv_perf", "QRP environment:",
 				             choices = c("none", "med", "high"), 
 										 selected = c("none", "med", "high"), inline=TRUE),
-				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PETPEESE", "3PSM", "4PSM", "pcurve", "puniform")),
+				radioButtons("evaluatedMethod", "Method to evaluate", c("reMA", "TF", "WAAP-WLS", "PET", "PEESE", "PETPEESE", "3PSM", "4PSM", "pcurve", "puniform")),
 
 				
 				h2("Good performance is defined as ..."),
@@ -135,6 +126,10 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			
 			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies."),
 			alert.create("This is the updated app based on the current revision of our paper (submitted to AMPPS).", style="info"),
+			
+			conditionalPanel("input.tabs1 == 'Estimation'",
+				uiOutput("cap_alert")
+			),
 			
 			tabsetPanel(id ="tabs1",	
 			

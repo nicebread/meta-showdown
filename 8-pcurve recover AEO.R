@@ -39,7 +39,7 @@ summ.PC <- PC %>% group_by(condition, k, k.label, delta, delta.label, qrpEnv, qr
 
 # average kSig in tau=0 conditions:
 
-summ.PC %>% filter(tau==0, delta == 0, qrpEnv=="none") %>% select(1:8, nSig)
+summ.PC %>% filter(tau==0, delta == 0, qrpEnv=="none") %>% dplyr::select(1:8, nSig)
 
 # ---------------------------------------------------------------------
 # Plot

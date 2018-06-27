@@ -169,32 +169,59 @@ shinyServer(function(input, output, session) {
 	})
 	
 	ggSumm0 <- reactive({
-		summLong %>% 
+		ggSumm0.res <- summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
 			selectModels()
+		
+		# cap values larger than YLIM[2] - otherwise the plot is screwed. A warning is displayed	
+		ggSumm0.res$value[ggSumm0.res$value > isolate(YLIM()[2])] <- YLIM()[2]
+		return(ggSumm0.res)
 	})
 	
 	ggQ0 <- reactive({
-		summLong %>% 
+		ggQ0.res <- summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == 0) %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
 			selectModels()
+			
+		# cap values larger than YLIM[2] - otherwise the plot is screwed. A warning is displayed	
+		ggQ0.res$value[ggQ0.res$value > isolate(YLIM()[2])] <- YLIM()[2]
+		return(ggQ0.res)
 	})
 	
 	ggSumm1 <- reactive({
-		summLong %>% 
+		ggSumm1.res <- summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == input$delta) %>% 
 			filter(variable == paste0("meanEst", ifelse(input$dropNegatives == TRUE, ".pos", ""))) %>% 
 			selectModels()
+			
+			# cap values larger than YLIM[2] - otherwise the plot is screwed. A warning is displayed	
+			ggSumm1.res$value[ggSumm1.res$value > isolate(YLIM()[2])] <- YLIM()[2]
+			return(ggSumm1.res)
 	})
 	
 	ggQ1 <- reactive({
-		summLong %>% 
+		ggQ1.res <- summLong %>% 
 			filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv, delta == input$delta)  %>% 
 			filter(variable %in% c(paste0("perc2.5", ifelse(input$dropNegatives == TRUE, ".pos", "")), paste0("perc97.5", ifelse(input$dropNegatives == TRUE, ".pos", "")))) %>% 
 			selectModels()
+			
+		# cap values larger than YLIM[2] - otherwise the plot is screwed. A warning is displayed	
+		ggQ1.res$value[ggQ1.res$value > isolate(YLIM()[2])] <- YLIM()[2]
+		return(ggQ1.res)
 	})
+	
+	
+	output$cap_alert <- renderUI({
+		
+		if (any(ggQ0()$value >= YLIM()[2]) | any(ggQ1()$value >= YLIM()[2])) {		
+			return(list(
+				alert.create(paste0("Note: Quantile bars have been capped at ", YLIM()[2]), style="warning")
+				))
+		}
+	})
+	
 	
 	# ggH1 <- reactive({
 	# 	ggH1Label <- paste0("Bias-corrected estimate for delta = ", input$delta)
