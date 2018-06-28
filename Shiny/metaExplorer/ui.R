@@ -3,6 +3,13 @@ library(shinythemes)
 library(shinyBS) # Additional Bootstrap Controls
 library(ggvis)
 
+alert.create <- function(content, style="info") {
+  HTML(paste0('<div class="alert alert-', style, ' alert-dismissible" role="alert">'),
+    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+    content, 
+    '</div>'
+  )
+}
 
 loadHTML <- function(filename) {
   fileConnection <- file(filename, encoding="UTF-8")
@@ -81,12 +88,14 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				
 				h2("Good performance is defined as ..."),
 				helpText("Fields without a value are not evaluated; all other fields are combined with a logical AND (i.e., all entered conditions must be true to result in a good performance).
-				As p-curve does not have a coverage metric, it is not positively evaluated if you enter a number there."),
-				textInput("ME_tolerance", "... a maximum deviation of the average estimate from true delta (i.e. |ME|): ", value = ""),
+				As p-curve does not provide CIs, it is never positively evaluated if you enter a number there."),
+				textInput("ME_upper", "... a maximum upward bias (i.e., positive deviation of the average estimate from true delta): ", value = ""),
+				textInput("ME_lower", "... a maximum downward bias (i.e., negative deviation of the average estimate from true delta): ", value = ""),
 				textInput("MAD_upperbound", "... a maximum mean absolute error (MAE) of: ", value = ""),
 				textInput("RMSE_upperbound", "... a maximum root mean square error (RMSE) of: ", value = ""),
 				textInput("coverage_lowerbound", "... a minimum coverage of the 95% CI in percentage (default: 95): ", value = ""),
-				textInput("TypeI_upperbound", "... a maximum false positive rate in percentage (default: 5): ", value = "")
+				textInput("TypeI_upperbound", "... a maximum false positive rate in percentage (default: 5): ", value = ""),
+				checkboxInput("show_performance_table", "Show performance results in table", FALSE)
 				
 			), # of conditionalPanel
 			
