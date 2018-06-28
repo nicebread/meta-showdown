@@ -57,7 +57,7 @@ str(res.final)
 # Reshape to wide format
 #res.wide <- res.final %>% filter(term %in% c("b0", "kSig")) %>% dcast(id + condition + simBatch + k + delta + qrpEnv + censor + tau + method + term ~ variable, value.var="value")
 res.wide <- res.final %>% 
-	filter(term %in% c("b0"), method %in% c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE.lm", "3PSM")) %>% 
+	filter(term %in% c("b0"), method %in% c("reMA", "TF", "WAAP-WLS", "pcurve", "puniform", "PETPEESE", "3PSM", "4PSM")) %>% 
 	dcast(id + condition + simBatch + k + delta + qrpEnv + censor + tau + method + term ~ variable, value.var="value")
 
 # get id's with kSig >= 4
@@ -81,15 +81,25 @@ summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, 
   RMSE			= sqrt(mean((estimate - delta)^2, na.rm=TRUE)),
   n.simulations = n()
 )
+
+# compute Monte Carlo Error (see Koehler, E., Brown, E., & Haneuse, S. J. P. A. (2009). On the Assessment of Monte Carlo Error in Simulation-Based Statistical Analyses. American Statistician, 63(2), 155–162. http://doi.org/10.1198/tast.2009.0030)
+# MCE = SD of the Monte Carlo estimator, taken across repetitions of the simulation, whereas each simulation is based on the same design
+
+MCE <- summ %>% group_by(k.label, delta, delta.label, censor.label, tau.label, method) %>% 
+	dplyr::summarise(
+		meanEst.MCE = sd(meanEst),
+		ME.MCE = sd(ME),
+		RMSE.MCE = sd(RMSE)
+	)
 ```
 
 This is Online Appendix B for:
 
-Carter, E. C., Schönbrodt, F. D., Hilgard, J., &amp; Gervais, W. (2017). *Correcting for bias in psychology: A comparison of meta-analytic methods.* Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
+Carter, E. C., Schönbrodt, F. D., Hilgard, J., &amp; Gervais, W. (2018). *Correcting for bias in psychology: A comparison of meta-analytic methods.* Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
 
 ## Method ##
 
-Simulations were run with 10,000 replications for a selection of conditions. Then, these 10,000 runs were divided in 10 batches of 1000 simulations each. The following plots show points for each of the 10 batches. One can see that they are virtually identical, as the points of the different batches overlap.
+Simulations were run with 10,000 replications for a random selection of conditions. Then, these 10,000 runs were divided in 10 batches of 1000 simulations each. The following plots show points for each of the 10 batches. One can see that they are virtually identical, as the points of the different batches overlap.
 
 ## Variance in ES estimates between simulation batches
 
