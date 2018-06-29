@@ -73,9 +73,9 @@ res.wide$delta.label <- factor(res.wide$delta, levels=unique(res.wide$delta), la
 res.wide$k.label <- factor(res.wide$k, levels=sort(unique(res.wide$k)), labels=paste0("k = ", sort(unique(res.wide$k))))
 res.wide$censor.label <- factor(res.wide$censor, levels=unique(res.wide$censor), labels=paste0("Publication bias = ", unique(res.wide$censor)))
 res.wide$tau.label <- factor(res.wide$tau, levels=unique(res.wide$tau), labels=paste0("tau = ", unique(res.wide$tau)))
+res.wide$qrp.label <- factor(res.wide$qrpEnv, levels=unique(res.wide$qrpEnv), labels=paste0("QRP = ", unique(res.wide$qrpEnv)))
 
-
-summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, censor.label, tau.label, method) %>% dplyr::summarise(
+summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, censor.label, tau.label, qrp.label, method) %>% dplyr::summarise(
   meanEst		= mean(estimate, na.rm=TRUE),
   ME 			= mean(estimate - delta, na.rm=TRUE),
   RMSE			= sqrt(mean((estimate - delta)^2, na.rm=TRUE)),
@@ -85,17 +85,24 @@ summ <- res.wide %>% group_by(condition, simBatch, k.label, delta, delta.label, 
 # compute Monte Carlo Error (see Koehler, E., Brown, E., & Haneuse, S. J. P. A. (2009). On the Assessment of Monte Carlo Error in Simulation-Based Statistical Analyses. American Statistician, 63(2), 155–162. http://doi.org/10.1198/tast.2009.0030)
 # MCE = SD of the Monte Carlo estimator, taken across repetitions of the simulation, whereas each simulation is based on the same design
 
-MCE <- summ %>% group_by(k.label, delta, delta.label, censor.label, tau.label, method) %>% 
+MCE <- summ %>% group_by(k.label, delta, delta.label, censor.label, tau.label, qrp.label, method) %>% 
 	dplyr::summarise(
 		meanEst.MCE = sd(meanEst),
 		ME.MCE = sd(ME),
-		RMSE.MCE = sd(RMSE)
+		RMSE.MCE = sd(RMSE),
+		n.batches = n()
 	)
+	
+summary(MCE)
+quantile(MCE$meanEst.MCE, probs=c(0.95))
+quantile(MCE$RMSE.MCE, probs=c(0.95))
+
 ```
 
-This is Online Appendix B for:
+This is an online Appendix for:
 
 Carter, E. C., Schönbrodt, F. D., Hilgard, J., &amp; Gervais, W. (2018). *Correcting for bias in psychology: A comparison of meta-analytic methods.* Retrieved from [https://osf.io/rf3ys/](https://osf.io/rf3ys/).
+
 
 ## Method ##
 
@@ -103,13 +110,13 @@ Simulations were run with 10,000 replications for a random selection of conditio
 
 ## Variance in ES estimates between simulation batches
 
-```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
-ggplot(summ, aes(x=method, y=meanEst, color=simBatch, shape=factor(delta.label))) + geom_point() + geom_hline(aes(yintercept=delta), linetype="dotted") + facet_grid(k.label~tau.label~censor.label) + coord_flip(ylim=c(-0.5, 1))
+```{r MCE_ES, echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
+ggplot(summ, aes(x=method, y=meanEst, color=simBatch, shape=factor(delta.label))) + geom_point() + geom_hline(aes(yintercept=delta), linetype="dotted") + facet_grid(k.label~tau.label~censor.label~QRP.) + coord_flip(ylim=c(-0.5, 1))
 ```
 
 
 ## Variance in RMSE between simulation batches
 
-```{r echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
+```{r MCE_RMSE, echo=FALSE, fig.width=11, fig.height=8, warning=FALSE}
 ggplot(summ, aes(x=method, y=RMSE, color=simBatch, shape=delta.label)) + geom_point() + facet_grid(k.label~tau.label~censor.label) + coord_flip(ylim=c(-.8, .8))
 ```
