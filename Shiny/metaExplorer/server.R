@@ -334,7 +334,7 @@ hypTab <- reactive({
 		filter(delta == input$delta)  %>% 
 		filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv) %>% 
 		select(-delta, -censor) %>% 
-		selectModels(selectModels)
+		selectModels()
 
 	RR.H0.specific <- RR.H0 %>% 
 		filter(k == input$k, tau == input$tau, censor == input$censor, qrpEnv == input$qrpEnv) %>% 

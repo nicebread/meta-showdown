@@ -86,3 +86,93 @@ res.aggregate <- res %>% group_by(qrpEnv, censor) %>% summarise(
 )
 
 print(res.aggregate, n=9)
+
+
+
+## ======================================================================
+## What is the false positive rate in each QRP style?
+## (only evaluated in conditions without publication bias)
+## ======================================================================
+
+res <- data.frame()
+
+# loop through all simParts files
+for (f in simDatFiles) {
+	load(f)	# the simulation data frame always is called "sim"
+
+	## (only evaluate in conditions without publication and without heterogeneity)
+	if (sim$delta[1] != 0 | sim$censor[1] != "none" | sim$tau[1] != 0) next;
+	
+	n.MA <- length(unique(sim$id))		# overall number of MAs
+	print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs from file ", f))
+
+	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau, qrp) %>% 
+	summarise(
+		FPR = sum(p<.05)/n(),
+		n = n()
+	) %>% ungroup() %>% as.data.frame()
+	
+	res <- rbind(res, desc)
+} # of "f in simDatFiles"
+
+
+ggplot(res, aes(y=FPR, x=factor(qrp), color=factor(k), shape=qrpEnv)) + geom_point()
+
+# FPR is independent of k and qrpEnv
+# --> aggregate across these factors; show mean of each proportion and the range
+res.aggregate.qrp <- res %>% group_by(qrp) %>% summarise(
+	FPR = paste0(round(mean(FPR, weight=n)*100), "%")
+)
+
+print(res.aggregate.qrp)
+
+#     qrp FPR
+#   <dbl> <chr>
+# 1     0 5%
+# 2     1 12%
+# 3     2 29%
+
+
+## ======================================================================
+## What is the false positive rate in each QRP Environment?
+## (only evaluated in conditions without publication bias)
+## ======================================================================
+
+res <- data.frame()
+
+# loop through all simParts files
+for (f in simDatFiles) {
+	load(f)	# the simulation data frame always is called "sim"
+
+	## (only evaluate in conditions without publication and without heterogeneity)
+	if (sim$delta[1] != 0 | sim$censor[1] != "none" | sim$tau[1] != 0) next;
+	
+	n.MA <- length(unique(sim$id))		# overall number of MAs
+	print(paste0(Sys.time(), ": Analyzing ", n.MA, " unique MAs from file ", f))
+
+	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau) %>% 
+	summarise(
+		FPR = sum(p<.05)/n(),
+		n = n()
+	) %>% ungroup() %>% as.data.frame()
+	
+	res <- rbind(res, desc)
+} # of "f in simDatFiles"
+
+
+ggplot(res, aes(y=FPR, x=factor(qrpEnv), color=factor(k))) + geom_point()
+
+# FPR is independent of k
+# --> aggregate across these factors; show mean of each proportion and the range
+res.aggregate.qrpEnv <- res %>% group_by(qrpEnv) %>% summarise(
+	FPR = paste0(round(mean(FPR, weight=n)*100), "%")
+)
+
+print(res.aggregate.qrpEnv)
+
+# # A tibble: 3 x 2
+#   qrpEnv FPR
+#   <fct>  <chr>
+# 1 none   5%
+# 2 med    13%
+# 3 high   20%
