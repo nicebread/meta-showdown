@@ -90,8 +90,9 @@ print(res.aggregate, n=9)
 
 
 ## ======================================================================
-## What is the false positive rate in each QRP style?
+## What is the *directionally consistent* false positive rate in each QRP style?
 ## (only evaluated in conditions without publication bias)
+## I.e., here we only count successful p-hacking
 ## ======================================================================
 
 res <- data.frame()
@@ -108,7 +109,7 @@ for (f in simDatFiles) {
 
 	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau, qrp) %>% 
 	summarise(
-		FPR = sum(p<.05)/n(),
+		FPR = sum(p<.05 & d > 0)/n(),
 		n = n()
 	) %>% ungroup() %>% as.data.frame()
 	
@@ -126,11 +127,12 @@ res.aggregate.qrp <- res %>% group_by(qrp) %>% summarise(
 
 print(res.aggregate.qrp)
 
+# # A tibble: 3 x 2
 #     qrp FPR
 #   <dbl> <chr>
-# 1     0 5%
-# 2     1 12%
-# 3     2 29%
+# 1     0 2%
+# 2     1 9%
+# 3     2 27%
 
 
 ## ======================================================================
@@ -152,7 +154,7 @@ for (f in simDatFiles) {
 
 	desc <- sim %>% group_by(condition, k, delta, qrpEnv, censor, tau) %>% 
 	summarise(
-		FPR = sum(p<.05)/n(),
+		FPR = sum(p<.05 & d > 0)/n(),
 		n = n()
 	) %>% ungroup() %>% as.data.frame()
 	

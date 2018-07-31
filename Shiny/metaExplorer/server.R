@@ -5,7 +5,7 @@ shinyServer(function(input, output, session) {
 
 
 	## ======================================================================
-	## Performance Plots
+	## Method Performance Check Plots
 	## ======================================================================
 	
 	output$perfPlot <- renderUI({
@@ -69,32 +69,44 @@ shinyServer(function(input, output, session) {
 			perfMeasureString <- paste0(perfMeasureString, "coverage >= ", as.numeric(input$coverage_lowerbound), "%", "; ")
 		}
 		
-		if (is.na(as.numeric(input$TypeI_upperbound))) {
-			perf.dat$TypeI_check <- TRUE
+		if (is.na(as.numeric(input$FPR_upperbound))) {
+			perf.dat$FPR_check <- TRUE
 		} else {
-			perf.dat$TypeI_check <- perf.dat$TypeI <= as.numeric(input$TypeI_upperbound)/100
-			perfMeasureString <- paste0(perfMeasureString, "false positive rate <= ", as.numeric(input$TypeI_upperbound), "%", "; ")
+			perf.dat$FPR_check <- perf.dat$TypeI <= as.numeric(input$FPR_upperbound)/100
+			perfMeasureString <- paste0(perfMeasureString, "false positive rate <= ", as.numeric(input$FPR_upperbound), "%", "; ")
 		}
 		
-		perf.dat <- perf.dat %>% mutate(performance = factor(ME_upper_check & ME_lower_check & RMSE_check & MAD_check & coverage_check & TypeI_check, levels=c(TRUE, FALSE), labels=c("good", "poor")))
+		if (is.na(as.numeric(input$FNR_upperbound))) {
+			perf.dat$FNR_check <- TRUE
+		} else {
+			print(1-(as.numeric(input$FNR_upperbound)/100))
+			perf.dat$FNR_check <- perf.dat$H0.reject.rate	>= 1-(as.numeric(input$FNR_upperbound)/100)
+			perfMeasureString <- paste0(perfMeasureString, "false negative rate <= ", as.numeric(input$FNR_upperbound), "%", "; ")
+		}
+		
+		perf.dat <- perf.dat %>% mutate(
+			performance.H0 = factor(ME_upper_check & ME_lower_check & RMSE_check & MAD_check & coverage_check & FPR_check, levels=c(TRUE, FALSE), labels=c("good", "poor")),
+			performance.H1 = factor(ME_upper_check & ME_lower_check & RMSE_check & MAD_check & coverage_check & FNR_check, levels=c(TRUE, FALSE), labels=c("good", "poor"))
+		)
 		
 		title <- paste0("Method: ", input$evaluatedMethod, "\nCriterion for good performance: ", perfMeasureString)
 		
 		
-		p.H1 <- ggplot(perf.dat %>% filter(delta > 0), aes(x=loop1, y=loop2, fill=performance)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
+		p.H1 <- ggplot(perf.dat %>% filter(delta > 0), aes(x=loop1, y=loop2, fill=performance.H1)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
 		
-		p.H0 <- ggplot(perf.dat %>% filter(delta == 0), aes(x=loop1, y=loop2, fill=performance)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
+		p.H0 <- ggplot(perf.dat %>% filter(delta == 0), aes(x=loop1, y=loop2, fill=performance.H0)) + geom_tile() + theme(axis.text.x = element_text(angle = 90)) + xlab("") + ylab("") + scale_fill_manual(name="Performance", values = c("good" = "lightblue", "poor"= "red3")) + ggtitle(title)
 
 		returnList <- list(
-			h3("Under H1s:"),
-			renderPlot(p.H1, height = 650, units="px"),
 			h3("Under H0:"),
-			renderPlot(p.H0, height = 650, units="px")
+			renderPlot(p.H0, height = 600, units="px"),
+			h3("Under H1s:"),
+			renderPlot(p.H1, height = 600, units="px")
 		)
 		
 		if (input$show_performance_table == TRUE) {
-			perfTable.H0 <- perf.dat %>% filter(delta == 0) %>% select(-meanEst, -k.label, -delta.label, -qrp.label,	-censor.label, -tau.label, -stroke,	-fill,	-loop1,	-loop2, -H0.reject.pos.rate, -H0.reject.wrongSign.rate, -n.p.values, -n.validEstimates, -coverage.pos, -n.ci, -consisZero.rate, -contains(".pos"))
-			perfTable.H1 <- perf.dat %>% filter(delta > 0) %>% select(-meanEst, -k.label, -delta.label, -qrp.label,	-censor.label, -tau.label, -stroke,	-fill,	-loop1,	-loop2, -H0.reject.pos.rate, -H0.reject.wrongSign.rate, -n.p.values, -n.validEstimates, -coverage.pos, -n.ci, -consisZero.rate, -contains(".pos"))
+			perfTable.H0 <- perf.dat %>% filter(delta == 0) %>% select(-meanEst, -k.label, -delta.label, -qrp.label,	-censor.label, -tau.label, -stroke,	-fill,	-loop1,	-loop2, -H0.reject.pos.rate, -H0.reject.wrongSign.rate, -n.p.values, -n.validEstimates, -coverage.pos, -n.ci, -consisZero.rate, -FNR_check, -performance.H1, -contains(".pos"))
+			perfTable.H1 <- perf.dat %>% filter(delta > 0) %>% select(-meanEst, -k.label, -delta.label, -qrp.label,	-censor.label, -tau.label, -stroke,	-fill,	-loop1,	-loop2, -H0.reject.pos.rate, -H0.reject.wrongSign.rate, -n.p.values, -n.validEstimates, -coverage.pos, -n.ci, -consisZero.rate, -FPR_check, -performance.H0, -contains(".pos"))
+			
 			perfTable.H0[, 8:15] <- round(perfTable.H0[, 8:15], 3)
 			perfTable.H1[, 8:15] <- round(perfTable.H1[, 8:15], 3)
 			returnList <- c(returnList, list(

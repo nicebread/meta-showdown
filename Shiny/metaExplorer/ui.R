@@ -94,7 +94,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				textInput("MAD_upperbound", "... a maximum mean absolute error (MAE) of: ", value = ""),
 				textInput("RMSE_upperbound", "... a maximum root mean square error (RMSE) of: ", value = ""),
 				textInput("coverage_lowerbound", "... a minimum coverage of the 95% CI in percentage (default: 95): ", value = ""),
-				textInput("TypeI_upperbound", "... a maximum false positive rate in percentage (default: 5): ", value = ""),
+				textInput("FPR_upperbound", "... a maximum false positive rate in percentage (only relevant under H0): ", value = ""),
+				textInput("FNR_upperbound", "... a maximum false negative rate in percentage (only relevant under H1): ", value = ""),
 				checkboxInput("show_performance_table", "Show performance results in table", FALSE)
 				
 			), # of conditionalPanel

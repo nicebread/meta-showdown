@@ -40,10 +40,15 @@ outlier=function(x,mean,sd){
 # sample size
 
 # results from an unbiased experiment 
-simData.noQRP <- function(delta, tau){
+simData.noQRP <- function(delta, tau, fixed.n=NULL){
   
-  #get the per-group sample size 
-  n <- getN(k=1)
+  # get the per-group sample size - 
+	# either a fixed n, or sampled from the gamma distribution 
+	if (!is.null(fixed.n)) {
+		n <- fixed.n
+	} else {
+		n <- getN(k=1)
+	}
   
   #calculate the treatement effect as a function of the 
   #true effect, delta, and tau
@@ -325,14 +330,14 @@ analyB <- function(g1, g2, g3, g4, D, multDV, out, mod){
 #==================
 
 # Produces results, a, from a p-hacked experiment.
-simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000){
+simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000, fixed.n=NULL){
   
   #correlation between multiple DVs is set to 0.20 as default
   cbdv = 0.2
   
   # if QRP strategy is NONE
   if (QRP.strategy=='none'){
-    a = simData.noQRP(delta, tau)
+    a = simData.noQRP(delta, tau, fixed.n=fixed.n)
   }
   
   #if QRP strategy is MODERATE
@@ -342,7 +347,13 @@ simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000){
     G <- expDataB(delta, tau, cbdv)
     
     #determine the starting per-group sample size
-    s <- getN(k=1)
+	  # get the per-group sample size - 
+		# either a fixed n, or sampled from the gamma distribution 
+		if (!is.null(fixed.n)) {
+			s <- fixed.n
+		} else {
+			s <- getN(k=1)
+		}
     
 		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)
@@ -385,7 +396,13 @@ simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000){
     G = expDataB(delta,tau,cbdv,maxN)
     
     #determine the starting per-group sample size
-    s <- getN(k=1)
+	  # get the per-group sample size - 
+		# either a fixed n, or sampled from the gamma distribution 
+		if (!is.null(fixed.n)) {
+			s <- fixed.n
+		} else {
+			s <- getN(k=1)
+		}
     
 		# Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
     s <- round(s/2)
@@ -448,7 +465,7 @@ simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000){
 #' @param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
 
 # k=10;delta=.3;tau=.1;qrpEnv="med";censorFunc="A"; empN=TRUE; maxN = 1000; meanN = NA; minN = 0; empN.boost = 0
-simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), censorFunc = c("none", "medium", "high"), verbose=FALSE) {  
+simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), censorFunc = c("none", "medium", "high"), verbose=FALSE, fixed.n=NULL) {  
     
 	# validate parameters
 	if (length(censorFunc) == 1) {
@@ -478,13 +495,13 @@ simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), cen
 		thisStudiesHackingStyle <- sample(x = c("none", "mod", "agg"), size=1, replace=TRUE, prob = c(noneP, modP, aggP))
 		
 		if (thisStudiesHackingStyle == "none") {
-      res <- simData.noQRP(delta=delta, tau=tau)			
+      res <- simData.noQRP(delta=delta, tau=tau, fixed.n=fixed.n)
       res[11] = 0 #QRP style
 		} else if (thisStudiesHackingStyle == "mod") {
-      res <- simData.QRP(delta=delta, tau=tau, QRP.strategy="mod")			
+      res <- simData.QRP(delta=delta, tau=tau, QRP.strategy="mod", fixed.n=fixed.n)
       res[11] = 1 #QRP style
 		} else if (thisStudiesHackingStyle == "agg") {
-      res <- simData.QRP(delta=delta, tau=tau, QRP.strategy="agg")			
+      res <- simData.QRP(delta=delta, tau=tau, QRP.strategy="agg", fixed.n=fixed.n)
       res[11] = 2 #QRP style
 		}
 		
