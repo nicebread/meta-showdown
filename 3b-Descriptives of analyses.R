@@ -98,7 +98,12 @@ puniform_comments <- res.wide.red %>%
 
 print(puniform_comments, n=432)
 
+# table collapsed across all conditions:
+res.wide.red %>% filter(method %in% c("puniform")) %>% count(b0_comment) %>% select("n")/432000*100
 
+# same for p-curve: How often does it return exactly 0?
+pcurve <- res.wide.red %>% filter(method %in% c("pcurve"))
+sum(pcurve$b0_estimate < 0.0001, na.rm=TRUE)/432000
 
 ## ======================================================================
 ## How many estimates converge?
@@ -221,3 +226,20 @@ load("dataFiles/summ.RData")
 a1 <- aov(RMSE ~ k.label*delta.label*qrp.label*censor.label*tau.label, data=summ %>% filter(method=="pcurve"))
 e1 <- data.frame(etaSquared(a1))
 e1[order(e1$eta.sq, decreasing=TRUE), ]
+
+
+## ======================================================================
+## Do TF and PET always/mostly disagree in the case of H0 + publication bias?
+## ======================================================================
+
+H0.PB <- res.wide.red %>% 
+	filter(method %in% c("TF", "PET"), !is.na(b0_estimate), delta==0, qrpEnv=="none", censor=="high")
+	
+	 %>% 
+	#select(method, k.label, delta.label, tau.label, censor.label, b0_estimate) %>% 
+	group_by(method, k.label, delta.label, tau.label, censor.label) %>% 
+	summarise(
+		estNegPerc = sum(b0_estimate < 0)/n()
+	) %>% arrange(tau.label, delta.label, k.label)
+
+ggplot(H0.PB, aes(x=b0_estimate, color=method)) + geom_density()

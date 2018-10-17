@@ -36,7 +36,7 @@ shinyServer(function(input, output, session) {
 		if (is.na(as.numeric(input$ME_upper))) {
 			perf.dat$ME_upper_check <- TRUE
 		} else {
-			perf.dat$ME_upper_check <- perf.dat$ME <= as.numeric(input$ME_upper)
+			perf.dat$ME_upper_check <- perf.dat$ME <= abs(as.numeric(input$ME_upper))
 			perfMeasureString <- paste0(perfMeasureString, "positive bias <= ", as.numeric(input$ME_upper), "; ")
 		} 
 		
@@ -44,7 +44,7 @@ shinyServer(function(input, output, session) {
 			perf.dat$ME_lower_check <- TRUE
 		} else {
 			perf.dat$ME_lower_check <- perf.dat$ME >= -abs(as.numeric(input$ME_lower))
-			perfMeasureString <- paste0(perfMeasureString, "negative bias <= ", as.numeric(input$ME_lower), "; ")
+			perfMeasureString <- paste0(perfMeasureString, "negative bias >= ", -abs(as.numeric(input$ME_lower)), "; ")
 		} 
 		
 		
@@ -79,7 +79,6 @@ shinyServer(function(input, output, session) {
 		if (is.na(as.numeric(input$FNR_upperbound))) {
 			perf.dat$FNR_check <- TRUE
 		} else {
-			print(1-(as.numeric(input$FNR_upperbound)/100))
 			perf.dat$FNR_check <- perf.dat$H0.reject.rate	>= 1-(as.numeric(input$FNR_upperbound)/100)
 			perfMeasureString <- paste0(perfMeasureString, "false negative rate <= ", as.numeric(input$FNR_upperbound), "%", "; ")
 		}

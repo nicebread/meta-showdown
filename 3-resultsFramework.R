@@ -78,6 +78,8 @@ res.wide.red <- res.wide.red %>% select(-b0_p.value, -skewtest_p.value)
 
 # The p-curve skewness tests only uses directionally consistent studies for computation, there is no estimate; estimate is set to NA there. Therefore, we treat this only as 'H0.reject.pos'
 # p-uniform does a one-sided test by default. The CI is based on profile likelihood and is *two-sided*. The p-value of p-uniform has been doubled in MA-methods/5-p-uniform.R. Therefore, only 'H0.reject.pos' exists for p-uniform.
+# Finally, p-uniform has the special case where the estimate is set to zero when the average p value of the statistically significant studies is larger than .025 (in about 10% of all simulations). In this case, the function returns an estimate (i.e., exactly zero), but no p-value and no CI. This case is treated as H0.reject.pos = FALSE.
+# Hence, H0.reject.pos and the CI of p-uniform do not give ecxactly the same result, as in the special case we *do not* reject H0, but have no CI.
 
 res.wide.red$H0.reject <- (res.wide.red$p.value < .05)
 res.wide.red$H0.reject[res.wide.red$method %in% c("puniform", "pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- NA
@@ -85,22 +87,26 @@ res.wide.red$H0.reject[res.wide.red$method %in% c("puniform", "pcurve.evidence",
 res.wide.red$H0.reject.pos <- (res.wide.red$p.value < .05) & (is.na(res.wide.red$b0_estimate) | res.wide.red$b0_estimate > 0)
 res.wide.red$H0.reject.pos[is.na(res.wide.red$p.value)] <- NA # if no p-value is provided, set to NA
 
+# special case: puniform returns code 2 = "set to zero if avg. p-value > .025"
+# this not is a H0 rejection, but without providing a p-value
+res.wide.red[res.wide.red$method=="puniform" & res.wide.red$b0_comment == 2, "H0.reject.pos"] <- FALSE
+
 res.wide.red$H0.reject.wrongSign <- (res.wide.red$p.value < .05) & (res.wide.red$b0_estimate < 0)
 res.wide.red$H0.reject.wrongSign[is.na(res.wide.red$p.value)] <- NA
 res.wide.red$H0.reject.wrongSign[res.wide.red$method %in% c("puniform", "pcurve.evidence", "pcurve.hack", "pcurve.lack")] <- NA
 
 # consisZero computation
-
+# consisZero indicates whether the CI excludes zero (i.e., it could be completely positive OR completely negative)
+# consisZero.pos indicates whether the CI is entirely positive (i.e., in the expected direction)
 res.wide.red$consisZero <- (0 > res.wide.red$b0_conf.low) & (0 < res.wide.red$b0_conf.high)
 res.wide.red$consisZero.pos <- (0 > res.wide.red$b0_conf.low)
 
-# sanity check: H0.reject and !consisZero should be identical except for p-curve
+# sanity check: H0.reject and !consisZero should be identical except for p-curve and p-uniform
 table(!res.wide.red$consisZero, res.wide.red$method, useNA="a")
 table(res.wide.red$H0.reject, res.wide.red$method, useNA="a")
 
 table(!res.wide.red$consisZero.pos, res.wide.red$method, useNA="a")
 table(res.wide.red$H0.reject.pos, res.wide.red$method, useNA="a")
-
 # --> 284 cases are still inconsistent in puniform. This happens when the CI borderline excludes 0 but p is slightly above .05 (such as .05002)
 
 save(res.wide.red, file="dataFiles/res.wide.red.RData", compress="gzip")

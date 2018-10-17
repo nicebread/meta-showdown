@@ -93,7 +93,20 @@ puniformEst <- function(t.value, n1, n2, skipBarelySignificant=TRUE, long=TRUE) 
 }
 
 
+## TEST: No significant values
 # t.value <- c(1.1, 1.2, 1.1)
+# n1 <- n2 <- c(20, 23, 24)
+# pt(t.value, n1+n2-2, lower.tail=FALSE)*2
+# puniformEst(t.value, n1, n2, skipBarelySignificant=TRUE)
+
+## TEST: barely significant values
+# t.value <- c(2.15, 2.1, 2.2)
+# n1 <- n2 <- c(20, 23, 24)
+# pt(t.value, n1+n2-2, lower.tail=FALSE)*2
+# puniformEst(t.value, n1, n2, skipBarelySignificant=TRUE)
+
+## TEST: significant values
+# t.value <- c(2.35, 2.41, 2.32)
 # n1 <- n2 <- c(20, 23, 24)
 # pt(t.value, n1+n2-2, lower.tail=FALSE)*2
 # puniformEst(t.value, n1, n2, skipBarelySignificant=TRUE)

@@ -51,10 +51,13 @@ censor <- function(pObs, direction, posSign_NS_baseRate = 0.3, negSign_NS_baseRa
   return(pubProb)
 }
 
+
+# in this (equivalent) variant of the function, you can provide a one-tailed p-value
+# --> then it's not necessary to provide the direction of the effect
 censor.1t.0 <- function(pObs, posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50){
 	
 	# ---------------------------------------------------------------------
-	# Correct direction fo effect
+	# Correct direction of effect
 	
   if (pObs < .05/2) {       #right direction, sig
     pubProb = 1
@@ -76,6 +79,24 @@ censor.1t.0 <- function(pObs, posSign_NS_baseRate = 0.3, negSign_NS_baseRate = 0
 	
   return(pubProb)
 }
+censor.1t <- Vectorize(censor.1t.0)
+
+# helper: convert 1-tailed p-value to 2-tailed
+p.1.to.2 <- function(p.1tailed) {
+	1-abs(0.5-p.1tailed)*2
+}
+
+# helper: get direction of a 1-tailed p-value
+getDir <- function(p.1tailed) {
+	ifelse(p.1tailed < .5, 1, -1)
+}
+
+# Sanity check: do both censor functions return the same value?
+# curve(censor.1t(pObs=x, posSign_NS_baseRate = 0.20, negSign_NS_baseRate = 0.05, counterSig_rate = 0.50), from=0, to=1, n=10000)
+#
+# for (p.1t in seq(0, 1, length.out=1000)) {
+#   points(x=p.1t, y=censor(pObs=p.1.to.2(p.1t), direction=getDir(p.1t)), col="red", pch=21, cex=.3)
+# }
 
 
 # some predefined settings: medium publication bias

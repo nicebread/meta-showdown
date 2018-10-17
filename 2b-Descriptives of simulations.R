@@ -90,7 +90,7 @@ print(res.aggregate, n=9)
 
 
 ## ======================================================================
-## What is the *directionally consistent* false positive rate in each QRP style?
+## What is the *directionally consistent* false positive rate in each QRP strategy?
 ## (only evaluated in conditions without publication bias)
 ## I.e., here we only count successful p-hacking
 ## ======================================================================

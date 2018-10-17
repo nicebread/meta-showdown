@@ -23,15 +23,15 @@ H1 <- 0.5
 #	ungroup()
 
 # reduced set for revision
-hyp.sel <-  summ %>%
- filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve.evidence", "puniform", "3PSM", "4PSM", "WAAP-WLS")) %>%
- mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve.evidence", "puniform", "PETPEESE", "3PSM", "4PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM", "4PSM"))) %>%
-	ungroup()
-	
+hyp.sel <- summ %>% 
+	filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
+  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve.evidence", "puniform", "PETPEESE", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"))) %>% ungroup()
+
 	
 # prepare extra data.frame for the number of successful computation out of 1000 simulations
 hyp.sel$n.p.values.symbol <- cut(hyp.sel$n.p.values, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))	
 
+# join H1 and H0 data to wide format data frame
 hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.pos.rate)
 hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.pos.rate)
 
@@ -61,7 +61,6 @@ theme_metashowdown <- theme(
 )
 
 
-
 buildFacet <- function(dat, title) {
   PLOT <- dat %>%
     ggplot(aes(x=factor(k), shape=qrp.label)) + 
@@ -73,7 +72,7 @@ buildFacet <- function(dat, title) {
 		geom_text(aes(x=factor(k), y=1.05, label=n.p.values.symbol.H1, group=qrp.label), position=position_dodge(width=0.7), size=2.5, hjust=0, vjust=0.6, color="black") +
     coord_flip() +
     facet_grid(tau~method,labeller = label_bquote(rows = tau == .(tau))) + 
-    scale_y_continuous(labels=scales::percent, limits=c(-0.07, 1.07), breaks = c(.05, .5, .8, 1)) + 
+    scale_y_continuous(labels=c("5%", "50%", "80%", "100%"), limits=c(-0.07, 1.07), breaks = c(.05, .5, .8, 1)) + 
     scale_shape_manual(values=c(21, 22, 24)) + 
     ylab("False positives / Statistical Power") +
     xlab(expression(italic(k))) + 
