@@ -101,7 +101,11 @@ print(puniform_comments, n=432)
 # table collapsed across all conditions:
 res.wide.red %>% filter(method %in% c("puniform")) %>% count(b0_comment) %>% select("n")/432000*100
 
-# same for p-curve: How often does it return exactly 0?
+# table per delta (i.e., at which deltas did the special case occur?):
+# --> mostly at delta==0
+res.wide.red %>% filter(method %in% c("puniform")) %>% group_by(delta) %>% count(b0_comment) %>% mutate(perc=n/108000)
+
+# same for p-curve: How often does it return exactly 0? (Well, the optimizer converges on somethin like 0.0001, not exactly 0)
 pcurve <- res.wide.red %>% filter(method %in% c("pcurve"))
 sum(pcurve$b0_estimate < 0.0001, na.rm=TRUE)/432000
 
@@ -211,7 +215,7 @@ estNeg <- res.wide.red %>%
 		estNegPerc = sum(b0_estimate < 0)/n()
 	) %>% arrange(tau.label, delta.label, k.label)
 
-table(estNeg$estNegPerc)
+print(estNeg, n=300)
 
 # --> virtually all pcurve and puniform estimates are truncated at zero.
 
@@ -223,6 +227,7 @@ table(estNeg$estNegPerc)
 
 load("dataFiles/summ.RData")
 
+library(lsr)
 a1 <- aov(RMSE ~ k.label*delta.label*qrp.label*censor.label*tau.label, data=summ %>% filter(method=="pcurve"))
 e1 <- data.frame(etaSquared(a1))
 e1[order(e1$eta.sq, decreasing=TRUE), ]

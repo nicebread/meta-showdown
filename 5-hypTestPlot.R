@@ -13,35 +13,27 @@ load(file="dataFiles/summ.RData")
 # ---------------------------------------------------------------------
 # SETTINGS
 
-# compare delta==0 (for false positive rate) against delta==0.5 (for power)
-H1 <- 0.5
-
-# select only some methods for displaying
-#hyp.sel <-  summ %>% 
-#  filter(method %in% c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM")) %>% 
-#  mutate(method = factor(method, levels=c("reMA", "TF", "PET.lm", "PEESE.lm", "PETPEESE.lm", "pcurve.evidence", "puniform", "3PSM"), labels=c("RE", "TF", "PET", "PEESE", "PET-PEESE", "p-curve", "p-uniform", "3PSM"))) %>% 
-#	ungroup()
-
-# reduced set for revision
-hyp.sel <- summ %>% 
-	filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
-  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve.evidence", "puniform", "PETPEESE", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"))) %>% ungroup()
+prepareDataSet <- function(H1) {
+	# select only some methods for displaying
+	hyp.sel <- summ %>% 
+		filter(method %in% c("reMA", "TF", "PETPEESE", "pcurve.evidence", "puniform", "3PSM", "WAAP-WLS")) %>% 
+	  mutate(method = factor(method, levels=c("reMA", "TF", "WAAP-WLS", "pcurve.evidence", "puniform", "PETPEESE", "3PSM"), labels=c("RE", "TF", "WAAP-WLS", "p-curve", "p-uniform", "PET-PEESE", "3PSM"))) %>% ungroup()
 
 	
-# prepare extra data.frame for the number of successful computation out of 1000 simulations
-hyp.sel$n.p.values.symbol <- cut(hyp.sel$n.p.values, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))	
+	# prepare extra data.frame for the number of successful computation out of 1000 simulations
+	hyp.sel$n.p.values.symbol <- cut(hyp.sel$n.p.values, breaks=c(-1, 250, 500, 750, 1000), labels=c("! ", "#", "* ", ""))	
 
-# join H1 and H0 data to wide format data frame
-hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.pos.rate)
-hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.pos.rate)
+	# join H1 and H0 data to wide format data frame
+	hyp.H0 <- hyp.sel %>% filter(delta == 0) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H0 = n.p.values.symbol, TypeI = H0.reject.pos.rate)
+	hyp.H1 <- hyp.sel %>% filter(delta == H1) %>% select(k, qrp.label, censor, tau.label, method, tau, n.p.values.symbol.H1 = n.p.values.symbol, Power = H0.reject.pos.rate)
 
-hyp.wide <- inner_join(hyp.H0, hyp.H1)
+	hyp.wide <- inner_join(hyp.H0, hyp.H1)
 
-hyp.wide$rejectionRatio <- hyp.wide$Power/hyp.wide$TypeI
-hyp.wide$errorSum <- (1-hyp.wide$Power) + hyp.wide$TypeI
-
-save(hyp.wide, file="dataFiles/hyp.wide.RData")
-save(hyp.wide, file="Shiny/metaExplorer/hyp.wide.RData")
+	hyp.wide$rejectionRatio <- hyp.wide$Power/hyp.wide$TypeI
+	hyp.wide$errorSum <- (1-hyp.wide$Power) + hyp.wide$TypeI
+	
+	return(hyp.wide)
+}
 
 
 theme_metashowdown <- theme(
@@ -81,10 +73,6 @@ buildFacet <- function(dat, title) {
   return(PLOT)	
 }
 
-plotA <- buildFacet(dat = hyp.wide %>% filter(censor=="none", method != "4PSM"), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = hyp.wide %>% filter(censor=="med", method != "4PSM"), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = hyp.wide %>% filter(censor=="high", method != "4PSM"), bquote("(C) strong publication bias"))
-
 
 # ---------------------------------------------------------------------
 # Build the legend
@@ -113,9 +101,48 @@ g_legend<-function(a.gplot) {
 
 legend <- g_legend(legOnlyPlot) 
 
-# ---------------------------------------------------------------------
-# Save PDF of plot
 
-pdf("Plots/HypothesisTestPlot.pdf", width=15, height=22)
-grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
+
+# ---------------------------------------------------------------------
+# Save PDF for main text: delta = 0 vs. 0.5
+
+# compare delta==0 (for false positive rate) against delta==0.5 (for power)
+hyp.wide.05 <- prepareDataSet(H1=0.5)
+save(hyp.wide.05, file="dataFiles/hyp.wide.RData")
+save(hyp.wide.05, file="Shiny/metaExplorer/hyp.wide.RData")
+
+plotA.5 <- buildFacet(dat = hyp.wide.05 %>% filter(censor=="none", method != "4PSM"), bquote("(A) no publication bias"))
+plotB.5 <- buildFacet(dat = hyp.wide.05 %>% filter(censor=="med", method != "4PSM"), bquote("(B) medium publication bias"))
+plotC.5 <- buildFacet(dat = hyp.wide.05 %>% filter(censor=="high", method != "4PSM"), bquote("(C) strong publication bias"))
+
+
+pdf("Plots/HypothesisTest_H1_05.pdf", width=15, height=22)
+grid.arrange(plotA.5, plotB.5, plotC.5, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
+dev.off()
+
+
+# ---------------------------------------------------------------------
+# Save PDFs for supplement: delta = 0 vs. 0.2, and 0 vs. 0.8
+
+hyp.wide.2 <- prepareDataSet(H1=0.2)
+
+plotA.2 <- buildFacet(dat = hyp.wide.2 %>% filter(censor=="none", method != "4PSM"), bquote("(A) no publication bias"))
+plotB.2 <- buildFacet(dat = hyp.wide.2 %>% filter(censor=="med", method != "4PSM"), bquote("(B) medium publication bias"))
+plotC.2 <- buildFacet(dat = hyp.wide.2 %>% filter(censor=="high", method != "4PSM"), bquote("(C) strong publication bias"))
+
+
+pdf("Plots/HypothesisTest_H1_02.pdf", width=15, height=22)
+grid.arrange(plotA.2, plotB.2, plotC.2, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
+dev.off()
+
+
+hyp.wide.8 <- prepareDataSet(H1=0.8)
+
+plotA.8 <- buildFacet(dat = hyp.wide.8 %>% filter(censor=="none", method != "4PSM"), bquote("(A) no publication bias"))
+plotB.8 <- buildFacet(dat = hyp.wide.8 %>% filter(censor=="med", method != "4PSM"), bquote("(B) medium publication bias"))
+plotC.8 <- buildFacet(dat = hyp.wide.8 %>% filter(censor=="high", method != "4PSM"), bquote("(C) strong publication bias"))
+
+
+pdf("Plots/HypothesisTest_H1_08.pdf", width=15, height=22)
+grid.arrange(plotA.8, plotB.8, plotC.8, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4)))
 dev.off()

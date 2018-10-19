@@ -92,9 +92,6 @@ colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "T
                                   method != 'pcurve', #remove pcurve, use pcurve.evidence
                                   method != 'pcurve.hack',
                                   method != 'pcurve.lack',
-                                  method != 'PET.rma',
-                                  method != 'PEESE.rma',
-                                  method != 'PETPEESE.rma',
                                   method != 'topN.fixed')
         }else{
           check = summ %>% filter(delta==params[iCon, "delta"],
@@ -107,9 +104,6 @@ colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "T
                                   method != 'pcurve.evidence', #remove pcurve.evidence, use pcurve
                                   method != 'pcurve.hack',
                                   method != 'pcurve.lack',
-                                  method != 'PET.rma',
-                                  method != 'PEESE.rma',
-                                  method != 'PETPEESE.rma',
                                   method != 'topN.fixed')
         }
         
@@ -141,9 +135,9 @@ colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "T
         
         #Make sure each method is represented. If not, leave as NA.
         if(metric=='pow'){
-          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve.evidence","puniform","3PSM", "WAAP-WLS")        
+          methodNames2 = c("reMA","TF","PET","PEESE","PETPEESE","pcurve.evidence","puniform","3PSM", "WAAP-WLS")        
         }else{
-          methodNames2 = c("reMA","TF","PET.lm","PEESE.lm","PETPEESE.lm","pcurve","puniform","3PSM", "WAAP-WLS")        
+          methodNames2 = c("reMA","TF","PET","PEESE","PETPEESE","pcurve","puniform","3PSM", "WAAP-WLS")        
         }
         
         for(iMethod in 1:length(methodNames2)){
@@ -265,13 +259,13 @@ colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "T
   W = .28
   
   #mark if posified
-  if(positive==T){
+  if(positive == TRUE){
     posif = "_Posified"
   }else{
     posif = "_NotPosified"
   }
   
-  plotFileName=paste0("./ColorTablePlots/", metric,'_sel',cens,posif,'.pdf')
+  plotFileName=paste0("ColorTablePlots/", metric,'_sel',cens,posif,'.pdf')
   pdf(file=plotFileName,12,10)
   
   print(plotList[[1]],vp = viewport(width = W, height = 0.25, x = .38, y = .0, just = c("right","bottom")))
@@ -308,13 +302,11 @@ colorTable = function(metric, cens, positive=FALSE, selectedMethods = c("RE", "T
   
 }
 
-dir.create("ColorTablePlots")
-
 #not posified
-colorTable('ME', "none")
-colorTable('RMSE', "none")
-colorTable('cov', "none")
-colorTable('pow', "none") #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
+colorTable(metric='ME', cens="none")
+colorTable(metric='RMSE', cens="none")
+colorTable(metric='cov', cens="none")
+colorTable(metric='pow', cens="none") #p-curve and p-uniform will be NA. See note in 3-resultsFramework 
 
 colorTable('ME',  "med")
 colorTable('RMSE',"med")
@@ -328,18 +320,18 @@ colorTable('pow', "high")  #p-curve and p-uniform will be NA. See note in 3-resu
 
 
 #posified
-colorTable('ME', "none", positive=TRUE)
-colorTable('RMSE', "none", positive=TRUE)
-colorTable('cov', "none", positive=TRUE)
-colorTable('pow', "none", positive=TRUE)
-
-colorTable('ME',  "med", positive=TRUE)
-colorTable('RMSE',"med", positive=TRUE)
-colorTable('cov', "med", positive=TRUE)
-colorTable('pow', "med", positive=TRUE)
-
-colorTable('ME',  "high", positive=TRUE)
-colorTable('RMSE',"high", positive=TRUE)
-colorTable('cov', "high", positive=TRUE)
-colorTable('pow', "high", positive=TRUE)
+# colorTable('ME', "none", positive=TRUE)
+# colorTable('RMSE', "none", positive=TRUE)
+# colorTable('cov', "none", positive=TRUE)
+# colorTable('pow', "none", positive=TRUE)
+#
+# colorTable('ME',  "med", positive=TRUE)
+# colorTable('RMSE',"med", positive=TRUE)
+# colorTable('cov', "med", positive=TRUE)
+# colorTable('pow', "med", positive=TRUE)
+#
+# colorTable('ME',  "high", positive=TRUE)
+# colorTable('RMSE',"high", positive=TRUE)
+# colorTable('cov', "high", positive=TRUE)
+# colorTable('pow', "high", positive=TRUE)
 

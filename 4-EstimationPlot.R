@@ -15,7 +15,6 @@ load("dataFiles/summ.RData")
 
 #YLIM <- c(-0.09, 1.2)
 YLIM <- c(-0.52, 1.2)
-DELTAS <- c(0, 0.5)
 
 theme_metashowdown <- theme(
   title = element_text(size=18),
@@ -82,47 +81,79 @@ buildFacet <- function(dat, title) {
 }
 
 
-plotA <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
-plotB <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), bquote("(B) medium publication bias"))
-plotC <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), bquote("(C) strong publication bias"))
-
 
 # ---------------------------------------------------------------------
 # Build legend
 
-values <- c("skyblue", "black")
-names(values) <- DELTAS
 
-#Extract Legend 
-g_legend<-function(a.gplot){ 
-  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-  legend <- tmp$grobs[[leg]] 
-  return(legend)} 
+buildLegend <- function(DELTAS) {
+	values <- c("skyblue", "black")
+	names(values) <- DELTAS
 
-legOnlyPlot = summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
-  ggplot(aes(x=factor(k), y=meanEst, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
-  geom_point() +
-  coord_flip(ylim=YLIM) +
-  facet_grid(tau.label~method) +
-  theme(
-    panel.background = element_rect(fill="white"),
-    legend.position = c("bottom"),
-    legend.key = element_rect(fill='white'),
-		legend.title = element_text(size=14, face="bold"),
-		legend.text = element_text(size=12)
-  ) + 
-  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
-  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta), override.aes = list(size=6))) +
-  scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))
+	#Extract Legend 
+	g_legend<-function(a.gplot){ 
+	  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+	  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+	  legend <- tmp$grobs[[leg]] 
+	  return(legend)
+	} 
+
+	legOnlyPlot <- summ2 %>% filter(censor=="none", delta %in% DELTAS) %>%
+	  ggplot(aes(x=factor(k), y=meanEst, shape=factor(qrpEnv),color=factor(delta),fill=factor(delta))) + 
+	  geom_point() +
+	  coord_flip(ylim=YLIM) +
+	  facet_grid(tau.label~method) +
+	  theme(
+	    panel.background = element_rect(fill="white"),
+	    legend.position = c("bottom"),
+	    legend.key = element_rect(fill='white'),
+			legend.title = element_text(size=14, face="bold"),
+			legend.text = element_text(size=12)
+	  ) + 
+	  scale_shape_manual(values=c("none"=21,"med"=22,"high"=24),guide = guide_legend(title = "QRP Env.", override.aes = list(size=6))) +
+	  scale_color_manual(values=values, guide = guide_legend(title = bquote(delta), override.aes = list(size=6))) +
+	  scale_fill_manual(values=values, guide = guide_legend(title = bquote(delta)))
 
 
-legend <- g_legend(legOnlyPlot) 
+	return(g_legend(legOnlyPlot))
+}
+
 
 
 # ---------------------------------------------------------------------
-# Save PDF
+# Save PDF for main text: delta = 0 vs. 0.5
 
-pdf("Plots/EstimationPlot.pdf", width=15, height=22)
+DELTAS <- c(0, 0.5)
+plotA <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
+plotB <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), bquote("(B) medium publication bias"))
+plotC <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), bquote("(C) strong publication bias"))
+legend <- buildLegend(DELTAS)
+
+pdf("Plots/Estimation_H1_05.pdf", width=15, height=22)
 grid.arrange(plotA, plotB, plotC, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
+dev.off()
+
+
+# ---------------------------------------------------------------------
+# Save PDFs for supplement: delta = 0 vs. 0.2, and 0 vs. 0.8
+
+DELTAS <- c(0, 0.2)
+plotA.2 <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
+plotB.2 <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), bquote("(B) medium publication bias"))
+plotC.2 <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), bquote("(C) strong publication bias"))
+legend <- buildLegend(DELTAS)
+
+pdf("Plots/Estimation_H1_02.pdf", width=15, height=22)
+grid.arrange(plotA.2, plotB.2, plotC.2, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
+dev.off()
+
+
+DELTAS <- c(0, 0.8)
+plotA.8 <- buildFacet(dat = summ2 %>% filter(censor=="none", delta %in% DELTAS), bquote("(A) no publication bias"))
+plotB.8 <- buildFacet(dat = summ2 %>% filter(censor=="med", delta %in% DELTAS), bquote("(B) medium publication bias"))
+plotC.8 <- buildFacet(dat = summ2 %>% filter(censor=="high", delta %in% DELTAS), bquote("(C) strong publication bias"))
+legend <- buildLegend(DELTAS)
+
+pdf("Plots/Estimation_H1_08.pdf", width=15, height=22)
+grid.arrange(plotA.8, plotB.8, plotC.8, legend, nrow=19, layout_matrix = cbind(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4)))
 dev.off()
