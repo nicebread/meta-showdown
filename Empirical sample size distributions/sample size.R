@@ -1,3 +1,14 @@
+## This source code is licensed under a CC-BY4.0 license (see https://creativecommons.org/licenses/by/4.0/)
+## (c) 2018 Felix Schönbrodt. 
+## This source code accompanies the paper Carter, E. C., Schönbrodt, F. D., Gervais, W. M., & Hilgard, J. (2017, May 30). Correcting for bias in psychology: A comparison of meta-analytic methods. https://doi.org/10.31234/osf.io/9h3nu
+
+## ======================================================================
+## This function reads three different data sets with empirical sample sizes,
+## and fits several functions to their distributions.
+## At the end, we only focus on the Marszalek, J. M. (2011) data set,
+## because this is the only data set that provides per-cell sample sizes.
+## ======================================================================
+
 library(ggplot2)
 library(rio)
 library(dplyr)
@@ -19,8 +30,8 @@ summary(dat)
 FV.ns0 <- round(dat$Avg_Coder_N[!is.na(dat$Avg_Coder_N)])
 summary(FV.ns0)
 
-# These are sample sizes for the whole sample - divide by two to approximate per-group sample sizes
-FV.ns.perGroup0 <- round(FV.ns/2)
+# These are sample sizes for the whole sample - divide by two to approximate per-group sample sizes, assuming always a two-group design.
+FV.ns.perGroup0 <- round(FV.ns0/2)
 
 # trim lower end at n=5
 FV.ns.perGroup <- FV.ns.perGroup0[FV.ns.perGroup0 >= n.min]
@@ -73,6 +84,7 @@ summary(M.n.all.groups)
 ## find the best fitting curve for all samples
 ## ======================================================================
 
+# function that allows to fit a truncated distribution to the data x
 fitTruncDist <- function(x, spec, lower, upper, verbose=FALSE) {
 	
 	x <- x[x>= lower & x <= upper]
@@ -98,7 +110,10 @@ fitTruncDist <- function(x, spec, lower, upper, verbose=FALSE) {
 }
 
 
-
+# convenience function that fits multiple candidate distirbutions to the empirical distribution
+# RED = negative binomial
+# GREEN = lognormal
+# BLUE = inverse gamma
 fitCurve <- function(x, x.min=min(x), x.max=max(x)) {
 	
 	library(fitdistrplus)
@@ -138,11 +153,13 @@ fitCurve <- function(x, x.min=min(x), x.max=max(x)) {
 	return(p1)	
 }
 
-fitCurve(M.n.first.group, x.min=5, x.max=1905)
+# .group0 is the vector including outliers on the left side of the distribution (n < n.min)
 fitCurve(M.n.first.group0, x.min=5, x.max=1905)
-
-fitCurve(M.n.all.groups, x.min=5, x.max=1905)
 fitCurve(M.n.all.groups0, x.min=5, x.max=1905)
+
+# .group is the vector excluding outliers on the left side of the distribution (n < n.min)
+fitCurve(M.n.first.group, x.min=5, x.max=1905)
+fitCurve(M.n.all.groups, x.min=5, x.max=1905)
 
 fitCurve(FV.ns.perGroup, x.min=5, x.max=1905)
 fitCurve(US.ns.perGroup, x.min=5, x.max=1905)
@@ -160,8 +177,17 @@ round(quantile(n.sim, prob=c(.25, .5, .75)))
 round(quantile(M.n.first.group, prob=c(.25, .5, .75)))
 
 
-#hist(n.sim, probability=TRUE, breaks=200)
-x.max <- 1000
-hist(M.n.first.group, probability=TRUE, breaks=200, xlim=c(5, x.max), xlab="sample size", main="")
+# The final plot of sample sizes, truncated at n=1000
+
+pdf(file="../Plots/sample_size_comparison.pdf", width=5, height=5)
+
+x.max <- 400
+hist(M.n.first.group, probability=TRUE, breaks=200, xlim=c(5, x.max), xlab="Per group sample size", ylab="", main="", axes=FALSE)
+Axis(side=1, labels=TRUE)
+Axis(side=2, labels=FALSE, lwd.ticks=0)
+mtext("Density", side=2, line=1.2, cex.lab=1, las=3, col="black")
+
 x <- seq(5, x.max, by=1)
-lines(x, dtrunc(x, spec="invgamma", shape=1.15326986, scale=0.04622745, a=5, b=1905), type="l", col="red")
+lines(x, dtrunc(x, spec="invgamma", shape=1.15326986, scale=0.04622745, a=5, b=1905), type="l", col="black", lwd=3)
+
+dev.off()

@@ -49,7 +49,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 									 
 				conditionalPanel("input.tabs1 != 'Funnel plots'",
 					radioButtons("delta", "True effect size under H1 (for power computation)",
-					             c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE)
+					             c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE),
+	 				helpText("Note: The results of H0 are always displayed and compared to one H1, which is selected here.")
 				),
 				conditionalPanel("input.tabs1 == 'Funnel plots'",
 					radioButtons("deltaFull", "True effect size",
@@ -77,9 +78,10 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 				checkboxGroupInput("k_perf", "Number of studies in meta-analysis:",
 				             choices = c("10" = 10, "30" = 30, "60" = 60, "100"=100),
 										 selected = c("10" = 10, "30" = 30, "60" = 60, "100"=100), inline = TRUE),									 
-				checkboxGroupInput("delta_H1_perf", "True effect size under H1",
+				checkboxGroupInput("delta_H1_perf", "True effect size under H1:",
 					           choices = c("0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), 
 										 selected = c("0" = 0, "0.2" = 0.2, "0.5" = 0.5, "0.8"=0.8), inline=TRUE),
+				helpText("Note: The results of H0 are always displayed and compared to one H1, which is selected here."),
 				checkboxGroupInput("qrpEnv_perf", "QRP environment:",
 				             choices = c("none", "med", "high"), 
 										 selected = c("none", "med", "high"), inline=TRUE),
@@ -102,17 +104,12 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			
 			
 			# Advanced options
-		 conditionalPanel("input.tabs1 != 'Funnel plots'",
+			conditionalPanel("input.tabs1 == 'Estimation'",
 				h2("Advanced options"),			
-				#radioButtons("PETPEESEmodel", "Model PET/PEESE as:",
-			             #c("lm (default)" = "lm", "rma" = "rma"), inline=TRUE),
-								 
-				conditionalPanel("input.tabs1 == 'Estimation'",
-					selectInput("dropNegatives", "Set negative estimates to zero:",
-			             c("Keep all estimates, regardless of sign (default)" = FALSE, "Set to zero" = TRUE))									 
-				)
+				selectInput("dropNegatives", "Set negative estimates to zero:",
+		             c("Keep all estimates, regardless of sign (default)" = FALSE, "Set to zero" = TRUE))									 
 			),
-						
+										
 			conditionalPanel("input.tabs1 == 'Funnel plots'",
  				sliderInput("demoDatID", "Demo data set (1 to 10)", min=1, max=10, step=1, value=1),
 				helpText("For each condition, this app provides 10 demo data sets (the data sets are not simulated on the fly, as this would need too much computing time)."),
@@ -134,7 +131,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		
 		column(width=8, 
 			
-			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies."),
+			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies, certain types of p-hacking/QRPs, and certain types of publication bias. This does not necessarily generalize to other conditions."),
 			alert.create("This is the updated app based on the current revision of our paper (submitted to AMPPS).", style="info"),
 			
 			conditionalPanel("input.tabs1 == 'Estimation'",

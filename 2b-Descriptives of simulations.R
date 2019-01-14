@@ -51,10 +51,10 @@ print(res)
 
 ## ======================================================================
 ## Which QRPs "survive" publication bias?
-## We simulate research environments with certain proportions of pure/moderate/aggressive QRP strategies.
+## We simulate research environments with certain proportions of pure/moderate/strong QRP strategies.
 ## But this is done *before* publication bias takes place. What are the proportions *after* publication bias?
 
-## Encoded in variable qrp of the simDat files: 0 = none, 1 = moderate, 2 = aggressive
+## Encoded in variable qrp of the simDat files: 0 = none, 1 = moderate, 2 = aggressive ("aggressive" now is called "strong" in the paper)
 ## ======================================================================
 
 res <- data.frame()
@@ -90,7 +90,7 @@ print(res.aggregate, n=9)
 
 
 ## ======================================================================
-## What is the *directionally consistent* false positive rate in each QRP strategy?
+## What is the *directionally consistent* false positive rate in each QRP **strategy**?
 ## (only evaluated in conditions without publication bias)
 ## I.e., here we only count successful p-hacking
 ## ======================================================================
@@ -136,7 +136,7 @@ print(res.aggregate.qrp)
 
 
 ## ======================================================================
-## What is the false positive rate in each QRP Environment?
+## What is the false positive rate in each QRP **Environment**?
 ## (only evaluated in conditions without publication bias)
 ## ======================================================================
 

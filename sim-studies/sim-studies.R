@@ -390,6 +390,7 @@ simData.QRP <- function(delta, tau, QRP.strategy, maxN = 3000, fixed.n=NULL){
   }
   
   #if QRP strategy is AGGRESSIVE
+	# ("aggressive" now is called "strong" in the paper)
   else if (QRP.strategy=='agg'){
     
     #get data for a study using QRPs
