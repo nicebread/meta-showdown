@@ -131,7 +131,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		
 		column(width=8, 
 			
-			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies, certain types of p-hacking/QRPs, and certain types of publication bias. This does not necessarily generalize to other conditions. You can dismiss this note by clikcing on 'X'."),
+			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies, certain types of p-hacking/QRPs, and certain types of publication bias. This does not necessarily generalize to other conditions. You can dismiss this note by clicking on 'X'."),
 			
 			conditionalPanel("input.tabs1 == 'Estimation'",
 				uiOutput("cap_alert")
