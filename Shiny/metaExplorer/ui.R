@@ -131,8 +131,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 		
 		column(width=8, 
 			
-			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies, certain types of p-hacking/QRPs, and certain types of publication bias. This does not necessarily generalize to other conditions."),
-			alert.create("This is the updated app based on the current revision of our paper (submitted to AMPPS).", style="info"),
+			alert.create("Please note: All results covered in this app are based on two-group t-tests and assume a certain distribution of sample sizes in the primary studies, certain types of p-hacking/QRPs, and certain types of publication bias. This does not necessarily generalize to other conditions. You can dismiss this note by clikcing on 'X'."),
 			
 			conditionalPanel("input.tabs1 == 'Estimation'",
 				uiOutput("cap_alert")
@@ -153,7 +152,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 						#uiOutput("funnelplotAnnotation")
 						HTML("<ul>
 							<li>Blue triangle is the region of non-significance; dotted black triangle is the funnel of the naive random-effects meta-analysis.</li>
-							<li>Red dot at the bottom shows the true effect size. Blue dots show the naive random-effects estimate, and PET and PEESE estimates, if selected.</li>
+							<li>The red dot at the bottom shows the true effect size. Blue dots show the naive random-effects estimate, and PET and PEESE estimates, if selected.</li>
 							</ul>
 							")
 					)					
